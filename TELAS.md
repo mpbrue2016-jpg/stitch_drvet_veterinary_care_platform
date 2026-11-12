@@ -5,20 +5,21 @@
 - Foram encontrados **110** diretorios com `code.html`; **95** tambem tem `screen.png`, **15** nao tem captura. Existem ainda **2** imagens `screen.png` sem `code.html` associado.
 - As pastas exportadas contem prototipos HTML; a interface Next.js observada e estatica e usa conteudo de demonstracao. Perfis, rotas pretendidas e acoes abaixo sao inferidos pelo nome/titulo da tela, nao confirmados por requisitos funcionais.
 - A busca no codigo da aplicacao nao encontrou cliente, consulta ou autenticacao Supabase. Portanto, nenhuma tela usa tabelas Supabase atualmente; nomes de tabela nao sao inventados nesta auditoria.
-- O produto solicitado e `stitch_drvet_veterinary_care_platform`, mas os exports e os metadados Next.js ainda exibem a marca DrVet. Nenhuma logo oficial nem pasta de referencia visual foi encontrada na raiz do projeto.
+- O produto foi confirmado como DrVet para a interface e os metadados Next.js. Nenhuma logo oficial nem pasta de referencia visual foi encontrada na raiz do projeto.
+- O layout comum DrVet usa navegação responsiva pelas rotas existentes. Menus e permissões separados por perfil dependem da autenticação e autorização, ainda não implementadas.
 
 ## Rotas Next.js observadas
 
 | Rota | Arquivo | Situacao observada |
 |---|---|---|
 | `/` | `app/page.tsx` | Landing page estatica; links internos apontam para rotas existentes. |
-| `/agenda` | `app/agenda/page.tsx` | Prototipo estatico com registros de exemplo e botao sem acao. |
-| `/agendamento` | `app/agendamento/page.tsx` | Prototipo estatico com registros de exemplo e botao sem acao. |
-| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Formulario visual; botao de salvar sem acao. |
-| `/comissões` | `app/comissões/page.tsx` | Prototipo estatico com valores de exemplo e botao sem acao. |
-| `/receitas` | `app/receitas/page.tsx` | Prototipo estatico com registros de exemplo e botao sem acao. |
+| `/agenda` | `app/agenda/page.tsx` | Prototipo com dados demonstrativos e acoes desativadas ate a integracao. |
+| `/agendamento` | `app/agendamento/page.tsx` | Prototipo com dados demonstrativos e acoes desativadas ate a integracao. |
+| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Formulario visual; gravacao desativada ate a integracao. |
+| `/comissoes` | `app/comissoes/page.tsx` | Protótipo estático com dados demonstrativos e botões desativados até integração. |
+| `/receitas` | `app/receitas/page.tsx` | Prototipo com dados demonstrativos e acao desativada ate a integracao. |
 
-Nao foi encontrado `app/pagamentos/page.tsx`; a pasta `app/pagamentos` esta vazia. Tambem nao foram encontrados layouts por perfil, componentes de navegacao compartilhados ou acessos a dados.
+Nao foi encontrado `app/pagamentos/page.tsx`; a pasta `app/pagamentos` esta vazia. O shell responsivo e os componentes comuns foram implementados, mas o menu ainda nao varia por perfil porque nao ha autenticacao/autorizacao. Tambem nao foram encontrados acessos a dados Supabase.
 
 ## Inventario completo dos exports
 
@@ -71,13 +72,13 @@ A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfi
 | 43 | emitir nova evolu o cl nica atestado complementar pipoca drvet | `emitir_nova_evolu_o_cl_nica_atestado_complementar_pipoca_drvet/code.html`; `emitir_nova_evolu_o_cl_nica_atestado_complementar_pipoca_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
 | 44 | encontrar veterin rios por valor da consulta especialidade drvet | `encontrar_veterin_rios_por_valor_da_consulta_especialidade_drvet/code.html` (sem `screen.png`) | `/painel` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 45 | exporta o de arquivo ofx csv para concilia o banc ria drvet empresas | `exporta_o_de_arquivo_ofx_csv_para_concilia_o_banc_ria_drvet_empresas/code.html`; `exporta_o_de_arquivo_ofx_csv_para_concilia_o_banc_ria_drvet_empresas/screen.png` | `/painel` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
-| 46 | extrato de comiss es repasses d 1 pet shop parceiro drvet | `extrato_de_comiss_es_repasses_d_1_pet_shop_parceiro_drvet/code.html`; `extrato_de_comiss_es_repasses_d_1_pet_shop_parceiro_drvet/screen.png` | `/comissões` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
-| 47 | extrato financeiro repasses d 1 drvet empresas | `extrato_financeiro_repasses_d_1_drvet_empresas/code.html`; `extrato_financeiro_repasses_d_1_drvet_empresas/screen.png` | `/comissões` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
+| 46 | extrato de comiss es repasses d 1 pet shop parceiro drvet | `extrato_de_comiss_es_repasses_d_1_pet_shop_parceiro_drvet/code.html`; `extrato_de_comiss_es_repasses_d_1_pet_shop_parceiro_drvet/screen.png` | `/comissoes` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
+| 47 | extrato financeiro repasses d 1 drvet empresas | `extrato_financeiro_repasses_d_1_drvet_empresas/code.html`; `extrato_financeiro_repasses_d_1_drvet_empresas/screen.png` | `/comissoes` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
 | 48 | DrVet Empresas \| Portal B2B de Dispensação Farmacêutica Veterinária | `farm_cia_credenciada_com_sucesso_ativada_no_supabase_drvet/code.html`; `farm_cia_credenciada_com_sucesso_ativada_no_supabase_drvet/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
 | 49 | farm cias parceiras com 15 off drvet | `farm_cias_parceiras_com_15_off_drvet/code.html` (sem `screen.png`) | `/parceiros` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
 | 50 | gest o de balc o qr codes promocionais pet shop parceiro drvet | `gest_o_de_balc_o_qr_codes_promocionais_pet_shop_parceiro_drvet/code.html`; `gest_o_de_balc_o_qr_codes_promocionais_pet_shop_parceiro_drvet/screen.png` | `/parceiros` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 51 | gest o de campanhas banners drvet ads drvet empresas | `gest_o_de_campanhas_banners_drvet_ads_drvet_empresas/code.html`; `gest_o_de_campanhas_banners_drvet_ads_drvet_empresas/screen.png` | `/anuncios` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
-| 52 | gest o de m dicos veterin rios repasses drvet master | `gest_o_de_m_dicos_veterin_rios_repasses_drvet_master/code.html` (sem `screen.png`) | `/comissões` | Admin Master / Operações | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
+| 52 | gest o de m dicos veterin rios repasses drvet master | `gest_o_de_m_dicos_veterin_rios_repasses_drvet_master/code.html` (sem `screen.png`) | `/comissoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Pagar / consultar (integração não implementada) | Parcial - rota existe, tela nao ligada a dados |
 | 53 | gest o de usu rios perfis e permiss es rbac drvet master | `gest_o_de_usu_rios_perfis_e_permiss_es_rbac_drvet_master/code.html`; `gest_o_de_usu_rios_perfis_e_permiss_es_rbac_drvet_master/screen.png` | `/admin` | Admin Master / Operações | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 54 | hist rico de consultas gravadas com player seguro drvet | `hist_rico_de_consultas_gravadas_com_player_seguro_drvet/code.html`; `hist_rico_de_consultas_gravadas_com_player_seguro_drvet/screen.png` | `/teleconsulta` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 55 | DrVets - Telemedicina Veterinária 24h \| Seu pet sempre por perto | `home_desktop_drvet_telemedicina_veterin_ria_1/code.html`; `home_desktop_drvet_telemedicina_veterin_ria_1/screen.png` | `/` | Veterinário | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Parcial - rota existe, tela nao ligada a dados |

@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { AppShell } from '@/components/app-shell';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'DrVet Telemedicina',
-  description: 'Plataforma de telemedicina veterinária DrVet',
+  title: {
+    default: 'DrVet',
+    template: '%s | DrVet',
+  },
+  description: 'Plataforma de cuidado e telemedicina veterinária DrVet.',
 };
 
 export default function RootLayout({
@@ -13,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-floor-5 text-text-344">{children}</body>
+      <body className="bg-brand-floor text-brand-ink">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

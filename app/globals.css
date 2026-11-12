@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-brand-navy: #153b50;
+  --color-brand-green: #13a88a;
+  --color-brand-turquoise: #35c6b0;
+  --color-brand-ice: #eaf5f8;
+  --color-floor: #f5f8fa;
+  --color-ink: #183344;
+  --color-muted: #718096;
+}
+
+html {
+  min-width: 320px;
+  background: var(--color-floor);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-floor);
+  color: var(--color-ink);
+  font-family: 'Plus Jakarta Sans', Inter, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: var(--color-brand-turquoise);
+  color: white;
+}
+
+:focus-visible {
+  outline: 3px solid rgb(53 198 176 / 70%);
+  outline-offset: 2px;
+}
