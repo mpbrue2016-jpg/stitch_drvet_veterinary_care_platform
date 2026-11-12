@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#cbe6fc","tertiary-fixed":"#72f8e0","inverse-surface":"#183344","secondary-fixed":"#c7e7ff","outline":"#6d7a75","surface-bright":"#f6faff","on-primary-fixed":"#002019","error":"#ba1a1a","primary":"#006b57","surface-container-high":"#d4ebff","surface-container-low":"#ebf5ff","inverse-on-surface":"#e5f2ff","surface-container":"#dff0ff","secondary-container":"#c0e4ff","on-primary-fixed-variant":"#005141","inverse-primary":"#5ddbbb","error-container":"#ffdad6","on-secondary-container":"#44677d","on-surface-variant":"#3d4945","primary-container":"#13a88a","on-primary-container":"#003529","on-tertiary-fixed-variant":"#005046","on-tertiary":"#ffffff","tertiary-fixed-dim":"#52dbc5","tertiary-container":"#00a894","secondary-fixed-dim":"#a7cbe5","on-surface":"#001e2e","on-secondary":"#ffffff","surface-dim":"#c2def4","background":"#f6faff","on-secondary-fixed-variant":"#274a60","surface-tint":"#006b57","on-error-container":"#93000a","secondary":"#406279","on-tertiary-container":"#00352d","on-tertiary-fixed":"#00201b","surface":"#f6faff","on-background":"#001e2e","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-variant":"#cbe6fc","tertiary":"#006b5d","on-secondary-fixed":"#001e2e","primary-fixed":"#7cf8d6","on-primary":"#ffffff","outline-variant":"#bccac3","primary-fixed-dim":"#5ddbbb"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","margin-mobile":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","gutter-mobile":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter":"1.5rem","margin":"2rem"},"fontFamily":{"body-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},"fontSize":{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 flex items-center px-space-lg gap-space-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-2xl">medical_services</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">B2B</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Portal de Anunciantes</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-xl bg-surface-container-low flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-xl">verified</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Parceiro Credenciado</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[170px]">PetLove Farma &amp; Clin</span></div></div></div><nav class="flex-1 px-space-md py-space-sm space-y-1 overflow-y-auto" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span class="font-label-lg text-label-lg">Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="anuncios-e-campanhas" href="#"><span class="material-symbols-outlined text-xl">campaign</span><span class="font-label-lg text-label-lg">Anúncios &amp; Campanhas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="receitas-e-pedidos" href="#"><span class="material-symbols-outlined text-xl">receipt_long</span><span class="font-label-lg text-label-lg">Receitas &amp; Pedidos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="exames-e-laudos" href="#"><span class="material-symbols-outlined text-xl">vital_signs</span><span class="font-label-lg text-label-lg">Exames &amp; Laudos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="catalogo-e-precos" href="#"><span class="material-symbols-outlined text-xl">inventory_2</span><span class="font-label-lg text-label-lg">Catálogo &amp; Preços</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="faturamento-e-repasses" href="#"><span class="material-symbols-outlined text-xl">payments</span><span class="font-label-lg text-label-lg">Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="configuracoes-de-integracao-erp" href="#"><span class="material-symbols-outlined text-xl">sync_alt</span><span class="font-label-lg text-label-lg">Configurações de Integração ERP</span></a></nav><div class="p-space-md mt-auto"><div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-lg">support_agent</span><span class="font-label-md text-label-md font-semibold">Canal B2B DrVet</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Suporte técnico e homologação de APIs clínicas.</p><a class="mt-space-xs inline-flex items-center gap-1 font-label-md text-label-md text-primary font-semibold hover:underline" data-path="suporte-b2b" href="#">Abrir Chamado <span class="material-symbols-outlined text-sm">arrow_forward</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-bright/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-sm rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-primary text-xl">store</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Unidade Operacional</span><div class="flex items-center gap-space-xs cursor-pointer"><span class="font-label-lg text-label-lg text-on-surface font-semibold">PetLove Farma - CD Moema</span><span class="material-symbols-outlined text-on-surface-variant text-base">expand_more</span></div></div></div><div class="hidden xl:flex items-center gap-space-xs px-space-md py-space-sm rounded-full bg-surface-container-low text-primary"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-md text-label-md font-semibold">Destaque Patrocinado Ativo</span><span class="font-label-sm text-label-sm px-space-xs rounded bg-surface-container-highest text-on-secondary-fixed">Válido até 31/12</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><button aria-label="Notificações em tempo real" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-bright"></span></div><div class="h-8 w-px bg-outline-variant/40"></div><div class="flex items-center gap-space-sm"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-lg text-label-lg text-on-surface font-bold leading-tight">Dr. Marcelo Antunes</span><span class="font-label-sm text-label-sm text-on-surface-variant">Gestor Comercial &amp; Credenciamento</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full relative">
+<!-- Pano de fundo da tela subjacente: Extrato Financeiro & Repasses D+1 -->
+<div class="w-full px-space-lg py-space-md opacity-35 filter blur-[2px] pointer-events-none select-none transition-all">
+<!-- Breadcrumb Subjacente -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md mb-space-md">
+<span>Visão Geral</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span>Faturamento &amp; Repasses</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-semibold">Extrato D+1</span>
+</div>
+<!-- Top KPI cards subjacentes -->
+<div class="grid grid-cols-4 gap-space-md mb-space-lg">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Saldo Líquido D+1</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1">R$ 223.972,64</div>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +14.2% vs ciclo anterior
+        </span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lançamentos Processados</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1">418</div>
+<span class="font-label-sm text-label-sm text-secondary">Outubro / 2026</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Split DrVet (2.9%)</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1">R$ 6.928,68</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Taxa de intermediação</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Retenção Ads &amp; Antecipação</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1">R$ 8.018,68</div>
+<span class="font-label-sm text-label-sm text-secondary">Campanhas ativas</span>
+</div>
+</div>
+<!-- Tabela fantasma subjacente -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="h-8 bg-surface-container-low rounded-lg w-1/3 mb-4"></div>
+<div class="space-y-3">
+<div class="h-10 bg-surface-container rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container-low rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container-low rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container rounded-lg w-full"></div>
+</div>
+</div>
+</div>
+<!-- OVERLAY TRANSLÚCIDO E MODAL PRINCIPAL -->
+<div class="fixed inset-0 left-72 top-20 bg-inverse-surface/40 backdrop-blur-md z-50 flex items-start justify-center overflow-y-auto p-space-md lg:p-space-lg">
+<!-- Janela de Diálogo do Modal -->
+<div class="w-full max-w-5xl bg-surface-container-lowest rounded-2xl shadow-2xl flex flex-col my-auto overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- Cabeçalho do Modal & Contexto Operacional -->
+<div class="p-space-lg bg-surface-container-lowest flex flex-col gap-space-xs">
+<!-- Breadcrumb Superior Integrado -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">home</span>
+            Visão Geral
+          </span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>Financeiro &amp; Repasses</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>Extrato D+1</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-bold">Exportar Dados Contábeis</span>
+</div>
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-container/15 text-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-3xl">account_balance</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-headline-md text-headline-md text-on-surface font-bold">Exportação para Conciliação Bancária &amp; ERP</h1>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-highest text-on-secondary-fixed font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  Lote Fechado D+1
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Gere arquivos no padrão bancário oficial para importação direta no seu sistema contábil (Omie, Bling, Totvs, ContaAzul, SAP ou ERP próprio).
+              </p>
+</div>
+</div>
+<button aria-label="Fechar Modal" class="w-9 h-9 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<!-- Indicador de Unidade & CNPJ Vinculado -->
+<div class="mt-space-sm p-space-sm rounded-xl bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-lg">domain</span>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-bold">PetLove Farma - CD Moema</span>
+<span class="text-on-surface-variant/40">|</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">CNPJ: 42.108.924/0001-92</span>
+<span class="text-on-surface-variant/40">|</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Chave Pix Bacen ID: 8847.1092.441</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+            Ambiente Certificado ICP-Brasil &amp; Febraban
+          </div>
+</div>
+</div>
+<!-- Corpo com Scroll do Modal -->
+<div class="p-space-lg space-y-space-lg overflow-y-auto max-h-[calc(85vh-200px)] bg-surface-container-lowest">
+<!-- MÓDULO 1: SELEÇÃO DE FORMATO -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center font-bold">1</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Selecione o Formato de Arquivo</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Padrões de exportação homologados</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Opção 1: OFX (Selecionado por padrão) -->
+<label class="relative flex flex-col p-space-md rounded-xl bg-surface-container-low cursor-pointer shadow-sm ring-2 ring-primary-container transition-all group">
+<input checked="" class="sr-only" name="export_format" type="radio" value="ofx"/>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold font-mono text-sm shadow-sm">
+                    OFX
+                  </div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold block">OFX (Open Financial Exchange)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Versão 2.2 XML / 1.0.2 Febraban</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold shadow-xs">
+                  Recomendado para ERPs
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm leading-relaxed">
+                Padrão Febraban / Bancos. Ideal para importação de extrato bancário automático em ERPs e internet banking. Inclui metadados de transação, ID único e split DrVet discriminado.
+              </p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-primary font-label-sm text-label-sm font-semibold">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">task_alt</span> Reconciliação em 1 Clique
+                </span>
+<span class="font-mono text-on-surface-variant">.ofx</span>
+</div>
+</label>
+<!-- Opção 2: CSV Analítico Completo -->
+<label class="relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer shadow-sm transition-all group">
+<input class="sr-only" name="export_format" type="radio" value="csv_full"/>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-secondary flex items-center justify-center font-bold font-mono text-sm">
+                    CSV
+                  </div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold block">CSV Analítico Completo</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Delimitador ponto e vírgula (;)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-secondary-container font-label-sm text-label-sm font-medium">
+                  Auditoria e BI
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm leading-relaxed">
+                Planilha detalhada com todas as 418 linhas de movimentação: dados do tutor, CRMV do médico, ID da receita ICP-Brasil, valor bruto, taxa split DrVet (2.9%), retenção Ads e valor líquido.
+              </p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm font-semibold">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">table_view</span> 418 colunas normalizadas
+                </span>
+<span class="font-mono text-on-surface-variant">.csv</span>
+</div>
+</label>
+<!-- Opção 3: CSV Sintético / Fiscal (SPED / NFS-e) -->
+<label class="relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer shadow-sm transition-all group">
+<input class="sr-only" name="export_format" type="radio" value="csv_fiscal"/>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-secondary flex items-center justify-center font-bold font-mono text-sm">
+                    FISCAL
+                  </div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold block">CSV Sintético / Fiscal (SPED / NFS-e)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Agrupamento diário contábil</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-medium">
+                  Contabilidade
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm leading-relaxed">
+                Consolidado por dia e por regime tributário para cálculo de retenções fiscais, emissão de notas de intermediação e apuração de PIS/COFINS e ISS.
+              </p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm font-semibold">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base">receipt</span> Pronto p/ Escrituração
+                </span>
+<span class="font-mono text-on-surface-variant">.csv</span>
+</div>
+</label>
+<!-- Opção 4: API & Webhook Contínuo -->
+<div class="relative flex flex-col p-space-md rounded-xl bg-surface-container-high/40 shadow-sm justify-between">
+<div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center font-bold font-mono text-sm">
+                      JSON
+                    </div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold block">API REST &amp; Webhook ERP</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sincronização contínua D+0</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">
+                    Automação
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm leading-relaxed">
+                  Conecte seu backend para recepção em tempo real de eventos financeiros assinados com mTLS e webhook HMAC.
+                </p>
+</div>
+<div class="mt-space-md flex items-center justify-between pt-space-xs">
+<button class="inline-flex items-center gap-1 text-primary hover:text-on-primary-container font-label-sm text-label-sm font-bold" type="button">
+<span class="material-symbols-outlined text-sm">key</span>
+                  Gerar Bearer Token Contábil
+                </button>
+<span class="font-mono text-xs text-on-surface-variant">API v2.4</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MÓDULO 2: FILTROS E PARÂMETROS DE CONCILIAÇÃO -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center font-bold">2</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Período e Filtros de Conciliação</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Selecione o corte temporal dos lançamentos</span>
+</div>
+<!-- Filtros de Período em Chips Rápidos -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-md shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-bold">Intervalo de Competência:</label>
+<div class="flex flex-wrap gap-space-xs">
+<button class="px-space-md py-2 rounded-full bg-primary-container text-on-primary font-label-md text-label-md font-bold shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-base">calendar_month</span>
+                  Mês Atual (Outubro/2026 - 418 lançamentos)
+                </button>
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high font-label-md text-label-md font-medium shadow-sm transition-colors" type="button">
+                  Últimos 15 dias
+                </button>
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high font-label-md text-label-md font-medium shadow-sm transition-colors" type="button">
+                  Últimos 7 dias
+                </button>
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high font-label-md text-label-md font-medium shadow-sm transition-colors" type="button">
+                  Ontem (D+1 fechado)
+                </button>
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md font-medium shadow-sm transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-base">date_range</span>
+                  Personalizado...
+                </button>
+</div>
+</div>
+<!-- Filtros de Tipos de Lançamento (Checkboxes Clínicos/Financeiros) -->
+<div class="pt-space-sm flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-bold">Tipos de Lançamentos a Consolidar:</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-sm">
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest shadow-sm cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Receitas PIX &amp; Cartão</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Crédito bruto</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest shadow-sm cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Split DrVet Platform (2.9%)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Dedução taxa B2B</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest shadow-sm cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Retenção DrVet Ads</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Campanhas e Patrocínio</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest shadow-sm cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Cessão e Antecipações</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Deságio e tarifas D+0</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- MÓDULO 3: PRÉ-VISUALIZAÇÃO DE DADOS & COMPATIBILIDADE ERP -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Snippet do Arquivo OFX Gerado -->
+<div class="lg:col-span-8 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center font-bold">3</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Pré-visualização do Arquivo OFX</h3>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">code</span>
+                drvet_extrato_conciliacao_outubro_2026_cdmoema.ofx
+              </span>
+</div>
+<!-- Janela de Terminal / Snippet OFX -->
+<div class="bg-inverse-surface text-inverse-on-surface p-space-md rounded-xl font-mono text-xs overflow-x-auto shadow-md leading-relaxed selection:bg-primary-container selection:text-on-primary">
+<div class="flex items-center justify-between text-outline-variant pb-2 mb-2">
+<span>ENCODING: US-ASCII | BANKID: 077 (DrVet BaaS) | ACCTID: 42108924000192</span>
+<span class="text-tertiary-fixed font-bold">PREVIEW DAS PRIMEIRAS TRANSAÇÕES</span>
+</div>
+<p class="text-secondary-fixed">&lt;OFX&gt;</p>
+<p class="text-secondary-fixed pl-2">&lt;BANKMSGSRSV1&gt;&lt;STMTTRNRS&gt;&lt;STMTRS&gt;</p>
+<p class="text-secondary-fixed pl-4">&lt;CURDEF&gt;BRL&lt;/CURDEF&gt;</p>
+<p class="text-secondary-fixed pl-4">&lt;BANKTRANLIST&gt;</p>
+<p class="text-secondary-fixed pl-6">&lt;DTSTART&gt;20261001000000[-03:EST]&lt;/DTSTART&gt;</p>
+<p class="text-secondary-fixed pl-6">&lt;DTEND&gt;20261031235959[-03:EST]&lt;/DTEND&gt;</p>
+<!-- Transação 1 -->
+<div class="bg-surface-container-highest/10 py-1 px-2 my-1 rounded text-primary-fixed">
+<p class="pl-6">&lt;STMTTRN&gt;</p>
+<p class="pl-8">&lt;TRNTYPE&gt;CREDIT&lt;/TRNTYPE&gt;</p>
+<p class="pl-8">&lt;DTPOSTED&gt;20261028103000[-03:EST]&lt;/DTPOSTED&gt;</p>
+<p class="pl-8">&lt;TRNAMT&gt;+548.90&lt;/TRNAMT&gt;</p>
+<p class="pl-8">&lt;FITID&gt;DRVET-20261028-REC4109&lt;/FITID&gt;</p>
+<p class="pl-8">&lt;MEMO&gt;PETLOVE-FARM-REC-4109-PIPOCA-CRMV-SP41829&lt;/MEMO&gt;</p>
+<p class="pl-6">&lt;/STMTTRN&gt;</p>
+</div>
+<!-- Transação 2 (Split DrVet) -->
+<div class="py-1 px-2 my-1 rounded text-error-container">
+<p class="pl-6">&lt;STMTTRN&gt;</p>
+<p class="pl-8">&lt;TRNTYPE&gt;DEBIT&lt;/TRNTYPE&gt;</p>
+<p class="pl-8">&lt;DTPOSTED&gt;20261028103000[-03:EST]&lt;/DTPOSTED&gt;</p>
+<p class="pl-8">&lt;TRNAMT&gt;-15.92&lt;/TRNAMT&gt;</p>
+<p class="pl-8">&lt;FITID&gt;DRVET-20261028-SPLIT4109&lt;/FITID&gt;</p>
+<p class="pl-8">&lt;MEMO&gt;TAXA-INTERMEDIACAO-DRVET-2.9PCT-REC4109&lt;/MEMO&gt;</p>
+<p class="pl-6">&lt;/STMTTRN&gt;</p>
+</div>
+<p class="text-secondary-fixed pl-4">&lt;/BANKTRANLIST&gt;</p>
+<p class="text-secondary-fixed pl-2">&lt;/STMTRS&gt;&lt;/STMTTRNRS&gt;&lt;/BANKMSGSRSV1&gt;</p>
+<p class="text-secondary-fixed">&lt;/OFX&gt;</p>
+</div>
+</div>
+<!-- Compatibilidade com ERPs -->
+<div class="lg:col-span-4 flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div>
+<div class="flex items-center gap-space-xs mb-2">
+<span class="material-symbols-outlined text-primary text-xl">hub</span>
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold">Compatibilidade Homologada</h4>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                Arquivo 100% testado contra conflito de duplicidade de `FITID` nos principais softwares do mercado brasileiro:
+              </p>
+<!-- Lista de ERPs Suportados com Chips estilizados -->
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Omie ERP</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Bling! Farma</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Totvs Protheus</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Conta Azul Pro</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">SAP Business One</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest shadow-xs flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Arquivei / SPED</span>
+</div>
+</div>
+</div>
+<!-- Cartãozinho de Validação Febraban -->
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container-high/60 flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-2xl">verified</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Padrão Febraban 240/OFX</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hash SHA-256 verificado em D+1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MÓDULO 4: RESUMO CONSOLIDADO DA EXPORTAÇÃO -->
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-lg w-full md:w-auto">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Lançamentos</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">418 itens</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Volume Bruto</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">R$ 238.920,00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Split &amp; Retenções</span>
+<span class="font-headline-sm text-headline-sm text-error font-bold mt-0.5">- R$ 14.947,36</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Líquido Depositado</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5">R$ 223.972,64</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full md:w-auto justify-end">
+<div class="text-right hidden sm:block">
+<span class="font-label-sm text-label-sm text-on-surface-variant block font-mono">Tamanho Estimado</span>
+<span class="font-label-md text-label-md text-on-surface font-bold font-mono">~148.4 KB</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rodapé de Ações do Modal -->
+<div class="p-space-lg bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Alerta de Segurança e Compliance -->
+<div class="flex items-center gap-space-xs text-on-surface-variant max-w-lg">
+<span class="material-symbols-outlined text-primary text-xl flex-shrink-0">shield</span>
+<p class="font-label-sm text-label-sm leading-tight">
+            Arquivo criptografado com assinatura digital SHA-256 e compatível com as normas de conciliação Febraban e Resolução BCB nº 150/2021.
+          </p>
+</div>
+<!-- Grupo de Botões -->
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<button class="px-space-md py-2.5 rounded-full text-on-surface hover:bg-surface-container font-label-lg text-label-lg font-semibold transition-colors" type="button">
+            Cancelar / Fechar
+          </button>
+<button class="px-space-md py-2.5 rounded-full bg-surface-container-low text-secondary hover:bg-surface-container-high font-label-lg text-label-lg font-semibold flex items-center gap-1.5 transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+<span>Copiar Chave API</span>
+</button>
+<button class="px-space-lg py-2.5 rounded-full bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all transform active:scale-95" type="button">
+<span class="material-symbols-outlined text-xl">download</span>
+<span>Baixar Arquivo OFX Agora (148 KB)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

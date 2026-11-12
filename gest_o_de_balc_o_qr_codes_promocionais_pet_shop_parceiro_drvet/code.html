@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#dff0ff", "on-tertiary-fixed-variant": "#005046", "background": "#f6faff", "inverse-surface": "#183344", "inverse-on-surface": "#e5f2ff", "on-surface-variant": "#3d4945", "primary-fixed-dim": "#5ddbbb", "tertiary-fixed-dim": "#52dbc5", "on-tertiary-fixed": "#00201b", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#a7cbe5", "on-tertiary": "#ffffff", "secondary-fixed": "#c7e7ff", "on-primary-fixed-variant": "#005141", "surface-bright": "#f6faff", "on-primary-fixed": "#002019", "tertiary": "#006b5d", "tertiary-container": "#00a894", "on-secondary-fixed-variant": "#274a60", "on-tertiary-container": "#00352d", "on-error": "#ffffff", "primary": "#006b57", "surface-tint": "#006b57", "surface": "#f6faff", "primary-container": "#13a88a", "outline-variant": "#bccac3", "on-secondary-fixed": "#001e2e", "on-surface": "#001e2e", "on-error-container": "#93000a", "on-primary-container": "#003529", "on-background": "#001e2e", "on-secondary": "#ffffff", "inverse-primary": "#5ddbbb", "surface-container-highest": "#cbe6fc", "primary-fixed": "#7cf8d6", "surface-container-low": "#ebf5ff", "on-secondary-container": "#44677d", "surface-dim": "#c2def4", "outline": "#6d7a75", "error": "#ba1a1a", "secondary-container": "#c0e4ff", "on-primary": "#ffffff", "error-container": "#ffdad6", "surface-variant": "#cbe6fc", "tertiary-fixed": "#72f8e0", "surface-container-high": "#d4ebff", "secondary": "#406279" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2.5rem", "space-md": "1rem", "space-xs": "0.25rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "space-lg": "1.5rem", "margin": "2rem" }, fontFamily: { "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, fontSize: { "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(21,59,80,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-20 flex items-center gap-space-sm px-space-lg bg-surface-container-low"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-headline-sm">local_hospital</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DrVet</span><span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">B2B</span></div><span class="font-label-sm text-label-sm text-secondary font-semibold uppercase tracking-wider">Parceiros Telemedicina</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm bg-surface-container-low rounded-xl flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">CDC Realtime Hub</span></div><span class="font-label-sm text-label-sm text-primary font-bold">ONLINE</span></div></div><nav class="flex flex-col gap-1 px-space-md mt-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined">dashboard</span><span>Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="balcao-e-qr-codes" href="#"><span class="material-symbols-outlined">qr_code_scanner</span><span>Balcão &amp; QR Codes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agendamentos-e-servicos" href="#"><span class="material-symbols-outlined">calendar_month</span><span>Agendamentos &amp; Serviços</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="clientes-e-pets" href="#"><span class="material-symbols-outlined">pets</span><span>Clientes &amp; Pets Vinculados</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="comissoes-e-repasses" href="#"><span class="material-symbols-outlined">payments</span><span>Comissões &amp; Farmácia</span><span class="ml-auto font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-bold">10%</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-space-container-high hover:text-on-surface transition-all" data-path="cupons-e-campanhas" href="#"><span class="material-symbols-outlined">confirmation_number</span><span>Cupons &amp; Campanhas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="configuracoes-e-split" href="#"><span class="material-symbols-outlined">settings</span><span>Loja &amp; Split Bancário</span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest"><div class="p-space-sm bg-surface-container-low rounded-xl flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-headline-sm">verified</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface font-bold">Parceiro Verificado</span><span class="font-label-sm text-label-sm text-on-surface-variant">Selo DrVet Pro</span></div></div><span class="font-label-sm text-label-sm text-primary font-bold">Ativo</span></div><a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all" href="#"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">support_agent</span><span class="font-label-md text-label-md font-semibold">Suporte WhatsApp B2B</span></div><span class="material-symbols-outlined text-headline-sm">open_in_new</span></a><div class="flex items-center justify-between px-space-xs text-on-surface-variant"><span class="font-label-sm text-label-sm">Supabase CDC Sync</span><span class="font-label-sm text-label-sm text-primary font-semibold">Sincronizado</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(21,59,80,0.04)] z-40 px-space-lg flex items-center justify-between gap-space-lg"><div class="flex-1 max-w-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-md text-secondary">search</span><input class="w-full pl-11 pr-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container shadow-[0_1px_4px_rgba(21,59,80,0.03)] transition-all" placeholder="Buscar por cliente, pet, CPF, agendamento ou cupom..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container-low text-on-surface"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface font-semibold">Realtime Supabase CDC</span><span class="font-label-sm text-label-sm text-primary font-bold">Conectado</span></div><button class="relative w-10 h-10 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all"><span class="material-symbols-outlined">notifications</span><span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span></button><button class="relative w-10 h-10 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all"><span class="material-symbols-outlined">point_of_sale</span><span class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm font-bold">3</span></button><div class="h-8 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="flex flex-col text-right"><span class="font-label-lg text-label-lg text-on-surface font-bold leading-tight">Pet Care &amp; Shop Vila Mariana</span><span class="font-label-sm text-label-sm text-secondary font-medium">ID #PARC-8821 • Balcão 01</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/></div></div></header><main class="relative pt-20 w-full min-h-screen bg-background"><div class="flex flex-col w-full">
+<!-- Sub-Header & Action Bar -->
+<div class="px-margin pt-space-lg pb-space-md flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="hover:text-primary transition-colors cursor-pointer">Pet Shop &amp; Clínica Vila Mariana</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span>Painel Comercial &amp; Parcerias</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-bold">Balcão &amp; QR Codes Promocionais</span>
+</div>
+<div class="flex items-center flex-wrap gap-space-sm items-baseline">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Totens de Balcão &amp; QR Codes PDV</h1>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span>CDC Supabase Conectado (24ms)</span>
+</div>
+<span class="px-space-sm py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm font-bold">
+          3 Totens Ativos na Loja
+        </span>
+</div>
+</div>
+<!-- Top Action Buttons -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="px-space-md py-2.5 rounded-full bg-primary text-on-primary hover:bg-on-tertiary-fixed-variant transition-all flex items-center gap-space-xs font-label-lg text-label-lg shadow-sm" onclick="document.getElementById('modal-new-qrcode').classList.remove('hidden')">
+<span class="material-symbols-outlined text-headline-sm">add_circle</span>
+<span>Novo QR Code / Campanha</span>
+</button>
+<button class="px-space-md py-2.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-space-xs font-label-lg text-label-lg shadow-sm" onclick="alert('Gerando pacote PDF em alta definição 300DPI com marcas de corte A4/A5...')">
+<span class="material-symbols-outlined text-headline-sm text-primary">print</span>
+<span>Baixar Kit de Impressão (PDF)</span>
+</button>
+<button class="px-space-md py-2.5 rounded-full bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed transition-all flex items-center gap-space-xs font-label-lg text-label-lg shadow-sm" onclick="alert('Iniciando Modo Kiosk / Tablet de Balcão em tela cheia...')">
+<span class="material-symbols-outlined text-headline-sm">tablet_mac</span>
+<span>Modo Tablet de Balcão</span>
+</button>
+</div>
+</div>
+<!-- Main Content Layout -->
+<div class="px-margin pb-space-xl flex flex-col gap-space-lg">
+<!-- 4 Key Performance Metrics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1: Scans -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-3 -top-3 w-20 h-20 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Total Scans no PDV</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-extrabold">1.420</span>
+<span class="font-label-sm text-label-sm text-primary font-bold flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span>+18%
+              </span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Conversão de cadastro:</span>
+<span class="font-bold text-on-surface bg-surface-container-low px-2 py-0.5 rounded-full">43.6%</span>
+</div>
+</div>
+<!-- Card 2: Consultas Geradas -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-3 -top-3 w-20 h-20 bg-secondary-container/30 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Teleconsultas na Loja</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-extrabold">148</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">ativas</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">video_chat</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Comissão balcão (R$ 15/un):</span>
+<span class="font-bold text-primary bg-primary-fixed/40 px-2 py-0.5 rounded-full">R$ 2.220,00</span>
+</div>
+</div>
+<!-- Card 3: Receitas & Farmácia Split -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-3 -top-3 w-20 h-20 bg-tertiary-fixed/30 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Repasse Farmácia (10%)</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-extrabold">R$ 4.280,50</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">medication</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Split Automático via Asaas:</span>
+<span class="font-bold text-on-surface flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>D+1 Útil
+          </span>
+</div>
+</div>
+<!-- Card 4: Campanhas Ativas -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Campanhas em Circulação</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-on-surface font-extrabold">3</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">displays físicos</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center gap-1 font-label-sm text-label-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-mono font-bold text-[10px]">VILAMARIANA</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-mono font-bold text-[10px]">BANHO-DRVET</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-mono font-bold text-[10px]">WELCOME</span>
+</div>
+</div>
+</div>
+<!-- Middle Bento: Displays Gestor + Live Interactive Acrílico Preview -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Display Physical Cards (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary">storefront</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Displays Físicos &amp; Materiais Configurados</h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Atualizado em tempo real</span>
+</div>
+<!-- Card Material 1: Acrílico Balcão Principal -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-primary-fixed/30 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-3xl">picture_in_picture</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Totem Acrílico de Caixa (A5)</h3>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-bold">Ativo no PDV 01</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Oferta: 15% OFF na 1ª Teleconsulta 24h + Vale Compras R$ 30 na loja parceira</p>
+<div class="flex items-center gap-space-sm mt-1 text-secondary font-label-sm text-label-sm font-mono bg-surface-container-low px-2 py-1 rounded max-w-fit">
+<span class="material-symbols-outlined text-xs">link</span>
+<span>drvet.com.br/ativar?ref=PARC-8821&amp;cupom=DRVET-VILAMARIANA</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro Analytics row -->
+<div class="grid grid-cols-3 gap-space-sm p-space-sm bg-surface-container-low rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Scans (48h)</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">89 leituras</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Consultas Ativadas</span>
+<span class="font-label-lg text-label-lg text-primary font-bold">28 pets atendidos</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Comissão Gerada</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">R$ 1.410,00</span>
+</div>
+</div>
+<!-- Action buttons for Display 1 -->
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1 transition-all" onclick="previewAcrilico('DRVET-VILAMARIANA', 'Totem de Caixa Principal (A5)', '15% OFF na Consulta', 'R$ 30 em Compras Loja')">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span>Visualizar na Tela</span>
+</button>
+<button class="px-space-md py-1.5 rounded-full bg-primary-container text-on-primary hover:bg-primary transition-all font-label-md text-label-md flex items-center gap-1" onclick="alert('Iniciando spool de impressão em folha A5 com margem de 5mm para encaixe no suporte acrílico...')">
+<span class="material-symbols-outlined text-sm">print</span>
+<span>Imprimir Display A5</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all" title="Baixar Vetor SVG 300DPI">
+<span class="material-symbols-outlined text-lg">download</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all" title="Editar Parâmetros">
+<span class="material-symbols-outlined text-lg">tune</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card Material 2: Adesivo Banho & Tosa -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-secondary-container/40 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-3xl">shower</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Adesivo Espelho Banho &amp; Tosa (15x15cm)</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold">Vidro &amp; Espelhos</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Foco: Coceiras, dermatologia preventiva e retorno pós-banho com veterinário online.</p>
+<div class="flex items-center gap-space-sm mt-1 text-secondary font-label-sm text-label-sm font-mono bg-surface-container-low px-2 py-1 rounded max-w-fit">
+<span class="material-symbols-outlined text-xs">link</span>
+<span>drvet.com.br/ativar?ref=PARC-8821&amp;cupom=BANHO-DRVET15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro Analytics row -->
+<div class="grid grid-cols-3 gap-space-sm p-space-sm bg-surface-container-low rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Scans Totais</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">42 leituras</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Teleconsultas Derma</span>
+<span class="font-label-lg text-label-lg text-secondary font-bold">14 pacientes</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Comissão Estimada</span>
+<span class="font-label-lg text-label-lg text-primary font-bold">R$ 630,00</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1 transition-all" onclick="previewAcrilico('BANHO-DRVET15', 'Adesivo Banho &amp; Tosa', 'Orientação Dermatológica 24h', '10% de Cashback Farmácia')">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span>Visualizar na Tela</span>
+</button>
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1 shadow-sm" onclick="alert('Exportando arquivo PDF para gráfica em formato de vinil adesivo 15x15cm com sangria de 3mm...')">
+<span class="material-symbols-outlined text-sm">print</span>
+<span>Imprimir Vinil 15x15</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-lg">tune</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card Material 3: Tag de Sacola / Delivery -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-tertiary-fixed/40 flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-3xl">shopping_bag</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Tag de Coleira &amp; Sacola Delivery</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold">Gramatura 250g</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Aplicado em todos os pedidos de entrega de ração e farmácia para engajamento em domicílio.</p>
+<div class="flex items-center gap-space-sm mt-1 text-secondary font-label-sm text-label-sm font-mono bg-surface-container-low px-2 py-1 rounded max-w-fit">
+<span class="material-symbols-outlined text-xs">link</span>
+<span>drvet.com.br/ativar?ref=PARC-8821&amp;cupom=FILHOTES-WELCOME</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-space-sm p-space-sm bg-surface-container-low rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Tags Distribuídas</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">187 tags</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Ativações Mobile</span>
+<span class="font-label-lg text-label-lg text-tertiary font-bold">54 pets</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Conversão Farmácia</span>
+<span class="font-label-lg text-label-lg text-primary font-bold">R$ 2.240,50</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1 transition-all" onclick="previewAcrilico('FILHOTES-WELCOME', 'Tag Sacola Delivery', 'R$ 20 OFF Boas-Vindas', 'Entrega Grátis Próx. Compra')">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span>Visualizar na Tela</span>
+</button>
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1 shadow-sm" onclick="alert('Baixando folha de impressão A4 com 8 tags de sacola prontas para destacar...')">
+<span class="material-symbols-outlined text-sm">print</span>
+<span>Imprimir Folha com 8 Tags</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-low text-secondary hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-lg">tune</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Realtime Acrílico Totem Display Preview (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md sticky top-24">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary">palette</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Simulador 3D do Display PDV</h2>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-bold">
+            Padrão A5 Vertical
+          </span>
+</div>
+<!-- The Physical Totem Visual Mockup Container -->
+<div class="bg-gradient-to-b from-surface-container-high to-surface-container-low p-space-lg rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+<!-- Background Atmospheric Blur -->
+<div class="absolute inset-0 bg-radial from-white/60 to-transparent pointer-events-none"></div>
+<!-- Acrylic Glass Base Reflection Effect -->
+<div class="relative w-full max-w-sm bg-surface-container-lowest rounded-2xl shadow-2xl p-space-lg flex flex-col items-center text-center backdrop-blur-md">
+<!-- Top Acrylic Bevel Bar -->
+<div class="w-16 h-1.5 rounded-full bg-surface-container-high mb-space-md"></div>
+<!-- Header of Display: Co-Branding DrVet + Pet Shop -->
+<div class="flex items-center justify-between w-full pb-space-sm mb-space-sm">
+<div class="flex items-center gap-1.5">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-lg">local_hospital</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-headline-sm text-headline-sm text-on-surface font-black leading-none">DrVet</span>
+<span class="text-[9px] font-bold text-primary tracking-widest uppercase">Telemedicina 24h</span>
+</div>
+</div>
+<div class="h-6 w-px bg-surface-container-high"></div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-on-surface font-bold" id="preview-store-name">Pet Shop Vila Mariana</span>
+<span class="text-[9px] text-secondary">Parceiro Oficial Credenciado</span>
+</div>
+</div>
+<!-- Hero Headline on Display -->
+<div class="my-space-xs flex flex-col gap-1">
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-extrabold uppercase tracking-wide mx-auto">
+                Atendimento Imediato Sem Espera
+              </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-black leading-tight mt-1" id="preview-headline">
+                Fale com um Veterinário Agora Pelo Celular
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant px-2" id="preview-subtitle">
+                Aponte a câmera, ative seu cupom e consulte sem sair da loja física.
+              </p>
+</div>
+<!-- The QR Code High-Contrast Block -->
+<div class="my-space-md p-space-md bg-white rounded-2xl shadow-md flex flex-col items-center justify-center relative">
+<!-- SVG Mockup of dynamic QR Code with DrVet Logo in Center -->
+<svg class="w-44 h-44 text-on-surface" fill="currentColor" viewbox="0 0 100 100">
+<!-- Outer Corners Position Patterns -->
+<rect fill="#001e2e" height="28" rx="4" width="28" x="5" y="5"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="9" y="9"></rect>
+<rect fill="#006b57" height="12" rx="2" width="12" x="13" y="13"></rect>
+<rect fill="#001e2e" height="28" rx="4" width="28" x="67" y="5"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="71" y="9"></rect>
+<rect fill="#006b57" height="12" rx="2" width="12" x="75" y="13"></rect>
+<rect fill="#001e2e" height="28" rx="4" width="28" x="5" y="67"></rect>
+<rect fill="#ffffff" height="20" rx="2" width="20" x="9" y="71"></rect>
+<rect fill="#006b57" height="12" rx="2" width="12" x="13" y="75"></rect>
+<!-- Random QR Code Grid Pixels -->
+<rect fill="#001e2e" height="4" width="4" x="38" y="8"></rect>
+<rect fill="#001e2e" height="4" width="4" x="46" y="8"></rect>
+<rect fill="#001e2e" height="4" width="4" x="54" y="8"></rect>
+<rect fill="#001e2e" height="4" width="8" x="38" y="16"></rect>
+<rect fill="#001e2e" height="4" width="4" x="50" y="16"></rect>
+<rect fill="#001e2e" height="4" width="4" x="58" y="16"></rect>
+<rect fill="#001e2e" height="8" width="4" x="42" y="24"></rect>
+<rect fill="#001e2e" height="4" width="6" x="54" y="24"></rect>
+<rect fill="#001e2e" height="4" width="4" x="8" y="38"></rect>
+<rect fill="#001e2e" height="4" width="8" x="16" y="38"></rect>
+<rect fill="#001e2e" height="4" width="4" x="28" y="38"></rect>
+<rect fill="#001e2e" height="4" width="6" x="8" y="46"></rect>
+<rect fill="#001e2e" height="8" width="4" x="20" y="46"></rect>
+<rect fill="#001e2e" height="4" width="4" x="8" y="56"></rect>
+<rect fill="#001e2e" height="4" width="8" x="16" y="56"></rect>
+<rect fill="#001e2e" height="4" width="8" x="68" y="38"></rect>
+<rect fill="#001e2e" height="4" width="4" x="80" y="38"></rect>
+<rect fill="#001e2e" height="8" width="4" x="88" y="38"></rect>
+<rect fill="#001e2e" height="4" width="4" x="72" y="46"></rect>
+<rect fill="#001e2e" height="4" width="4" x="80" y="46"></rect>
+<rect fill="#001e2e" height="4" width="8" x="68" y="54"></rect>
+<rect fill="#001e2e" height="4" width="12" x="80" y="54"></rect>
+<rect fill="#001e2e" height="4" width="4" x="38" y="68"></rect>
+<rect fill="#001e2e" height="4" width="8" x="46" y="68"></rect>
+<rect fill="#001e2e" height="4" width="4" x="58" y="68"></rect>
+<rect fill="#001e2e" height="4" width="6" x="42" y="76"></rect>
+<rect fill="#001e2e" height="8" width="4" x="52" y="76"></rect>
+<rect fill="#001e2e" height="4" width="4" x="38" y="86"></rect>
+<rect fill="#001e2e" height="4" width="8" x="48" y="86"></rect>
+<rect fill="#001e2e" height="4" width="8" x="68" y="76"></rect>
+<rect fill="#001e2e" height="4" width="4" x="80" y="76"></rect>
+<rect fill="#001e2e" height="4" width="4" x="68" y="86"></rect>
+<rect fill="#001e2e" height="4" width="8" x="76" y="86"></rect>
+<rect fill="#001e2e" height="4" width="4" x="88" y="86"></rect>
+<!-- Central DrVet Logo Shield inside QR -->
+<circle cx="50" cy="50" fill="#ffffff" r="14"></circle>
+<circle cx="50" cy="50" fill="#13a88a" r="11"></circle>
+<path d="M46 50 H54 M50 46 V54" stroke="#ffffff" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+<!-- Dynamic Tag with Coupon Code -->
+<div class="mt-2 flex items-center gap-1 px-3 py-1 bg-surface-container-low rounded-full">
+<span class="text-[10px] text-secondary font-bold">CUPOM:</span>
+<span class="text-xs font-mono font-extrabold text-primary" id="preview-coupon-code">DRVET-VILAMARIANA</span>
+</div>
+</div>
+<!-- Value Proposition Badges -->
+<div class="w-full grid grid-cols-2 gap-space-xs my-space-xs">
+<div class="p-2 rounded-xl bg-surface-container-low flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-base">verified_user</span>
+<span class="font-label-sm text-[11px] text-on-surface font-bold mt-0.5" id="preview-benefit-1">15% OFF na Consulta</span>
+<span class="text-[9px] text-on-surface-variant">Válido 24 horas</span>
+</div>
+<div class="p-2 rounded-xl bg-surface-container-low flex flex-col items-center">
+<span class="material-symbols-outlined text-secondary text-base">redeem</span>
+<span class="font-label-sm text-[11px] text-on-surface font-bold mt-0.5" id="preview-benefit-2">R$ 30 Vale-Compras</span>
+<span class="text-[9px] text-on-surface-variant">Para gastar na loja</span>
+</div>
+</div>
+<!-- Footnote on Display -->
+<div class="mt-space-sm pt-space-xs text-[9px] text-secondary flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">lock</span>
+<span>Prescrições digitais válidas pelo CFMV com assinatura ICP-Brasil</span>
+</div>
+</div>
+<!-- Physical Base of the Acrylic Totem Stand (Visual cue) -->
+<div class="w-64 h-3.5 bg-gradient-to-r from-surface-variant via-white to-surface-variant rounded-full mt-1 shadow-lg opacity-80"></div>
+<div class="w-72 h-1 bg-black/10 rounded-full blur-sm mt-0.5"></div>
+<!-- Quick Selector Buttons beneath 3D Totem -->
+<div class="flex items-center gap-space-sm mt-space-md">
+<button class="px-space-md py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm hover:bg-on-tertiary-fixed-variant transition-colors" onclick="downloadTotemArtwork()">
+<span class="material-symbols-outlined text-base">download</span>
+<span>Baixar Arte para Acrílico</span>
+</button>
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center gap-1.5 shadow-sm hover:bg-surface-container-high transition-colors" onclick="document.getElementById('modal-new-qrcode').classList.remove('hidden')">
+<span class="material-symbols-outlined text-base">edit</span>
+<span>Personalizar Textos</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 5: Realtime Supabase CDC Audit Log & Live Stream of Counter Scans -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-3 h-3 rounded-full bg-primary animate-ping"></div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Feed de Ativações no Balcão (Realtime Supabase CDC)</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-bold">Ao Vivo</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Stream direto da tabela `store_qr_events` com split de comissões calculado instantaneamente</span>
+</div>
+</div>
+<!-- Filter Controls -->
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary">Filtrar:</span>
+<select class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm focus:outline-none">
+<option>Todos os Totens</option>
+<option>Totem Caixa 01</option>
+<option>Adesivo Banho &amp; Tosa</option>
+<option>Tag de Entrega</option>
+</select>
+<button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm flex items-center gap-1 hover:bg-on-tertiary-fixed-variant transition-all" onclick="simulateIncomingScan()">
+<span class="material-symbols-outlined text-xs">play_arrow</span>
+<span>Simular Scan Agora</span>
+</button>
+</div>
+</div>
+<!-- Realtime Feed Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="text-secondary font-label-sm text-label-sm uppercase tracking-wider bg-surface-container-low/60 rounded-lg">
+<th class="py-3 px-4">Tutor &amp; Pet</th>
+<th class="py-3 px-4">Display de Origem</th>
+<th class="py-3 px-4">Horário</th>
+<th class="py-3 px-4">Ação Realizada</th>
+<th class="py-3 px-4">Status &amp; Telemedicina</th>
+<th class="py-3 px-4 text-right">Comissão Loja</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low" id="realtime-events-body">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-bold font-label-md text-label-md">
+                    JM
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Juliana Mendes Santana</span>
+<span class="text-xs text-on-surface-variant">Pet: Pipoca (Spitz Alemão, 2 anos)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary">point_of_sale</span>
+<span class="font-medium">Caixa Principal (A5)</span>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-xs text-secondary">
+                Hoje, 14:32:08
+              </td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                  Consulta Concluída
+                </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-primary font-bold text-xs">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span>Dr. Renato Lima (CRMV-SP 44.912)</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-label-lg text-label-lg font-bold text-primary">+ R$ 15,00</span>
+<span class="text-[10px] text-secondary font-mono">Creditado Asaas</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-secondary-container/40 text-secondary flex items-center justify-center font-bold font-label-md text-label-md">
+                    MV
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Marcos Vinicius Alcantara</span>
+<span class="text-xs text-on-surface-variant">Pet: Mel (Golden Retriever, 4 anos)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-sm text-secondary">shower</span>
+<span class="font-medium">Espelho Banho &amp; Tosa</span>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-xs text-secondary">
+                Hoje, 13:58:44
+              </td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm font-semibold">
+                  Receita Dispensada
+                </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-on-surface font-medium text-xs">
+<span class="material-symbols-outlined text-sm text-tertiary">pill</span>
+<span>Apoquel 16mg + Shampoo Clorexidina</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-label-lg text-label-lg font-bold text-tertiary">+ R$ 34,80</span>
+<span class="text-[10px] text-secondary font-mono">Split Farma 10%</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold font-label-md text-label-md">
+                    CE
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Carlos Eduardo Prado</span>
+<span class="text-xs text-on-surface-variant">Pet: Thor (Bulldog Francês, 1 ano)</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary">point_of_sale</span>
+<span class="font-medium">Totem Balcão Caixa</span>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-xs text-secondary">
+                Hoje, 12:15:10
+              </td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                  QR Scaneado / Cadastro
+                </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-secondary text-xs">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Aguardando chamada de vídeo</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary font-bold">Pendente</span>
+<span class="text-[10px] text-secondary">Previsão: R$ 15,00</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Realtime Webhook / Supabase CDC Raw Payload Inspector Pill -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sm text-primary">code</span>
+<span class="font-label-sm text-label-sm text-on-surface font-bold">CDC Event Stream Inspector (WebSocket `store_qr_events`)</span>
+</div>
+<span class="font-mono text-[10px] text-secondary">Evento: QR_CODE_SCAN_EVENT • ACK 200 OK</span>
+</div>
+<div class="font-mono text-[11px] text-on-surface-variant bg-surface-container-lowest p-space-sm rounded-lg overflow-x-auto leading-relaxed">
+          {"event": "QR_CODE_SCAN_EVENT", "partner_id": "PARC-8821", "qr_token": "DRVET-VILAMARIANA", "pos_location": "CAIXA_01", "tutor_session": "sess_894101", "commission_rule": "FIXED_15_BRL", "pharma_split_pct": 10.0, "latency_ms": 24}
+        </div>
+</div>
+</div>
+</div>
+<!-- Modal / Floating Drawer: Criar & Personalizar Novo QR Code / Material de Balcão -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden flex items-center justify-center p-space-md" id="modal-new-qrcode">
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl p-space-lg flex flex-col gap-space-md max-h-[921px] overflow-y-auto">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container-low">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined">add_link</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Novo QR Code Promocional de Balcão</h3>
+<span class="font-label-sm text-label-sm text-secondary">Gera link rastreável com split de comissões e arte para impressão</span>
+</div>
+</div>
+<button class="p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" onclick="document.getElementById('modal-new-qrcode').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Form Inputs -->
+<form class="flex flex-col gap-space-md" onsubmit="handleCreateQRCode(event)">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Identificação do Display / Local</label>
+<input class="px-space-sm py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" id="input-display-name" required="" type="text" value="Totem Balcão Farmácia Pet"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Código do Cupom de Desconto</label>
+<input class="uppercase px-space-sm py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-container" id="input-coupon" required="" type="text" value="FARMA-VILA10"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Benefício para o Tutor (Cliente)</label>
+<input class="px-space-sm py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" id="input-benefit-tutor" required="" type="text" value="20% OFF na 1ª Consulta + Brinde"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Estímulo na Loja Parceira</label>
+<input class="px-space-sm py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" id="input-benefit-store" required="" type="text" value="R$ 25 de Vale Compras no Caixa"/>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Formato do Material Físico</label>
+<div class="grid grid-cols-3 gap-space-sm">
+<label class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer flex flex-col items-center text-center gap-1">
+<input checked="" class="accent-primary" name="display-format" type="radio" value="A5"/>
+<span class="material-symbols-outlined text-primary">picture_in_picture</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Acrílico A5 Vertical</span>
+<span class="text-[10px] text-secondary">Com base de mesa</span>
+</label>
+<label class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer flex flex-col items-center text-center gap-1">
+<input class="accent-primary" name="display-format" type="radio" value="ADESIVO"/>
+<span class="material-symbols-outlined text-secondary">crop_square</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Adesivo Vinil</span>
+<span class="text-[10px] text-secondary">15x15cm para Vidros</span>
+</label>
+<label class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high cursor-pointer flex flex-col items-center text-center gap-1">
+<input class="accent-primary" name="display-format" type="radio" value="TAG"/>
+<span class="material-symbols-outlined text-tertiary">loyalty</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Tags de Sacola</span>
+<span class="text-[10px] text-secondary">Folha A4 destacável</span>
+</label>
+</div>
+</div>
+<!-- Regras de Comissionamento -->
+<div class="p-space-sm rounded-xl bg-primary-fixed/20 flex items-start gap-space-xs text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-primary text-base">monetization_on</span>
+<div class="flex flex-col font-label-sm text-label-sm">
+<span class="font-bold">Split Automático de Parceria DrVet Ativado</span>
+<span>R$ 15,00 fixos por teleconsulta convertida + 10% perpétuo sobre receitas farmacêuticas dispensadas.</span>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" onclick="document.getElementById('modal-new-qrcode').classList.add('hidden')" type="button">
+            Cancelar
+          </button>
+<button class="px-space-lg py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-on-tertiary-fixed-variant transition-colors flex items-center gap-1 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-base">check</span>
+<span>Salvar &amp; Gerar Arte do Totem</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Interactive Logic Scripts -->
+<script>
+    function previewAcrilico(cupom, titulo, benef1, benef2) {
+      document.getElementById('preview-coupon-code').innerText = cupom;
+      document.getElementById('preview-headline').innerText = titulo;
+      document.getElementById('preview-benefit-1').innerText = benef1;
+      document.getElementById('preview-benefit-2').innerText = benef2;
+    }
+
+    function downloadTotemArtwork() {
+      const coupon = document.getElementById('preview-coupon-code').innerText;
+      alert(`Iniciando download do pacote vetorial com Sangria Gráfica (PDF + SVG) para o cupom [${coupon}]. Pronto para envio à gráfica.`);
+    }
+
+    function handleCreateQRCode(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-display-name').value;
+      const cupom = document.getElementById('input-coupon').value;
+      const benTutor = document.getElementById('input-benefit-tutor').value;
+      const benStore = document.getElementById('input-benefit-store').value;
+
+      previewAcrilico(cupom, name, benTutor, benStore);
+      document.getElementById('modal-new-qrcode').classList.add('hidden');
+      alert(`Novo display [${name}] criado com sucesso! Simulador 3D atualizado.`);
+    }
+
+    function simulateIncomingScan() {
+      const tbody = document.getElementById('realtime-events-body');
+      const now = new Date();
+      const timeStr = "Hoje, " + now.toTimeString().split(' ')[0];
+
+      const newRow = document.createElement('tr');
+      newRow.className = "bg-primary-fixed/20 transition-all duration-700 animate-pulse";
+      newRow.innerHTML = `
+        <td class="py-3.5 px-4">
+          <div class="flex items-center gap-space-sm">
+            <div class="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold font-label-md text-label-md">
+              TC
+            </div>
+            <div class="flex flex-col">
+              <span class="font-label-md text-label-md text-on-surface font-bold">Tatiana Costa</span>
+              <span class="text-xs text-on-surface-variant">Pet: Frederico (Shih-tzu, 3 anos)</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-4">
+          <div class="flex items-center gap-1.5 text-on-surface">
+            <span class="material-symbols-outlined text-sm text-primary">point_of_sale</span>
+            <span class="font-medium">Totem Caixa 01</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 font-mono text-xs text-primary font-bold">
+          ${timeStr} (Agora)
+        </td>
+        <td class="py-3.5 px-4">
+          <span class="px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">
+            Scan Realtime Detectado
+          </span>
+        </td>
+        <td class="py-3.5 px-4">
+          <div class="flex items-center gap-1 text-primary font-bold text-xs">
+            <span class="material-symbols-outlined text-sm animate-spin">sync</span>
+            <span>Iniciando Triage Online</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 text-right">
+          <div class="flex flex-col items-end">
+            <span class="font-label-lg text-label-lg font-bold text-primary">+ R$ 15,00</span>
+            <span class="text-[10px] text-primary font-mono font-bold">Calculando Split</span>
+          </div>
+        </td>
+      `;
+
+      tbody.insertBefore(newRow, tbody.firstChild);
+
+      setTimeout(() => {
+        newRow.classList.remove('bg-primary-fixed/20', 'animate-pulse');
+        newRow.classList.add('hover:bg-surface-container-low/40');
+      }, 3000);
+    }
+  </script>
+</div></main></div></body></html>

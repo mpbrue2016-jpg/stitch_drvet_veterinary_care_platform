@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"tertiary-container":"#00a894","inverse-surface":"#183344","surface-container-high":"#d4ebff","secondary-fixed":"#c7e7ff","on-secondary-container":"#44677d","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-container-highest":"#cbe6fc","on-primary-fixed-variant":"#005141","on-surface":"#001e2e","on-background":"#001e2e","secondary-container":"#c0e4ff","secondary-fixed-dim":"#a7cbe5","surface-variant":"#cbe6fc","inverse-primary":"#5ddbbb","on-surface-variant":"#3d4945","on-error-container":"#93000a","on-secondary-fixed":"#001e2e","primary-fixed-dim":"#5ddbbb","surface-container-low":"#ebf5ff","outline":"#6d7a75","on-primary-fixed":"#002019","on-tertiary-fixed":"#00201b","on-secondary-fixed-variant":"#274a60","primary-fixed":"#7cf8d6","tertiary":"#006b5d","error-container":"#ffdad6","on-secondary":"#ffffff","tertiary-fixed":"#72f8e0","background":"#f6faff","tertiary-fixed-dim":"#52dbc5","outline-variant":"#bccac3","primary":"#006b57","primary-container":"#13a88a","on-primary":"#ffffff","surface-dim":"#c2def4","surface-container":"#dff0ff","secondary":"#406279","on-tertiary":"#ffffff","on-primary-container":"#003529","error":"#ba1a1a","surface-tint":"#006b57","on-tertiary-container":"#00352d","on-tertiary-fixed-variant":"#005046","surface":"#f6faff","inverse-on-surface":"#e5f2ff","surface-bright":"#f6faff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter":"1.5rem","margin":"2rem","space-md":"1rem","margin-mobile":"1rem","space-xs":"0.25rem","space-xl":"2.5rem","space-lg":"1.5rem","space-sm":"0.5rem","gutter-mobile":"1rem"},fontFamily:{"headline-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"]},fontSize:{"headline-lg":["28px",{lineHeight:"36px",fontWeight:"700"}],"body-sm":["13px",{lineHeight:"18px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-md":["22px",{lineHeight:"30px",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",fontWeight:"700"}],"headline-xl-mobile":["26px",{lineHeight:"34px",fontWeight:"700"}],"display-hero":["48px",{lineHeight:"56px",fontWeight:"800"}],"display-hero-mobile":["32px",{lineHeight:"40px",fontWeight:"800"}],"body-md":["14px",{lineHeight:"22px",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"26px",fontWeight:"400"}],"headline-xl":["36px",{lineHeight:"44px",fontWeight:"700"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md"><div class="px-space-lg flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">pets</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">DrVet</span><span class="font-label-sm text-label-sm text-secondary tracking-wide uppercase">B2B Parceiros</span></div></div><div class="px-space-md"><div class="bg-surface-container-lowest rounded-xl p-space-sm flex items-center justify-between shadow-[0_1px_6px_rgba(21,59,80,0.04)]"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[18px]">verified</span><span class="font-label-md text-label-md text-on-surface">CRMV-SP Homologado</span></div><span class="w-2 h-2 rounded-full bg-primary-container inline-block"></span></div></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm font-semibold rounded-xl shadow-[0_2px_8px_rgba(19,168,138,0.15)]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="balcao-e-qr-codes" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_2</span><span>Balcão &amp; QR Codes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="extrato-de-comissoes" href="#"><span class="material-symbols-outlined text-[20px]">payments</span><span>Extrato de Comissões</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="contratos-e-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Contratos &amp; Compliance</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="configuracoes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span>Configurações</span></a></nav></div><div class="px-space-md"><div class="bg-surface-container rounded-xl p-space-md flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm uppercase text-secondary">Suporte Dedicado</span><span class="material-symbols-outlined text-secondary text-[16px]">support_agent</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Plantão técnico DrVet para teleconsultas em balcão.</p><a class="mt-space-xs inline-flex items-center gap-space-xs font-label-md text-label-md text-primary hover:text-on-primary-container transition-colors" data-path="central-de-suporte" href="#"><span>Falar com Concierge</span><span class="material-symbols-outlined text-[14px]">arrow_forward</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="bg-surface-container-low px-space-md py-space-xs rounded-full flex items-center gap-space-xs"><span class="material-symbols-outlined text-outline text-[18px]">store</span><span class="font-label-md text-label-md text-on-surface">Pet Shop Central • Unidade Jardins</span></div><span class="font-label-sm text-label-sm bg-surface-container-high text-on-secondary-container px-space-sm py-space-xs rounded-full">Parceiro Gold</span></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs bg-primary text-on-primary font-label-md text-label-md px-space-md py-space-xs rounded-full hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm" type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span>Nova Ativação</span></button><div class="flex items-center gap-space-xs"><button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-full hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-full hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">help_outline</span></button></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 w-full bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="px-gutter py-space-xl max-w-7xl mx-auto w-full flex flex-col gap-space-lg">
+<!-- Toast / Notification bar -->
+<div class="flex items-center justify-between bg-surface-container-low px-space-md py-space-sm rounded-xl shadow-sm">
+<div class="flex items-center gap-space-sm">
+<span class="flex h-2.5 w-2.5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-label-md text-label-md text-on-surface">Supabase CDC Realtime Stream Ativo</span>
+<span class="text-outline-variant">•</span>
+<span class="font-body-sm text-body-sm text-secondary">Canal: <code class="bg-surface-container-highest px-space-xs py-0.5 rounded text-on-surface font-mono text-[11px]">partners_audit_events:cluster-br-east</code></span>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">cloud_done</span>
+<span>Snapshot Sincronizado</span>
+</div>
+</div>
+<!-- Main Success Showcase Bento Block -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-xl shadow-md relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-space-lg">
+<div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+<div class="flex items-start gap-space-lg z-10 max-w-3xl">
+<div class="relative flex-shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-primary-container/15 flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[42px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1 shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center flex-wrap gap-space-xs">
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-space-sm py-0.5 rounded-full uppercase tracking-wider">
+              HTTP 201 Created
+            </span>
+<span class="bg-surface-container-high text-on-secondary-container font-label-sm text-label-sm px-space-sm py-0.5 rounded-full">
+              Supabase Realtime CDC Sincronizado
+            </span>
+<span class="bg-surface-container-high text-secondary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">timer</span>
+<span>14ms Latência</span>
+</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-space-xs">
+            Pet Shop Credenciado com Sucesso no DrVet!
+          </h1>
+<p class="font-body-lg text-body-lg text-secondary">
+            O formulário de credenciamento e o aceite formal do contrato foram persistidos atomicamente no banco de dados Supabase e na rede de auditoria médica veterinária.
+          </p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row md:flex-col gap-space-xs z-10 w-full md:w-auto">
+<button class="w-full justify-center flex items-center gap-space-xs bg-primary text-on-primary font-label-lg text-label-lg px-space-lg py-space-sm rounded-full hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Acessar Painel Comercial →</span>
+</button>
+<button class="w-full justify-center flex items-center gap-space-xs bg-surface-container text-on-surface font-label-md text-label-md px-space-md py-space-sm rounded-full hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+<span>Ver QR Code do Balcão</span>
+</button>
+</div>
+</div>
+<!-- Asymmetric 2-Column Core: Left = Cryptographic Audit, Right = Supabase CDC Terminal -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Cryptographic Audit Panel (7 cols) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">policy</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Auditoria Criptográfica do Aceite</h2>
+</div>
+<span class="bg-primary-container/20 text-primary font-label-sm text-label-sm px-space-sm py-1 rounded-full font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+              [✓ ACEITO INTEGRALMENTE]
+            </span>
+</div>
+<!-- Metadata Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md bg-surface-container-low p-space-md rounded-xl">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Documento Jurídico</span>
+<span class="font-label-lg text-label-lg text-on-surface">Instrumento Particular de Parceria Comercial</span>
+<span class="font-body-sm text-body-sm text-outline">Minuta DVT-CTR-PET-2026 v3.2</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Razão Social &amp; CNPJ</span>
+<span class="font-label-lg text-label-lg text-on-surface">Pet Care Jardins Eireli</span>
+<span class="font-body-sm text-body-sm text-outline font-mono">32.891.442/0001-90</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Timestamp UTC (Supabase Now)</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span class="font-label-md text-label-md text-on-surface font-mono">2026-10-14T15:42:19.821Z</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">IP de Origem Auditado</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">pin_drop</span>
+<span class="font-label-md text-label-md text-on-surface font-mono">201.86.11.42 (São Paulo - SP)</span>
+</div>
+</div>
+</div>
+<!-- Cryptographic Hash Box -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-[0_1px_6px_rgba(21,59,80,0.04)]">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-primary">key</span>
+                Hash SHA-256 Inalterável do Aceite
+              </span>
+<button class="text-primary hover:text-on-primary-container flex items-center gap-0.5 font-label-sm text-label-sm" onclick="navigator.clipboard.writeText('dd41c760ea8a287b4e9f9024b3c7d68a2d1e4c70a84b069d675685dfbc599a14')" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copiar Hash</span>
+</button>
+</div>
+<div class="bg-surface-container-high/60 p-space-sm rounded-lg overflow-x-auto">
+<code class="font-mono text-[12px] text-on-surface font-semibold break-all selection:bg-primary-container selection:text-on-primary">
+                dd41c760ea8a287b4e9f9024b3c7d68a2d1e4c70a84b069d675685dfbc599a14
+              </code>
+</div>
+</div>
+<!-- Compliance Note -->
+<div class="flex items-start gap-space-sm bg-surface-container-low px-space-md py-space-sm rounded-xl">
+<span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">verified_user</span>
+<p class="font-body-sm text-body-sm text-secondary">
+              Assinatura eletrônica em conformidade com a <strong>Lei Federal nº 14.063/2020</strong> e com a regulamentação de Telemedicina Veterinária da <strong>Resolução CFMV nº 1.465/2022</strong>. O token ICP possui carimbo de tempo inviolável de padrão criptográfico SHA-256.
+            </p>
+</div>
+</div>
+<div class="pt-space-sm flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs bg-surface-container-high text-on-surface font-label-md text-label-md px-space-md py-space-sm rounded-full hover:bg-surface-variant transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">download</span>
+<span>Baixar Cópia do Contrato Assinado (PDF com Carimbo ICP)</span>
+</button>
+<a class="font-label-md text-label-md text-secondary hover:text-on-surface flex items-center gap-0.5" href="#">
+<span>Ver no Repositório</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</a>
+</div>
+</div>
+<!-- Supabase CDC Terminal Window (5 cols) -->
+<div class="lg:col-span-5 bg-inverse-surface text-inverse-on-surface rounded-2xl p-space-lg shadow-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-error inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-surface-container-high inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-primary-container inline-block"></span>
+<span class="ml-2 font-mono text-label-sm text-surface-variant">supabase-cdc-worker // pglsn: 0/1A98BC4</span>
+</div>
+<span class="font-mono text-label-sm bg-surface-container-low/10 text-primary-fixed px-space-xs py-0.5 rounded">
+              POSTGREST 201
+            </span>
+</div>
+<!-- Code Stream Output -->
+<div class="font-mono text-[12px] leading-relaxed flex flex-col gap-2 mt-space-xs bg-black/25 p-space-md rounded-xl overflow-x-auto text-surface-container-low">
+<div class="flex items-center gap-2 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span class="font-semibold">BEGIN TRANSACTION (Isolation: Read Committed);</span>
+</div>
+<div class="pl-3 flex flex-col gap-1">
+<span class="text-tertiary-fixed font-bold">-- 1. Table: partners_petshop</span>
+<p class="text-white">
+                INSERT INTO <span class="text-primary-fixed">public.partners_petshop</span> (id, store_name, cnpj, plan, status)<br/>
+                VALUES (<span class="text-secondary-fixed">'ps_88421'</span>, <span class="text-secondary-fixed">'Pet Care Jardins'</span>, <span class="text-secondary-fixed">'32891442000190'</span>, <span class="text-secondary-fixed">'Pro Shop'</span>, <span class="text-primary-container font-bold">'active'</span>);
+              </p>
+</div>
+<div class="pl-3 flex flex-col gap-1">
+<span class="text-tertiary-fixed font-bold">-- 2. Table: legal_contract_signatures</span>
+<p class="text-white">
+                INSERT INTO <span class="text-primary-fixed">public.legal_contract_signatures</span> (contract_id, partner_id, accepted, signed_at, sha256)<br/>
+                VALUES (<span class="text-secondary-fixed">'DVT-CTR-PET-2026'</span>, <span class="text-secondary-fixed">'ps_88421'</span>, <span class="text-primary-container font-bold">true</span>, <span class="text-secondary-fixed">'2026-10-14T15:42:19Z'</span>, <span class="text-secondary-fixed">'dd41c7...9a14'</span>);
+              </p>
+</div>
+<div class="pl-3 flex flex-col gap-1">
+<span class="text-tertiary-fixed font-bold">-- 3. Table: logistics_kits</span>
+<p class="text-white">
+                INSERT INTO <span class="text-primary-fixed">public.logistics_kits</span> (partner_id, kit_type, status, tracking_carrier)<br/>
+                VALUES (<span class="text-secondary-fixed">'ps_88421'</span>, <span class="text-secondary-fixed">'TOTEM_ACRYLIC_QR'</span>, <span class="text-primary-container font-bold">'preparing_dispatch'</span>, <span class="text-secondary-fixed">'SEDEX-DVT-BR'</span>);
+              </p>
+</div>
+<div class="flex items-center gap-2 text-primary-fixed-dim pt-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-semibold">COMMIT TRANSACTION; /* Realtime CDC broadcast to 4 replica nodes */</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm bg-black/15 p-space-sm rounded-xl flex items-center justify-between text-surface-container-high">
+<div class="flex items-center gap-space-xs font-mono text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">speed</span>
+<span>Query Runtime: <strong>14.28ms</strong></span>
+</div>
+<span class="font-mono text-[11px] text-primary-fixed">1 row affected • Write ACK Verified</span>
+</div>
+</div>
+</div>
+<!-- Provisioning & Next Steps Cards -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">rocket_launch</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Próximos Passos &amp; Provisionamento Imediato da Loja</h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">3 módulos acionados simultaneamente</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+</div>
+<span class="bg-primary-container/15 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">
+                Em separação
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Kit de Balcão &amp; Totem QR</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                Display acrílico premium com QR Code individualizado da sua unidade. Envio prioritário via Sedex sem custos adicionais.
+              </p>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary">Rastreio:</span>
+<span class="font-label-md text-label-md font-mono text-primary font-semibold">SEDEX-DVT-88421BR</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">
+                Geo Ativada
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Vitrine no App Tutor DrVet</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                Sua loja já é visível como ponto oficial DrVet no raio de 10 km (São Paulo - Jardins/Cerqueira César) para tutores locais.
+              </p>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary">Alcance Estimado:</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">~4.200 tutores ativos</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+<span class="bg-primary-container/15 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">
+                Validado D+1
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Chave PIX de Repasses</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                Gateway de liquidação bancária configurado. As comissões de teleconsultas geradas no balcão são transferidas diariamente.
+              </p>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary">Chave Registrada:</span>
+<span class="font-label-md text-label-md font-mono text-on-surface font-semibold">32.891.***-90</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Contextual Card: Realtime Live Metrics Preview -->
+<div class="bg-surface-container-low rounded-2xl p-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Quer testar o fluxo de atendimento agora?</span>
+<p class="font-body-sm text-body-sm text-secondary">
+            Simule a leitura do QR Code do balcão pelo smartphone do cliente para verificar o redirecionamento imediato para a triagem veterinária com teleconsulta DrVet.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full md:w-auto flex-shrink-0">
+<a class="w-full md:w-auto text-center font-label-md text-label-md text-secondary hover:text-on-surface px-space-md py-space-sm rounded-full bg-surface-container transition-colors" href="#">
+          Repositório de Auditoria
+        </a>
+<button class="w-full md:w-auto text-center font-label-md text-label-md text-on-primary bg-primary hover:bg-primary-container hover:text-on-primary-container px-space-lg py-space-sm rounded-full transition-all shadow-sm" type="button">
+          Simular QR Code de Teste
+        </button>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

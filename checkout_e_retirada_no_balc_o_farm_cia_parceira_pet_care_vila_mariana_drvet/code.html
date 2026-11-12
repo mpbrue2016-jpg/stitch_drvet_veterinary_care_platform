@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary-fixed": "#c7e7ff", "on-background": "#001e2e", "secondary": "#406279", "on-primary": "#ffffff", "surface-dim": "#c2def4", "on-primary-container": "#003529", "error": "#ba1a1a", "tertiary-fixed": "#72f8e0", "on-tertiary": "#ffffff", "outline-variant": "#bccac3", "primary-container": "#13a88a", "surface-container": "#dff0ff", "surface-variant": "#cbe6fc", "on-primary-fixed-variant": "#005141", "tertiary-fixed-dim": "#52dbc5", "secondary-container": "#c0e4ff", "primary-fixed-dim": "#5ddbbb", "on-tertiary-fixed": "#00201b", "surface": "#f6faff", "on-surface": "#001e2e", "surface-container-highest": "#cbe6fc", "outline": "#6d7a75", "error-container": "#ffdad6", "primary-fixed": "#7cf8d6", "surface-container-lowest": "#ffffff", "tertiary": "#006b5d", "on-tertiary-container": "#00352d", "on-error-container": "#93000a", "on-secondary-fixed": "#001e2e", "primary": "#006b57", "background": "#f6faff", "secondary-fixed-dim": "#a7cbe5", "on-surface-variant": "#3d4945", "on-primary-fixed": "#002019", "surface-container-low": "#ebf5ff", "on-error": "#ffffff", "inverse-primary": "#5ddbbb", "surface-container-high": "#d4ebff", "on-secondary": "#ffffff", "on-secondary-container": "#44677d", "surface-tint": "#006b57", "tertiary-container": "#00a894", "inverse-surface": "#183344", "surface-bright": "#f6faff", "on-tertiary-fixed-variant": "#005046", "inverse-on-surface": "#e5f2ff", "on-secondary-fixed-variant": "#274a60" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-md": "1rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-xl": "2.5rem", "margin": "2rem", "gutter-mobile": "1rem", "gutter": "1.5rem", "space-lg": "1.5rem" }, "fontFamily": { "body-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"] }, "fontSize": { "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;font-family:'Plus Jakarta Sans',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Voltar" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Retirada Em Balcao</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Fechar fluxo" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" onclick="window.location.href='#'"><span class="material-symbols-outlined text-[22px]">close</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full pb-safe">
+<!-- Content Container with mobile margins -->
+<div class="flex flex-col gap-space-md px-gutter-mobile py-space-md">
+<!-- Digital Prescription ICP-Brasil Header Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-primary/5 rounded-full pointer-events-none"></div>
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>RECEITA ICP-BRASIL VINCULADA</span>
+</div>
+<span class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-1 rounded-full">#REC-2026-8842</span>
+</div>
+<div class="flex items-start gap-space-md pt-space-xs">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[24px]">prescriptions</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Kit Dermatológico Pipoca</h2>
+<span class="text-xs">🐾</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">
+            Prescrito por Dra. Camila Vasconcellos (CRMV-SP 38.412)
+          </p>
+</div>
+</div>
+</div>
+<!-- Fulfillment Method Tabs (Interactive) -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider px-1">Modalidade de Obtenção</span>
+<div class="grid grid-cols-1 gap-space-sm" id="delivery-tab-container">
+<!-- Option 1: Pickup (Selected by default) -->
+<label class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm cursor-pointer transition-all duration-200" id="option-pickup-card">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<input checked="" class="w-4 h-4 accent-primary cursor-pointer mt-0.5" id="fulfillment-pickup" name="fulfillment" type="radio" value="pickup"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface flex items-center gap-1.5">
+                  🏪 Retirada no Balcão
+                  <span class="bg-primary text-on-primary font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold">GRÁTIS + R$ 30 BÔNUS</span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Pet Care &amp; Shop Vila Mariana</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold">R$ 0,00</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1 ml-6 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1.5 text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-primary">pin_drop</span>
+<span>Av. Domingos de Morais, 2140 • Vila Mariana, SP</span>
+</div>
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-label-sm mt-0.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Pronto em 2h • Retire hoje a partir das 16:30</span>
+</div>
+</div>
+</label>
+<!-- Option 2: Express Delivery -->
+<label class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm cursor-pointer transition-all duration-200 opacity-90" id="option-delivery-card">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<input class="w-4 h-4 accent-primary cursor-pointer mt-0.5" id="fulfillment-delivery" name="fulfillment" type="radio" value="delivery"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface flex items-center gap-1.5">
+                  🛵 Entrega Expressa Telecare
+                </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Motoboy climatizado com rastreamento</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-bold">R$ 14,90</span>
+</div>
+<div class="text-on-surface-variant font-body-sm text-body-sm ml-6 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">timer</span>
+<span>Receba em até 3 horas na sua residência</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Prescribed Pharmacy Items -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Itens do Tratamento (3)</span>
+<span class="bg-primary-container/20 text-primary font-label-sm text-label-sm px-2 py-0.5 rounded-full font-bold">15% OFF Telemedicina</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Item 1: Apoquel -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-md">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0 bg-surface-container" data-alt="A clean pharmaceutical veterinary package of Apoquel 16mg tablets on a calm modern clinical white background with soft teal hospital lighting and soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlC8F7dCVltgvrcenDEPv7AWwPVYWYg-a6_shz8t1OlYJRD06kSzvUB3_m9QqU1QwFVn_IB3r-4HNAf4bvRsRnkQ28WXO4xk8muJdP2s0kk4KKCERK15VqKXNIucNCIsQzKqBRkdzkKTi9Mju5HD4HnN0GnC0zSdO6VxcO1Um2U2PkTAtfvJtb7PxwCRFvGWl3-dYJzg88rCHoYZnPk5BqUrBbLrH-g7_G0QiMwHXW"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-tight truncate">Apoquel 16mg Zoetis</h3>
+<div class="text-right shrink-0">
+<span class="line-through text-on-surface-variant font-body-sm text-body-sm">R$ 195,00</span>
+<div class="font-label-lg text-label-lg text-primary font-bold">R$ 165,75</div>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Frasco com 20 comprimidos</span>
+<div class="mt-space-xs inline-flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded w-fit text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">medication</span>
+<span>Uso Oral • 1 comp. a cada 12h (14 dias)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2: Shampoo Clorexiderm -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-md">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0 bg-surface-container" data-alt="Veterinary dermatological shampoo bottle Clorexiderm 3 percent in a premium modern clinic aesthetic with clinical teal accents and soft ambient light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClqlYdqvR3kXDU8-xqgs0now8QuvcrRQbsMRc73q08sPXBhN-05fcJ3X0MqAl0wq3PALdWDyfQHAlHXRV-uwikBWZhHPF3CoMSK8YhRpx5CZS-1VkhRYK7f0Sxr8gZRN1wV8MpyaGxbtirnTnrJDV5Bk3tQjVcLNDS_vzUJ9663a8tXtfGGerB5UbO5AhHMpOzZUho9XB268IlnGwdmHaeFAmZ-INsYO94SNSBhbDr"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-tight truncate">Shampoo Clorexiderm 3%</h3>
+<div class="text-right shrink-0">
+<span class="line-through text-on-surface-variant font-body-sm text-body-sm">R$ 82,00</span>
+<div class="font-label-lg text-label-lg text-primary font-bold">R$ 69,70</div>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Frasco 250ml • Fórmula Manipulada</span>
+<div class="mt-space-xs inline-flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded w-fit text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">shower</span>
+<span>Uso Tópico • Banho medicamentoso a cada 3 dias</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3: Ômega 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-md">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0 bg-surface-container" data-alt="Clear pharmaceutical bottle of Omega 3 Vet nutritional golden softgels for dogs on a clean clinical aesthetic backdrop with teal and daylight accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi659mnEW4U4MhuuJeHVe_fWrkf8_tyNOI4-I1K71L3tKxmmrg32wEkSoog6d8OGF3ZBmIrUGg-LIU39mUgBxHMcqij57xjuYKBarxAPcuT65o3FiuQSeStJuVtc8BGOpct0JAqRscMn4kiMP6WYOjHzfccJ51fp1UB5i6SeUihM9wXcHwt3fSEBL-CjvQnPu9i0o6kKLTtqJ4ctz23amGWYTP0lGNIFadWEbvrpA2"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-tight truncate">Ômega 3 Vet 1000mg</h3>
+<div class="text-right shrink-0">
+<span class="line-through text-on-surface-variant font-body-sm text-body-sm">R$ 65,00</span>
+<div class="font-label-lg text-label-lg text-primary font-bold">R$ 55,25</div>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">30 cápsulas gelatinosas</span>
+<div class="mt-space-xs inline-flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded w-fit text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">pets</span>
+<span>Suplemento Cutâneo • 1 cápsula/dia</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Vouchers & Coupons Banner -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Benefícios &amp; Cupons Ativos</span>
+<div class="flex flex-col gap-space-xs">
+<!-- Bonus Partner Store Coupon -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[18px]">sell</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold font-mono">VILAMARIANA-30BONUS</span>
+<span class="bg-primary text-on-primary font-label-sm text-label-sm px-1.5 py-0.2 rounded font-bold">✓ Aplicado</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Bônus Retirada Loja Parceira Pet Care</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold shrink-0">- R$ 30,00</span>
+</div>
+<!-- Telemedicine 15% OFF Discount Tag -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[18px]">card_membership</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Parceria Telecare 15% OFF</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Desconto direto da consulta DrVet</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold shrink-0">- R$ 51,30</span>
+</div>
+</div>
+</div>
+<!-- Financial Breakdown -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Resumo de Valores</span>
+<div class="flex flex-col gap-space-xs font-body-md text-body-md text-on-surface-variant">
+<div class="flex justify-between items-center">
+<span>Subtotal de Tabela dos Medicamentos</span>
+<span class="text-on-surface font-medium">R$ 342,00</span>
+</div>
+<div class="flex justify-between items-center text-primary">
+<span class="flex items-center gap-1">
+<span>Desconto DrVet Telecare (15%)</span>
+</span>
+<span class="font-medium">- R$ 51,30</span>
+</div>
+<div class="flex justify-between items-center text-primary">
+<span class="flex items-center gap-1">
+<span>Bônus Especial Retirada Balcão</span>
+</span>
+<span class="font-medium">- R$ 30,00</span>
+</div>
+<div class="flex justify-between items-center">
+<span>Frete / Taxa de Retirada</span>
+<span class="text-primary font-bold">Grátis</span>
+</div>
+<div class="h-px bg-surface-container my-1"></div>
+<div class="flex justify-between items-baseline pt-1">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Total a Pagar</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Você economiza R$ 81,30</span>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary font-extrabold" id="order-total-price">R$ 260,70</span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">ou 3x de R$ 86,90 s/ juros</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Selection -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider px-1">Forma de Pagamento</span>
+<div class="flex flex-col gap-space-sm">
+<!-- PIX (Recommended) -->
+<label class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between cursor-pointer">
+<div class="flex items-center gap-space-md">
+<input checked="" class="w-4 h-4 accent-primary cursor-pointer" name="payment_method" type="radio" value="pix"/>
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">qr_code_2</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">PIX Instantâneo</span>
+<span class="bg-primary/10 text-primary font-label-sm text-label-sm px-1.5 py-0.2 rounded font-semibold">Mais Rápido</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Liberação imediata para separação</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+</label>
+<!-- Credit Card -->
+<label class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between cursor-pointer">
+<div class="flex items-center gap-space-md">
+<input class="w-4 h-4 accent-primary cursor-pointer" name="payment_method" type="radio" value="credit_card"/>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Cartão Nubank •••• 9812</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Em até 3x de R$ 86,90 sem acréscimo</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[20px]">radio_button_unchecked</span>
+</label>
+<!-- Pay at Counter -->
+<label class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between cursor-pointer">
+<div class="flex items-center gap-space-md">
+<input class="w-4 h-4 accent-primary cursor-pointer" name="payment_method" type="radio" value="store_counter"/>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Pagar no Balcão da Loja</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dinheiro, Débito ou Crédito na retirada</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[20px]">radio_button_unchecked</span>
+</label>
+</div>
+</div>
+<!-- Pickup & Responsible Pharmacist Info Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>Dados para Retirada &amp; Farmácia</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-space-xs font-body-sm text-body-sm">
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-semibold">Titular da Retirada:</span>
+<span>Juliana Mendes (CPF ***.819.048-**)</span>
+</div>
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-semibold">Farmacêutico Responsável:</span>
+<span>Dr. Ricardo Silveira (CRF-SP 42.109)</span>
+</div>
+<div class="flex items-center gap-1 text-primary text-label-sm font-label-sm pt-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>Código de Retirada Segura será emitido no comprovante imediato.</span>
+</div>
+</div>
+</div>
+<!-- Security Trust Badges -->
+<div class="flex items-center justify-around py-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span>Garantia Pet Care</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">security</span>
+<span>Criptografia 256 bits</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">local_pharmacy</span>
+<span>Homologado CRF</span>
+</div>
+</div>
+<!-- Space filler for sticky bottom bar clearance -->
+<div class="h-24"></div>
+</div>
+<!-- Sticky Bottom Order Summary & CTA Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-md shadow-lg p-gutter-mobile pb-safe flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Valor Total</span>
+<span class="bg-primary/10 text-primary font-label-sm text-label-sm px-1.5 py-0.2 rounded font-bold">Economizou R$ 81,30</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg font-headline-lg-mobile text-primary font-extrabold" id="sticky-total">R$ 260,70</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">à vista ou 3x s/ juros</span>
+</div>
+</div>
+<button class="h-12 px-space-lg rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-[0.98]" id="btn-confirm-order" onclick="triggerCheckoutSuccess()">
+<span>Confirmar Pedido</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Interactive Feedback Modal (Hidden by default) -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex-col items-center justify-end p-gutter-mobile pb-safe" id="checkout-modal">
+<div class="bg-surface-container-lowest rounded-2xl w-full p-space-lg flex flex-col items-center text-center gap-space-md shadow-2xl animate-in slide-in-from-bottom duration-300">
+<div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Pedido Confirmado! 🎉</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          O Kit de Pipoca foi enviado para a <strong>Pet Care Vila Mariana</strong>. O farmacêutico já iniciou a separação!
+        </p>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-md w-full flex flex-col gap-1 text-center">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Código de Retirada Rápida</span>
+<span class="font-headline-lg text-headline-lg font-mono font-bold text-primary tracking-widest">#VILA-9482</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Apresente este código com seu documento no balcão hoje a partir das 16:30.</span>
+</div>
+<button class="w-full h-12 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md" onclick="document.getElementById('checkout-modal').classList.add('hidden')">
+        Acompanhar no App
+      </button>
+</div>
+</div>
+</div>
+<script>
+  function triggerCheckoutSuccess() {
+    const modal = document.getElementById('checkout-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  // Handle fulfillment selection feedback
+  const pickupRadio = document.getElementById('fulfillment-pickup');
+  const deliveryRadio = document.getElementById('fulfillment-delivery');
+  const orderTotalPrice = document.getElementById('order-total-price');
+  const stickyTotal = document.getElementById('sticky-total');
+
+  function updatePricing() {
+    if (deliveryRadio.checked) {
+      // With delivery: R$ 260.70 + 14.90 freight - (adjusting voucher logic dynamically if desired)
+      // Showing recalculation for transparency
+      orderTotalPrice.innerText = 'R$ 275,60';
+      stickyTotal.innerText = 'R$ 275,60';
+    } else {
+      orderTotalPrice.innerText = 'R$ 260,70';
+      stickyTotal.innerText = 'R$ 260,70';
+    }
+  }
+
+  if (pickupRadio && deliveryRadio) {
+    pickupRadio.addEventListener('change', updatePricing);
+    deliveryRadio.addEventListener('change', updatePricing);
+  }
+</script></main></body></html>
