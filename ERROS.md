@@ -21,8 +21,16 @@ Uma execução de `tsc` em paralelo com `next build` encontrou arquivos temporá
 
 **Erros atuais de lint, build e TypeScript: nenhum nas verificações acima.** Isso não significa que a aplicação esteja funcional de ponta a ponta: as páginas ainda contêm conteúdo de demonstração e controles sem ação, e não há integração Supabase implementada. Consulte [TELAS.md](./TELAS.md) e [SCHEMA_GAPS.md](./SCHEMA_GAPS.md).
 
+## Fase 2: correção e revisão
+
+- Reexecutados, em sequência, `npm run lint`, `npm run build` e `npm run typecheck`; todos passaram sem avisos ou erros.
+- Revisados os arquivos TypeScript/TSX da aplicação: não foram encontrados imports não usados, diretivas `@ts-ignore`/`eslint-disable`, usos de `any`, nem logs `console` ou marcações `TODO`/`FIXME`.
+- As dependências Supabase e Zod foram mantidas: são necessárias para as fases futuras de integração e validação de dados descritas no escopo; removê-las agora causaria reinstalação sem resolver um problema atual.
+- Registros demonstrativos e botões sem comportamento nas páginas foram identificados na auditoria. A substituição por fluxos reais pertence às fases de backend e integração das telas, não pode ser resolvida com segurança nesta fase sem schema e serviços configurados.
+
 ## Preparação Git
 
 - Branch local: `feature/frontend-stitch-backend`.
 - Backup local criado antes da auditoria: `d442e3c` (`chore: backup project before audit`).
 - O repositório está isolado na pasta do projeto. Nenhum remoto GitHub está configurado.
+- Fase 1 registrada em `335b69f` (`docs: complete phase one audit`).
