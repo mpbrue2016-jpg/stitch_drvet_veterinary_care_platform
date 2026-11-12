@@ -8,6 +8,20 @@
 - O produto foi confirmado como DrVet para a interface e os metadados Next.js. Nenhuma logo oficial nem pasta de referencia visual foi encontrada na raiz do projeto.
 - O layout comum DrVet usa navegação responsiva pelas rotas existentes. Menus e permissões separados por perfil dependem da autenticação e autorização, ainda não implementadas.
 
+## Alinhamento visual com as referencias Stitch
+
+A rodada visual atual aproxima as rotas implementadas das referencias Stitch correspondentes, mantendo o nome DrVet e sem apresentar dados clinicos, agenda ou valores financeiros ficticios como reais:
+
+| Tela | Direcao visual aplicada | Estado funcional |
+|---|---|---|
+| `/` | Landing publica com hero, areas de atendimento e etapas de cuidado. | Conteudo informativo; disponibilidade sujeita a confirmacao. |
+| `/agenda` | Painel profissional com indicadores, grade semanal e proximo atendimento. | Sem consultas carregadas; acoes dependentes de integracao desativadas. |
+| `/agendamento` | Lista e filtros no estilo de gestao de agendamentos. | Sem registros reais; controles dependentes de servicos desativados. |
+| `/receitas` | Estrutura de emissao e previa de receita. | Sem dados clinicos ou prescricoes; emissao desativada. |
+| `/comissoes` | Indicadores financeiros e extrato. | Sem saldos ou transacoes; acoes financeiras desativadas. |
+
+O shell distingue a navegacao publica da area profissional e adapta a navegacao para telas pequenas. Icones e elementos decorativos nao representam uma logo oficial.
+
 ## Rotas Next.js observadas
 
 | Rota | Arquivo | Situacao observada |

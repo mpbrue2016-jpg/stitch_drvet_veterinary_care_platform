@@ -38,6 +38,13 @@ Uma execução de `tsc` em paralelo com `next build` encontrou arquivos temporá
 - Testes no navegador de produção: as seis rotas existentes retornaram HTTP 200; em 375 px não há overflow horizontal na página e tabelas largas rolam dentro do próprio quadro; em 1440 px a barra lateral aparece.
 - Navegação específica por perfil ainda não é exibida: depende da autenticação e autorização da Fase 4. A logo oficial também não foi fornecida; o símbolo geométrico usado no shell é apenas decorativo.
 
+## Alinhamento visual com as referencias Stitch
+
+- Reorganizada a home como landing publica e aproximadas agenda, agendamentos, receitas e comissoes das respectivas referencias Stitch.
+- Mantidos estados vazios e acoes desativadas quando dependem de backend; nao foram incluidos dados clinicos, consultas ou valores financeiros ficticios.
+- Validacao no navegador de producao: as seis rotas existentes retornaram HTTP 200; em viewport de 375 px nenhuma apresentou overflow horizontal; em 1440 px a sidebar profissional foi exibida; o menu movel abriu e mostrou as cinco rotas.
+- `npm run lint`, `npm run typecheck` e `npm run build` passaram apos as alteracoes.
+
 ## Preparação Git
 
 - Branch local: `feature/frontend-stitch-backend`.

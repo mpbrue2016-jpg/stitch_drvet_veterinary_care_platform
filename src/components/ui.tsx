@@ -137,8 +137,33 @@ export function PageHeader({
 export function DemoNotice() {
   return (
     <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-      Dados demonstrativos — integração com o banco ainda não configurada.
+      Ambiente de demonstração — não há dados reais carregados. Ações que exigem serviços estão desativadas.
     </p>
+  );
+}
+
+export function MetricCard({
+  label,
+  value = '—',
+  detail = 'Aguardando integração',
+  icon = '•',
+}: {
+  label: string;
+  value?: string;
+  detail?: string;
+  icon?: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-600">{label}</p>
+          <p className="mt-3 text-2xl font-extrabold tracking-tight text-[#153b50] sm:text-3xl">{value}</p>
+        </div>
+        <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#dff0ff] text-lg font-bold text-[#006b57]">{icon}</span>
+      </div>
+      <p className="mt-2 text-xs text-slate-500">{detail}</p>
+    </article>
   );
 }
 
