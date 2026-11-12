@@ -1,95 +1,38 @@
-# SCHEMA_GAPS.md - Supabase Schema vs Stitch Requirements (Phase 1 Audit)
+# SCHEMA_GAPS.md — auditoria local do Supabase
 
-Generated during Phase 1 – Audit (read-only).
+## Estado observado
 
-## 1. Current state of /supabase (source of truth)
+- A pasta raiz `supabase/` existe, mas está vazia: não há `config.toml`, diretório `migrations/`, tipos gerados ou seeds.
+- Não foi encontrado cliente Supabase, chamada `.from(...)`, autenticação Supabase ou variável `NEXT_PUBLIC_SUPABASE_*` no código da aplicação.
+- `@supabase/supabase-js` e `@supabase/ssr` estão declarados em `package.json`, mas a aplicação não os utiliza.
+- Não existe `.env.local` no projeto. Nenhum valor de chave foi lido.
+- As telas Stitch mencionam Supabase em nomes e conteúdo, mas isso não comprova que as tabelas, colunas ou políticas existam no projeto remoto.
 
-The `/supabase` folder does NOT exist yet. It must be created from scratch per Rule 2 (new migration only).
-- Expected location: `/supabase/migrations/` + config.
-- Existing references found in HTML files:
-  - `conex_o_com_banco_de_dados_supabase_postgresql_realtime_drvet_empresas/code.html`
-  - `inser_o_de_exames_laboratoriais_no_supabase_drvet/code.html`
-  - `link_de_conex_o_restabelecido_flush_buffer_200_ok_supabase_drvet/code.html`
-  - `credenciamento_conclu_do_com_sucesso_no_supabase_drvet/code.html`
+**Conclusão:** não há schema local para comparar, portanto não é possível afirmar quais tabelas, colunas, índices, funções ou políticas estão faltando no banco remoto. O estado remoto permanece desconhecido; não foi feita nenhuma alteração ou consulta ao banco.
 
-## 2. Tables referenced by Stitch screens (extracted from filenames & content)
+## Domínios sugeridos pelas telas (não são schema confirmado)
 
-| Screen category | Table(s) implied |
-|---|---|
-| Prontuário / Receita / Exames | `prontuarios`, `receitas`, `exames`, `laboratoriais`, `laudos`, `soap` |
-| Comissões / Repasses | `comissoes`, `repasses`, `extratos`, `pagamentos`, `balc` |
-| Pagamentos / Checkout | `pedidos`, `metodos_pagamento`, `vouchers`, `cupons`, `pix`, `seguro` |
-| Anúncios / Campanhas | `campanhas`, `anuncios`, `banners`, `qr_codes`, `promocao` |
-| Pet Shop / Parceiros | `pet_shops`, `parceiros`, `farms`, `cia`, `balcão`, `voucher` |
-| Veterinários | `veterinarios`, `profiles`, `tenants`, `m_dicos` |
-| Farm/CIA | `farm_cias`, `farm_cia`, `parceiras` |
-| Dashboard Global | `dashboard`, `global`, `operacional` |
-| Auditoria / CFMV | `audit_logs`, `icp_brasil`, `logs_seguranca` |
+| Domínio indicado pelos exports | Exemplos de telas | Situação local |
+|---|---|---|
+| Usuários, perfis, credenciamento e tenant | Cadastro de tutor, veterinário e parceiro; RBAC; aprovação | Sem tabelas ou políticas locais |
+| Pets e responsáveis | Cadastro de pet, dados do tutor, QR Code | Sem tabelas ou políticas locais |
+| Agenda e consultas | Agendamento, agenda semanal, teleconsulta | Sem tabelas ou políticas locais |
+| Prontuário e documentos clínicos | SOAP, atestados, receitas, exames e laudos | Sem tabelas ou políticas locais |
+| Vacinas e carteira de saúde | Cadastro de vacinação e carteira digital | Sem tabelas ou políticas locais |
+| Parceiros e catálogo | Pet shops, farmácias, planos, balcão e vouchers | Sem tabelas ou políticas locais |
+| Pagamentos e finanças | Checkout, comissões, repasses, carteira e conciliação | Sem tabelas ou políticas locais |
+| Anúncios e campanhas | Banners, Ads, orçamento e QR Codes | Sem tabelas ou políticas locais |
+| Integrações e auditoria | Asaas, Mercado Pago, ERP, webhooks, logs e Realtime | Sem tabelas ou políticas locais |
 
-## 3. Missing RLS policies (per Rule 3)
+Os nomes de tabelas anteriormente sugeridos em documentos ou inferidos de telas não devem ser usados como fonte de verdade. Colunas, chaves estrangeiras, índices, funções e políticas RLS também não podem ser especificados com segurança antes de obter o schema autoritativo.
 
-All tables require RLS with tenant_id and profile columns. Specific missing policies:
+## RLS e isolamento multi-tenant
 
-### Tabelas prováveis (from screen actions):
-- `pets` → RLS por tenant e perfil
-- `tutores` → RLS por tenant e perfil
-- `consultas` → RLS por tenant e perfil
-- `agenda` → RLS por tenant e perfil
-- `prontuarios` → RLS por tenant e perfil
-- `receitas` → RLS por tenant e perfil
-- `exames` → RLS por tenant e perfil
-- `comissoes` → RLS por tenant e perfil
-- `pagamentos` → RLS por tenant e perfil
-- `campanhas` → RLS por tenant e perfil
-- `anuncios` → RLS por tenant e perfil
-- `partners/shops` → RLS por tenant e perfil
-- `realtime` → RLS por tenant e perfil
+Não há migrations locais que habilitem RLS ou definam políticas. Não é possível confirmar o estado de RLS no banco remoto. Requisitos de tenant, papéis, relacionamentos e permissões devem ser validados com o schema real antes de propor uma migration.
 
-## 4. Chaves estrangeiras (FK) esperadas
+## Próximos passos antes de uma migration
 
-- `pets.pet_id` → `tutores.tutor_id`, `veterinarios.vet_id`, `pet_shops.petShopId`
-- `consultas.consulta_id` → `tutores.tutor_id`, `veterinarios.vet_id`
-- `agenda.agenda_id` → `tutores.tutor_id`, `veterinarios.vet_id`, `pet_shops.petShopId`
-- `prontuarios.prontoId` → `pets.petId`, `tutores.tutorId`, `veterinarios.vetId`, `pet_shops.petShopId`
-- `receitas.receitaId` → `pets.petId`, `tutores.tutorId`, `veterinarios.vetId`, `pet_shops.petShopId`
-- `exames.exameId` → `pets.petId`, `tutores.tutorId`, `veterinarios.vetId`, `pet_shops.petShopId`
-- `comissoes.comissãoId` → `pet_shops.petShopId`, `veterinarios.vetId`, `adminMaster.id`
-- `pagamentos.pagamentoId` → `pets.petId`, `tutores.tutorId`, `veterinarios.vetId`, `pet_shops.petShopId`
-
-## 5. Índices recomendados
-
-- `pets.pet_id` (PK)
-- `tutores.tutor_id` (PK)
-- `veterinarios.vet_id` (PK)
-- `pet_shops.petShop_id` (PK)
-- `agendas.agenda_id` (PK)
-- `prontuarios.pronto_id` (PK)
-- `receitas.receita_id` (PK)
-- `exames.exame_id` (PK)
-- `comissoes.comission_id` (PK)
-- `pagamentos.pagamento_id` (PK)
-- `campanhas.campana_id` (PK)
-- `audit_logs.log_id` (PK)
-
-## 6. Políticas RLS (per tenant + perfil)
-
-Exemplo de política para tabela `pets`:
-```sql
-CREATE POLICY pet_tenant_perfils ON pets USING (tenant_id = current_tenant() AND profile = 'tutor' OR profile = 'veterinario' OR profile = 'shop');
-```
-
-## 7. Necessidades de migração (nova migration)
-
-Antes de aplicar qualquer alteração:
-1. Execute `SUPABASE_RUN_READ_ONLY_QUERY` para obter metadados autoritativos.
-2. Use `SUPABASE_SELECT_FROM_TABLE` para validar colunas/typos.
-3. Não apague tabelas/colunas sem aprovação.
-
-## 8. Links de Supabase (no frontend)
-
-- NEXT_PUBLIC_SUPABASE_URL (env var)
-- NEXT_PUBLIC_SUPABASE_ANON_KEY (anon/publishable key — NEVER service_role)
-- Service role ONLY on server (route handlers, Edge Functions).
-
----
-*Este arquivo é o resultado da FASE 1 – AUDITORIA (leitura).*
+1. Conectar o projeto Supabase ao repositório e disponibilizar acesso de leitura ao schema remoto por ferramenta autorizada, sem enviar chaves no chat.
+2. Salvar localmente as variáveis de ambiente necessárias para o cliente público (`NEXT_PUBLIC_SUPABASE_URL` e chave anon/publishable). Nunca expor `service_role` no navegador.
+3. Comparar o schema remoto com os domínios confirmados e atualizar este relatório.
+4. Propor o SQL de uma nova migration para aprovação antes de criá-la ou aplicá-la. Não alterar nem remover dados, tabelas ou colunas sem aprovação.
