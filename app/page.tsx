@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const careSteps = [
@@ -61,18 +62,18 @@ export default function Home() {
                     <span className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-bold text-[#006b57]">DrVet · Cuidado veterinário</span>
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   </div>
-                  <div className="grid min-h-56 place-items-center py-7">
-                    <div className="relative grid h-44 w-44 place-items-center rounded-full bg-white/80 shadow-inner">
-                      <div aria-hidden="true" className="absolute inset-3 rounded-full border border-dashed border-emerald-200" />
-                      <svg aria-hidden="true" className="h-28 w-28 text-[#087a68]" fill="currentColor" viewBox="0 0 24 24">
-                        <ellipse cx="12" cy="16.5" rx="5.3" ry="4.3" />
-                        <ellipse cx="5.5" cy="10" rx="2.1" ry="2.8" transform="rotate(-20 5.5 10)" />
-                        <ellipse cx="10" cy="6.8" rx="2.1" ry="2.8" transform="rotate(-7 10 6.8)" />
-                        <ellipse cx="14.5" cy="6.8" rx="2.1" ry="2.8" transform="rotate(7 14.5 6.8)" />
-                        <ellipse cx="18.5" cy="10" rx="2.1" ry="2.8" transform="rotate(20 18.5 10)" />
-                      </svg>
-                      <span className="absolute bottom-1 right-0 rounded-2xl bg-white px-3 py-2 text-xs font-bold text-[#153b50] shadow-lg">Saúde e bem-estar</span>
-                    </div>
+                  <div className="relative my-5 h-56 overflow-hidden rounded-3xl shadow-sm sm:h-72">
+                    <Image
+                      alt="Médica veterinária atendendo um cachorro"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      src="/stitch-vet-hero.webp"
+                    />
+                    <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#153b50]/70 via-transparent to-transparent" />
+                    <span className="absolute bottom-4 left-4 rounded-full border border-white/40 bg-white/95 px-3 py-2 text-xs font-bold text-[#153b50] shadow-lg">
+                      Saúde e bem-estar animal
+                    </span>
                   </div>
                   <div className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm">
                     <p className="text-sm font-bold text-[#153b50]">Um espaço para cuidar melhor</p>

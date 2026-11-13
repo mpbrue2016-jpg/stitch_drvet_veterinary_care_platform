@@ -12,6 +12,7 @@ credentials*.json
 service-account*.json
 
 # Dependencias e arquivos gerados
+supabase/.temp/
 node_modules/
 .next/
 dist/

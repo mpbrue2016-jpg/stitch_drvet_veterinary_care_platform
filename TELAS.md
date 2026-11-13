@@ -3,10 +3,10 @@
 ## Escopo e criterios
 
 - Foram encontrados **110** diretorios com `code.html`; **95** tambem tem `screen.png`, **15** nao tem captura. Existem ainda **2** imagens `screen.png` sem `code.html` associado.
-- As pastas exportadas contem prototipos HTML; a interface Next.js observada e estatica e usa conteudo de demonstracao. Perfis, rotas pretendidas e acoes abaixo sao inferidos pelo nome/titulo da tela, nao confirmados por requisitos funcionais.
-- A busca no codigo da aplicacao nao encontrou cliente, consulta ou autenticacao Supabase. Portanto, nenhuma tela usa tabelas Supabase atualmente; nomes de tabela nao sao inventados nesta auditoria.
+- As pastas exportadas contem prototipos HTML; a interface Next.js usa conteudo demonstrativo onde os fluxos ainda nao foram integrados. Perfis, rotas pretendidas e acoes abaixo sao inferidos pelo nome/titulo da tela, nao confirmados por requisitos funcionais.
+- Existem factories de cliente Supabase, APIs e uma migration local para o primeiro fluxo de autenticação, pets e agendamentos. A migration não foi aplicada e as consultas não foram testadas contra um banco real.
 - O produto foi confirmado como DrVet para a interface e os metadados Next.js. Nenhuma logo oficial nem pasta de referencia visual foi encontrada na raiz do projeto.
-- O layout comum DrVet usa navegação responsiva pelas rotas existentes. Menus e permissões separados por perfil dependem da autenticação e autorização, ainda não implementadas.
+- O layout comum DrVet usa navegação responsiva. Login e proteção de rotas já existem; os menus e as permissões ainda não são filtrados completamente por perfil.
 
 ## Alinhamento visual com as referencias Stitch
 
@@ -15,25 +15,35 @@ A rodada visual atual aproxima as rotas implementadas das referencias Stitch cor
 | Tela | Direcao visual aplicada | Estado funcional |
 |---|---|---|
 | `/` | Landing publica com hero, areas de atendimento e etapas de cuidado. | Conteudo informativo; disponibilidade sujeita a confirmacao. |
-| `/agenda` | Painel profissional com indicadores, grade semanal e proximo atendimento. | Sem consultas carregadas; acoes dependentes de integracao desativadas. |
-| `/agendamento` | Lista e filtros no estilo de gestao de agendamentos. | Sem registros reais; controles dependentes de servicos desativados. |
-| `/receitas` | Estrutura de emissao e previa de receita. | Sem dados clinicos ou prescricoes; emissao desativada. |
+| `/agenda` | Painel profissional com indicadores, grade semanal e próximo atendimento. | Grade, indicadores e próximo atendimento carregam os dados da API Supabase; configuração e bloqueio/liberação de horários próprios disponíveis; depende de `.env.local` e migrations aplicadas. |
+| `/agendamento` | Lista e filtros no estilo de gestao de agendamentos. | Lista ligada a API; abertura de prontuario SOAP por consulta disponivel. |
+| `/prontuarios/[appointmentId]` | Registro SOAP por consulta, com sinais vitais. | Rascunho e finalizacao ligados a API; assinatura, receitas e anexos nao sao simulados. |
+| `/carteira/vacinas` | Histórico de vacinas do pet. | Leitura para tutor/veterinário autorizado; registro imutável pelo veterinário designado após o atendimento. |
+| `/exames` | Solicitação laboratorial ou de imagem e registro de resultado. | Pedido/resultados ligados a API, visibilidade protegida; integração externa e anexos pendentes. |
+| `/receitas` | Cadastro manual de itens e prévia de rascunho vinculados ao atendimento. | Rascunhos persistidos para o veterinário designado; catálogo, assinatura, emissão oficial, PDF e envio permanecem desativados. |
 | `/comissoes` | Indicadores financeiros e extrato. | Sem saldos ou transacoes; acoes financeiras desativadas. |
 
 O shell distingue a navegacao publica da area profissional e adapta a navegacao para telas pequenas. Icones e elementos decorativos nao representam uma logo oficial.
+
+O hero da home agora usa o arquivo visual exportado do Stitch, salvo localmente em `public/stitch-vet-hero.webp`, em vez do ícone decorativo usado como ilustração.
 
 ## Rotas Next.js observadas
 
 | Rota | Arquivo | Situacao observada |
 |---|---|---|
 | `/` | `app/page.tsx` | Landing page estatica; links internos apontam para rotas existentes. |
-| `/agenda` | `app/agenda/page.tsx` | Prototipo com dados demonstrativos e acoes desativadas ate a integracao. |
-| `/agendamento` | `app/agendamento/page.tsx` | Prototipo com dados demonstrativos e acoes desativadas ate a integracao. |
-| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Formulario visual; gravacao desativada ate a integracao. |
+| `/login` | `app/login/page.tsx` | Login/cadastro e solicitação de recuperação por e-mail; depende de `.env.local` e de Redirect URL autorizada no Supabase Auth. |
+| `/senha/nova` | `app/senha/nova/page.tsx` | Redefinição autenticada após retorno seguro pelo callback; exige link válido e sessão de recuperação. |
+| `/agenda` | `app/agenda/page.tsx` | Grade semanal, métricas e próximo atendimento ligados à API; configuração de organização, cadastro/aprovação de veterinários e publicação/bloqueio de horários próprios. |
+| `/agendamento` | `app/agendamento/page.tsx` | Lista consultas da conta, atualiza estados via API e permite solicitar novo agendamento. |
+| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Fluxo responsivo baseado no export `agendamento_da_1_teleconsulta_com_15_off_drvet`: lê pets e horários disponíveis, permite cadastrar pet, escolher modalidade/motivo e grava solicitação pendente via API; preço, cupom, voucher e pagamento do protótipo não são ativados. |
+| `/prontuarios/[appointmentId]` | `app/prontuarios/[appointmentId]/page.tsx` | Consulta e edição do SOAP por profissional designado; tutor lê somente registro finalizado. |
+| `/carteira/vacinas` | `app/carteira/vacinas/page.tsx` | Histórico autorizado; profissional designado registra vacinação após o atendimento. |
+| `/exames` | `app/exames/page.tsx` | Veterinário designado solicita exame e registra resultado; usuário autorizado consulta os pedidos. |
 | `/comissoes` | `app/comissoes/page.tsx` | Protótipo estático com dados demonstrativos e botões desativados até integração. |
-| `/receitas` | `app/receitas/page.tsx` | Prototipo com dados demonstrativos e acao desativada ate a integracao. |
+| `/receitas` | `app/receitas/page.tsx` | Rascunhos de receita ligados à API e ao atendimento; emissão e assinatura indisponíveis. |
 
-Nao foi encontrado `app/pagamentos/page.tsx`; a pasta `app/pagamentos` esta vazia. O shell responsivo e os componentes comuns foram implementados, mas o menu ainda nao varia por perfil porque nao ha autenticacao/autorizacao. Tambem nao foram encontrados acessos a dados Supabase.
+Nao foi encontrado `app/pagamentos/page.tsx`; a pasta `app/pagamentos` esta vazia. O shell responsivo e os componentes comuns foram implementados. O menu ainda nao varia por perfil, e os modulos fora de pets/agenda continuam sem dados reais.
 
 ## Inventario completo dos exports
 
@@ -42,7 +52,7 @@ A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfi
 | # | Tela (titulo do HTML) | Arquivos no diretorio | Rota atual/alvo | Perfil aparente | Supabase observado | Acoes inferidas | Status da tela |
 |---:|---|---|---|---|---|---|---|
 | 1 | agenda completa do m dico veterin rio semanal mensal drvet | `agenda_completa_do_m_dico_veterin_rio_semanal_mensal_drvet/code.html`; `agenda_completa_do_m_dico_veterin_rio_semanal_mensal_drvet/screen.png` | `/agenda` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Parcial - rota existe, tela nao ligada a dados |
-| 2 | agendamento da 1 teleconsulta com 15 off drvet | `agendamento_da_1_teleconsulta_com_15_off_drvet/code.html`; `agendamento_da_1_teleconsulta_com_15_off_drvet/screen.png` | `/agendamento` | Tutor / Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Parcial - rota existe, tela nao ligada a dados |
+| 2 | agendamento da 1 teleconsulta com 15 off drvet | `agendamento_da_1_teleconsulta_com_15_off_drvet/code.html`; `agendamento_da_1_teleconsulta_com_15_off_drvet/screen.png` | `/agendamento/edit` | Tutor / Veterinário | `pets`, `professional_availability`, `appointments` via APIs autenticadas | Consultar pet/horário e solicitar atendimento | Parcial - fluxo conectado; cupom, preços, crédito de parceiro e pagamento do HTML não configurados |
 | 3 | agendamento da 1 teleconsulta preventiva drvet | `agendamento_da_1_teleconsulta_preventiva_drvet/code.html` (sem `screen.png`) | `/agendamento` | Tutor / Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Parcial - rota existe, tela nao ligada a dados |
 | 4 | Apresentação Executiva do Projeto DrVet — Slides Interativos | `apresenta_o_powerpoint_executiva_todas_as_p_ginas_drvet/code.html`; `apresenta_o_powerpoint_executiva_todas_as_p_ginas_drvet/screen.png` | `/apresentacao` | A definir | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
 | 5 | DrVet Partner - Portal de Parcerias Pet Shop | `assinatura_pro_shop_confirmada_portal_b2b_liberado_drvet/code.html`; `assinatura_pro_shop_confirmada_portal_b2b_liberado_drvet/screen.png` | `/parceiros` | Pet Shop / Parceiro | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
@@ -97,7 +107,7 @@ A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfi
 | 54 | hist rico de consultas gravadas com player seguro drvet | `hist_rico_de_consultas_gravadas_com_player_seguro_drvet/code.html`; `hist_rico_de_consultas_gravadas_com_player_seguro_drvet/screen.png` | `/teleconsulta` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 55 | DrVets - Telemedicina Veterinária 24h \| Seu pet sempre por perto | `home_desktop_drvet_telemedicina_veterin_ria_1/code.html`; `home_desktop_drvet_telemedicina_veterin_ria_1/screen.png` | `/` | Veterinário | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Parcial - rota existe, tela nao ligada a dados |
 | 56 | DrVets - Telemedicina Veterinária 24h \| Seu pet sempre por perto | `home_desktop_drvet_telemedicina_veterin_ria_2/code.html`; `home_desktop_drvet_telemedicina_veterin_ria_2/screen.png` | `/` | Veterinário | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Parcial - rota existe, tela nao ligada a dados |
-| 57 | inser o de exames laboratoriais no supabase drvet | `inser_o_de_exames_laboratoriais_no_supabase_drvet/code.html`; `inser_o_de_exames_laboratoriais_no_supabase_drvet/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
+| 57 | inser o de exames laboratoriais no supabase drvet | `inser_o_de_exames_laboratoriais_no_supabase_drvet/code.html`; `inser_o_de_exames_laboratoriais_no_supabase_drvet/screen.png` | `/exames` | Veterinário | Migration local/API protegida, não aplicada ao banco | Registrar resultado textual | Parcial - anexos e integração laboratorial pendentes |
 | 58 | inser o de laudo de imagem ultrassonografia no supabase drvet | `inser_o_de_laudo_de_imagem_ultrassonografia_no_supabase_drvet/code.html`; `inser_o_de_laudo_de_imagem_ultrassonografia_no_supabase_drvet/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
 | 59 | inser o e alimenta o do prontu rio soap no supabase drvet | `inser_o_e_alimenta_o_do_prontu_rio_soap_no_supabase_drvet/code.html`; `inser_o_e_alimenta_o_do_prontu_rio_soap_no_supabase_drvet/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
 | 60 | leitura do qr code agendamento com 15 off drvet | `leitura_do_qr_code_agendamento_com_15_off_drvet/code.html`; `leitura_do_qr_code_agendamento_com_15_off_drvet/screen.png` | `/agendamento` | Tutor / Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Parcial - rota existe, tela nao ligada a dados |
@@ -121,7 +131,7 @@ A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfi
 | 78 | prontu rio cl nico com atestado anexado pipoca drvet | `prontu_rio_cl_nico_com_atestado_anexado_pipoca_drvet/code.html`; `prontu_rio_cl_nico_com_atestado_anexado_pipoca_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 79 | prontu rio cl nico com receita anexada thor drvet | `prontu_rio_cl_nico_com_receita_anexada_thor_drvet/code.html`; `prontu_rio_cl_nico_com_receita_anexada_thor_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 80 | prontu rio cl nico consolidado com receita de manuten o pipoca drvet | `prontu_rio_cl_nico_consolidado_com_receita_de_manuten_o_pipoca_drvet/code.html`; `prontu_rio_cl_nico_consolidado_com_receita_de_manuten_o_pipoca_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
-| 81 | prontu rio cl nico soap atualizado com laudos e exames luna drvet | `prontu_rio_cl_nico_soap_atualizado_com_laudos_e_exames_luna_drvet/code.html`; `prontu_rio_cl_nico_soap_atualizado_com_laudos_e_exames_luna_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
+| 81 | prontu rio cl nico soap atualizado com laudos e exames luna drvet | `prontu_rio_cl_nico_soap_atualizado_com_laudos_e_exames_luna_drvet/code.html`; `prontu_rio_cl_nico_soap_atualizado_com_laudos_e_exames_luna_drvet/screen.png` | `/prontuarios/[appointmentId]` | Veterinário | Migration SOAP local, não aplicada ao banco; exames em `/exames` | Consultar SOAP e exames autorizados | Parcial - anexos/laudos ainda pendentes |
 | 82 | prontu rio cl nico soap detalhado pipoca drvet | `prontu_rio_cl_nico_soap_detalhado_pipoca_drvet/code.html`; `prontu_rio_cl_nico_soap_detalhado_pipoca_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 83 | prontu rio cl nico soap luna siam s drvet | `prontu_rio_cl_nico_soap_luna_siam_s_drvet/code.html`; `prontu_rio_cl_nico_soap_luna_siam_s_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 84 | prontu rio cl nico soap thor bulldog franc s drvet | `prontu_rio_cl_nico_soap_thor_bulldog_franc_s_drvet/code.html`; `prontu_rio_cl_nico_soap_thor_bulldog_franc_s_drvet/screen.png` | `/prontuarios` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
@@ -144,8 +154,8 @@ A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfi
 | 101 | sala de teleconsulta mobile drvet | `sala_de_teleconsulta_mobile_drvet/code.html`; `sala_de_teleconsulta_mobile_drvet/screen.png` | `/teleconsulta` | Veterinário | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 102 | salvar prontu rio soap e encerrar teleconsulta drvet | `salvar_prontu_rio_soap_e_encerrar_teleconsulta_drvet/code.html`; `salvar_prontu_rio_soap_e_encerrar_teleconsulta_drvet/screen.png` | `/teleconsulta` | Veterinário | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
 | 103 | simula o de falha de conex o com reconex o autom tica backoff supabase drvet | `simula_o_de_falha_de_conex_o_com_reconex_o_autom_tica_backoff_supabase_drvet/code.html`; `simula_o_de_falha_de_conex_o_com_reconex_o_autom_tica_backoff_supabase_drvet/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
-| 104 | solicita o de exames complementares mobile drvet | `solicita_o_de_exames_complementares_mobile_drvet/code.html`; `solicita_o_de_exames_complementares_mobile_drvet/screen.png` | `/exames` | Veterinário | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
-| 105 | solicita o de exames complementares raio x e sangue drvet | `solicita_o_de_exames_complementares_raio_x_e_sangue_drvet/code.html`; `solicita_o_de_exames_complementares_raio_x_e_sangue_drvet/screen.png` | `/exames` | Veterinário | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
+| 104 | solicita o de exames complementares mobile drvet | `solicita_o_de_exames_complementares_mobile_drvet/code.html`; `solicita_o_de_exames_complementares_mobile_drvet/screen.png` | `/exames` | Veterinário | Migration local/API protegida, não aplicada ao banco | Criar solicitação e consultar resultados | Parcial - fluxo móvel integrado; anexos pendentes |
+| 105 | solicita o de exames complementares raio x e sangue drvet | `solicita_o_de_exames_complementares_raio_x_e_sangue_drvet/code.html`; `solicita_o_de_exames_complementares_raio_x_e_sangue_drvet/screen.png` | `/exames` | Veterinário | Migration local/API protegida, não aplicada ao banco | Criar solicitação e consultar resultados | Parcial - fluxo integrado; laboratório/anexos pendentes |
 | 106 | sucesso do cadastro pipoca drvet | `sucesso_do_cadastro_pipoca_drvet/code.html`; `sucesso_do_cadastro_pipoca_drvet/screen.png` | `/cadastro` | A definir | Nenhuma - client/schema ausente | Criar / editar (fluxo inferido) | Falta - rota nao existe |
 | 107 | teleconsulta encerrada e sincronizada no supabase cdc drvet | `teleconsulta_encerrada_e_sincronizada_no_supabase_cdc_drvet/code.html`; `teleconsulta_encerrada_e_sincronizada_no_supabase_cdc_drvet/screen.png` | `/teleconsulta` | Admin Master / Operações | Nenhuma - client/schema ausente | Consultar / gerenciar (protótipo) | Falta - rota nao existe |
 | 108 | teste de conex o asaas conclu do 200 ok drvet empresas | `teste_de_conex_o_asaas_conclu_do_200_ok_drvet_empresas/code.html`; `teste_de_conex_o_asaas_conclu_do_200_ok_drvet_empresas/screen.png` | `/admin/integracoes` | Admin Master / Operações | Nenhuma - client/schema ausente | Visualizar estado / resultado (protótipo) | Falta - rota nao existe |
