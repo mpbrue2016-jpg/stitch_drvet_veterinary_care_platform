@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DrVets - Telemedicina Veterinária 24h | Seu pet sempre por perto</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter, Plus Jakarta Sans, Caveat -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0C2D48',
+              deep: '#153B50',
+              primary: '#0B68C2',
+              teal: '#00B298',
+              emerald: '#13A88A',
+              lightGreen: '#32D77D',
+              cyan: '#25C5DC',
+              ice: '#F0F8FB',
+              softBg: '#F5F8FA'
+            },
+            primary: '#006b57',
+            'primary-container': '#13a88a',
+            'surface-container-lowest': '#ffffff',
+            'surface-container-low': '#ebf5ff'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            hand: ['Caveat', 'cursive']
+          },
+          boxShadow: {
+            'custom-card': '0 12px 35px -8px rgba(15, 60, 90, 0.08), 0 4px 12px -2px rgba(15, 60, 90, 0.04)',
+            'custom-glow': '0 15px 35px -5px rgba(19, 168, 138, 0.35)',
+            'button-hover': '0 8px 25px -4px rgba(11, 104, 194, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .custom-gradient-cta {
+      background: linear-gradient(92deg, #0A63BA 0%, #0690B4 45%, #0EB485 100%);
+    }
+    .custom-gradient-cta:hover {
+      background: linear-gradient(92deg, #0855A0 0%, #057E9E 45%, #0B9C73 100%);
+    }
+    .hero-glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-[#F5F8FA] text-slate-800 font-sans antialiased selection:bg-[#13A88A] selection:text-white">
+<!-- BEGIN: AnnouncementBar -->
+<div class="bg-gradient-to-r from-brand-deep via-brand-navy to-brand-deep text-white text-xs sm:text-sm py-2.5 px-4 shadow-sm border-b border-brand-teal/20" data-purpose="top-announcement">
+<div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+<div class="flex items-center gap-2 font-medium">
+<span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-1"></span>
+<span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-emerald-400 -ml-3 mr-1"></span>
+<span class="font-bold text-brand-cyan tracking-wide">PLANTÃO 24H:</span>
+<span>Médicos veterinários online para pronto atendimento por vídeo em até 10 minutos.</span>
+</div>
+<div class="flex items-center gap-6 text-xs text-slate-300">
+<div class="hidden md:flex items-center gap-1.5 hover:text-white transition">
+<span class="material-symbols-outlined text-[15px] text-brand-teal">verified</span>
+<span>Conforme Resolução CFMV nº 1.465/2022</span>
+</div>
+<a class="hover:text-brand-lightGreen transition flex items-center gap-1 font-semibold" href="#parceiros">
+<span>Seja um Pet Shop Parceiro</span>
+<span class="text-brand-teal">↗</span>
+</a>
+</div>
+</div>
+</div>
+<!-- END: AnnouncementBar -->
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+<!-- Brand Logo Component -->
+<a class="flex items-center gap-3 group focus:outline-none" href="#" title="DrVets - Telemedicina Veterinária">
+<img alt="DrVets Tele Veterinária Logo" class="h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV9q5mcPTtwheB7x80hHZmK-gtZsoKpeMx75JTHUkmXV-bVeMZkfkewU_Jxpkx-G_SdoZcWskRJ-ROa50XRA9zChBtQ1V5oNy3nNkRLl18YzieG58IkUHlKdxQMzN8d3eH3seiHcnI7uiOi83Ovon9BmhC2XQNgIDvNdYfk2B30-xJfqCFMSRIurRWEnplf8ArhRiImPaYK14-p7dYAX4HRip8WwkhklILf0PAfPNTTZt8KGKO25tPYw"/>
+</a>
+<!-- Main Navigation Menu -->
+<nav class="hidden lg:flex items-center gap-1 font-medium text-slate-700 text-sm">
+<a class="px-3.5 py-2 rounded-full text-brand-primary font-bold bg-brand-ice hover:bg-brand-ice transition flex items-center gap-1.5" href="#inicio">
+        Início
+      </a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition" href="#especialistas">Especialistas</a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition" href="#como-funciona">Como Funciona</a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition" href="#consultorio-vet">Para Veterinários</a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition" href="#parceiros">Pet Shops &amp; Clínicas</a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition flex items-center gap-1" href="#drvets-ads">
+<span>DrVet Ads</span>
+<span class="text-[10px] bg-brand-cyan/20 text-brand-deep font-bold px-1.5 py-0.5 rounded-full">B2B</span>
+</a>
+<a class="px-3.5 py-2 rounded-lg hover:text-brand-primary hover:bg-slate-50 transition" href="#depoimentos">Avaliações</a>
+</nav>
+<!-- Header Action Group -->
+<div class="flex items-center gap-3">
+<!-- CRMV Header Seal -->
+<div class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+<span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+<span>CRMV 100% Verificado</span>
+</div>
+<!-- Tutor Login -->
+<a class="text-sm font-semibold text-brand-deep hover:text-brand-primary transition px-2 py-2 flex items-center gap-1.5" href="#login">
+<span class="material-symbols-outlined text-[18px] text-slate-500">account_circle</span>
+<span class="hidden sm:inline">Área do Tutor</span>
+</a>
+<!-- Quick Fast Action CTA -->
+<a class="custom-gradient-cta text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-full shadow-custom-glow hover:shadow-button-hover transition duration-200 flex items-center gap-2 tracking-wide" href="#triage-box">
+<span class="material-symbols-outlined text-[18px]">videocam</span>
+<span>Encontrar veterinário</span>
+<span class="text-base font-bold">→</span>
+</a>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: BillboardHeroSection -->
+<section class="relative overflow-hidden pt-6 pb-14 lg:py-16 bg-gradient-to-b from-[#EDF5F9] via-white to-[#F5F8FA]" id="inicio">
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-cyan/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 right-0 w-[550px] h-[550px] bg-brand-teal/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Main Billboard-like Frame Card -->
+<div class="relative bg-white rounded-3xl lg:rounded-[36px] shadow-custom-card border border-slate-200/80 p-6 sm:p-10 lg:p-12 overflow-hidden">
+<!-- Curved Wave Accent -->
+<div class="absolute bottom-0 left-0 right-0 h-3.5 bg-gradient-to-r from-brand-primary via-brand-teal to-brand-lightGreen"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+<!-- LEFT COLUMN: Headline & Campaign Copy -->
+<div class="lg:col-span-7 flex flex-col justify-center space-y-6 z-10">
+<div class="w-fit">
+<img alt="DrVets Tele Veterinária" class="h-12 sm:h-14 md:h-16 w-auto object-contain drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV9q5mcPTtwheB7x80hHZmK-gtZsoKpeMx75JTHUkmXV-bVeMZkfkewU_Jxpkx-G_SdoZcWskRJ-ROa50XRA9zChBtQ1V5oNy3nNkRLl18YzieG58IkUHlKdxQMzN8d3eH3seiHcnI7uiOi83Ovon9BmhC2XQNgIDvNdYfk2B30-xJfqCFMSRIurRWEnplf8ArhRiImPaYK14-p7dYAX4HRip8WwkhklILf0PAfPNTTZt8KGKO25tPYw"/>
+</div>
+<div class="space-y-3">
+<h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-display font-extrabold text-[#153B50] leading-[1.14] tracking-tight">
+              Cuidado veterinário,<br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-[#0C8974] via-[#13A88A] to-[#25B899]">onde seu pet estiver.</span>
+</h1>
+<p class="text-base sm:text-lg text-slate-600 max-w-xl font-normal leading-relaxed">
+              Converse por vídeo com veterinários selecionados, receba orientações e cuide de quem faz parte da sua família no conforto de casa.
+            </p>
+</div>
+<!-- CTAs and Active Wait Indicator -->
+<div class="flex flex-wrap items-center gap-4 pt-1">
+<a class="custom-gradient-cta inline-flex items-center gap-3 px-7 py-3.5 rounded-full text-white font-bold text-base sm:text-lg shadow-custom-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group" href="#triage-box">
+<div class="bg-white/20 p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">videocam</span>
+</div>
+<span>Encontrar veterinário agora</span>
+<span class="text-xl font-bold ml-0.5 transition-transform group-hover:translate-x-1">→</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80">
+<span class="flex h-3 w-3 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+</span>
+<div class="text-xs">
+<p class="font-bold text-slate-800">Tempo de espera atual</p>
+<p class="text-emerald-700 font-semibold">Médio de ~8 min hoje</p>
+</div>
+</div>
+</div>
+<!-- Quick Navigation Bar for Tutor -->
+<div class="pt-3 border-t border-slate-100">
+<p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Navegação rápida do tutor</p>
+<div class="grid grid-cols-4 max-w-md bg-slate-50/90 p-1.5 rounded-2xl border border-slate-200/70 text-center gap-1.5">
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white shadow-sm border border-emerald-100 transition" href="#inicio">
+<span class="material-symbols-outlined text-brand-primary text-xl">home</span>
+<span class="text-[11px] font-bold text-brand-navy mt-0.5">Início</span>
+<div class="w-4 h-0.5 bg-emerald-500 rounded-full mt-0.5"></div>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/80 transition text-slate-600 hover:text-brand-primary" href="#especialistas">
+<span class="material-symbols-outlined text-xl">calendar_month</span>
+<span class="text-[11px] font-semibold mt-0.5">Consultas</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/80 transition text-slate-600 hover:text-brand-primary" href="#meus-pets">
+<span class="material-symbols-outlined text-xl">pets</span>
+<span class="text-[11px] font-semibold mt-0.5">Meus Pets</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/80 transition text-slate-600 hover:text-brand-primary" href="#login">
+<span class="material-symbols-outlined text-xl">person</span>
+<span class="text-[11px] font-semibold mt-0.5">Perfil</span>
+</a>
+</div>
+</div>
+<!-- CRMV Verification Badge -->
+<div class="flex items-center gap-3">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00A868] text-white font-medium text-xs sm:text-sm shadow-sm">
+<span class="flex items-center justify-center w-4 h-4 rounded-full border-2 border-white text-[10px] font-extrabold">✓</span>
+<span class="font-bold tracking-wide">Profissionais com CRMV verificado</span>
+</div>
+<span class="text-xs text-slate-500 hidden sm:inline">Atendimento humanizado e ético</span>
+</div>
+</div>
+<!-- RIGHT COLUMN: Campaign Billboard Reference Visual -->
+<div class="lg:col-span-5 relative">
+<div class="relative mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-[#153B50] group">
+<img alt="Campanha Oficial DrVets - Dra. Camila e Golden Retriever" class="w-full h-[360px] sm:h-[420px] object-cover transform duration-500 group-hover:scale-[1.02]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_9feFcil56R3xUIfTG884PtGxOgG5-4W1m4FrAfIZGhCqE_MV_VDRhWbW85dvHyBB2BaeROB-ev_o6Y0lSIoJxfkyew9mAwYQVmxO3viZqCQhzEPSErc5wDPCk4Gf1SFMn5mBtsZquBxYyBBtVa0hwYHJsTU7iEOhbkyQyI2D3Q2OEgZF_Mdw2MruL9lto-IggBlLS5kkyzhQz6Cz2lsEfEjZ_z2QBBsOEBVqh67q-tt-EIVCUsmo7A"/>
+<div class="absolute bottom-3 right-3 bg-brand-deep/90 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl border border-white/20">
+              Campanha Oficial DrVets
+            </div>
+</div>
+<!-- Floating Stamp -->
+<div class="absolute -top-5 -right-3 sm:-right-5 bg-gradient-to-br from-[#0EA57A] to-[#047E59] text-white p-3.5 rounded-2xl shadow-xl max-w-[170px] text-center border-2 border-white transform rotate-3 hover:rotate-0 transition duration-300">
+<span class="material-symbols-outlined text-2xl mb-0.5">pets</span>
+<p class="font-hand text-lg font-bold leading-tight">Mais saúde e bem-estar para seu pet!</p>
+</div>
+<!-- Mini rating floating card -->
+<div class="absolute -bottom-4 left-4 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-extrabold text-xs">
+              ★ 5.0
+            </div>
+<div class="text-xs">
+<p class="font-bold text-slate-800">Dra. Camila &amp; Theo</p>
+<p class="text-slate-500 text-[11px]">"Consulta remota rápida e precisa!"</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: BillboardHeroSection -->
+<!-- BEGIN: FastTriageWidget -->
+<section class="relative -mt-6 z-20 max-w-6xl mx-auto px-4 sm:px-6" id="triage-box">
+<div class="bg-white rounded-2xl shadow-xl border border-slate-200/90 p-5 sm:p-7">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-3 border-b border-slate-100 gap-2">
+<div>
+<h2 class="text-lg font-bold text-brand-deep flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-brand-teal"></span>
+          Iniciar Triagem Rápida ou Agendar Consulta
+        </h2>
+<p class="text-xs sm:text-sm text-slate-500">Conectamos você ao veterinário disponível mais indicado em segundos</p>
+</div>
+<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 self-start sm:self-auto">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+        Plantão com resposta imediata
+      </span>
+</div>
+<form class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" onsubmit="event.preventDefault();">
+<div>
+<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">1. Qual é o seu pet?</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl py-3 px-3.5 focus:ring-2 focus:ring-brand-teal focus:border-brand-teal outline-none transition">
+<option value="dog">🐕 Cachorro (Cão)</option>
+<option value="cat">🐈 Gato (Felino)</option>
+<option value="bird">🦜 Pássaro / Silvestre</option>
+<option value="exotic">🐇 Coelho / Roedor</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">2. O que ele precisa?</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl py-3 px-3.5 focus:ring-2 focus:ring-brand-teal focus:border-brand-teal outline-none transition">
+<option value="geral">Pronto Atendimento / Sintomas Gerais</option>
+<option value="derma">Dermatologia &amp; Coceira / Alergias</option>
+<option value="nutri">Nutrologia &amp; Dieta Personalizada</option>
+<option value="comportamento">Ansiedade &amp; Comportamento Pet</option>
+<option value="cardio">Cardiologia &amp; Exames</option>
+<option value="receita">Renovação de Receita / Exames</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">3. Quando prefere?</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl py-3 px-3.5 focus:ring-2 focus:ring-brand-teal focus:border-brand-teal outline-none transition">
+<option value="now">⚡ Plantão Imediato (Agora)</option>
+<option value="today">Hoje no próximo horário</option>
+<option value="tomorrow">Amanhã com especialista</option>
+<option value="schedule">Escolher data na agenda</option>
+</select>
+</div>
+<div class="flex items-end">
+<button class="w-full custom-gradient-cta hover:opacity-95 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 flex items-center justify-center gap-2 text-sm sm:text-base" type="submit">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<span>Conectar Agora</span>
+</button>
+</div>
+</form>
+</div>
+</section>
+<!-- END: FastTriageWidget -->
+<!-- BEGIN: TrustStatsStrip -->
+<section class="mt-14 bg-brand-deep text-white py-12 border-y border-brand-teal/20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center divide-y lg:divide-y-0 lg:divide-x divide-white/10">
+<div class="pt-4 lg:pt-0">
+<p class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-lightGreen font-display">
+          +18.500
+        </p>
+<p class="text-sm text-slate-300 font-medium mt-1">Teleconsultas Realizadas</p>
+<span class="text-xs text-brand-teal font-semibold">Em todo o Brasil</span>
+</div>
+<div class="pt-4 lg:pt-0">
+<p class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-lightGreen font-display">
+          99.4%
+        </p>
+<p class="text-sm text-slate-300 font-medium mt-1">Satisfação dos Tutores</p>
+<span class="text-xs text-brand-teal font-semibold">Índice NPS de Excelência</span>
+</div>
+<div class="pt-4 lg:pt-0">
+<p class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-lightGreen font-display">
+          24 / 7
+        </p>
+<p class="text-sm text-slate-300 font-medium mt-1">Plantão Clínico Ativo</p>
+<span class="text-xs text-brand-teal font-semibold">Sempre que seu pet precisar</span>
+</div>
+<div class="pt-4 lg:pt-0">
+<p class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-lightGreen font-display">
+          100%
+        </p>
+<p class="text-sm text-slate-300 font-medium mt-1">Médicos com CRMV Ativo</p>
+<span class="text-xs text-brand-teal font-semibold">Auditoria contínua de registros</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: TrustStatsStrip -->
+<!-- BEGIN: HowItWorks -->
+<section class="py-20 bg-white" id="como-funciona">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<span class="text-brand-primary font-bold text-xs uppercase tracking-wider bg-brand-ice px-3.5 py-1.5 rounded-full border border-brand-primary/20">
+        Praticidade Sem Estresse para o Animal
+      </span>
+<h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-deep mt-3">
+        Como funciona a Tele Veterinária na DrVets?
+      </h2>
+<p class="text-slate-600 text-base sm:text-lg mt-3">
+        Cuidado humanizado e profissional sem precisar colocar o seu pet em caixas de transporte ou enfrentar trânsito e salas de espera lotadas.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="bg-[#F9FBFC] rounded-2xl p-6 border border-slate-200/80 shadow-sm relative group hover:border-brand-teal/50 hover:shadow-md transition">
+<div class="w-12 h-12 rounded-xl bg-blue-100 text-brand-primary flex items-center justify-center font-bold text-lg mb-5 group-hover:scale-110 transition">
+          01
+        </div>
+<h3 class="text-lg font-bold text-brand-deep mb-2">Escolha o Especialista</h3>
+<p class="text-slate-600 text-sm leading-relaxed">
+          Selecione por especialidade médica ou acione direto o plantão 24h para atendimento imediato.
+        </p>
+<span class="mt-4 block text-xs font-semibold text-brand-primary">Triagem prévia inclusa →</span>
+</div>
+<div class="bg-[#F9FBFC] rounded-2xl p-6 border border-slate-200/80 shadow-sm relative group hover:border-brand-teal/50 hover:shadow-md transition">
+<div class="w-12 h-12 rounded-xl bg-emerald-100 text-brand-emerald flex items-center justify-center font-bold text-lg mb-5 group-hover:scale-110 transition">
+          02
+        </div>
+<h3 class="text-lg font-bold text-brand-deep mb-2">Vídeo HD Seguro</h3>
+<p class="text-slate-600 text-sm leading-relaxed">
+          Conecte-se pelo celular ou notebook em sala criptografada. Mostre o comportamento, lesões e sinais do pet.
+        </p>
+<span class="mt-4 block text-xs font-semibold text-brand-emerald">Sem precisar instalar apps →</span>
+</div>
+<div class="bg-[#F9FBFC] rounded-2xl p-6 border border-slate-200/80 shadow-sm relative group hover:border-brand-teal/50 hover:shadow-md transition">
+<div class="w-12 h-12 rounded-xl bg-cyan-100 text-brand-cyan flex items-center justify-center font-bold text-lg mb-5 group-hover:scale-110 transition">
+          03
+        </div>
+<h3 class="text-lg font-bold text-brand-deep mb-2">Prescrição ICP-Brasil</h3>
+<p class="text-slate-600 text-sm leading-relaxed">
+          Receba receitas digitais certificadas por WhatsApp e e-mail com QR Code aceito em farmácias de todo o Brasil.
+        </p>
+<span class="mt-4 block text-xs font-semibold text-teal-600">Assinatura digital válida →</span>
+</div>
+<div class="bg-[#F9FBFC] rounded-2xl p-6 border border-slate-200/80 shadow-sm relative group hover:border-brand-teal/50 hover:shadow-md transition">
+<div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg mb-5 group-hover:scale-110 transition">
+          04
+        </div>
+<h3 class="text-lg font-bold text-brand-deep mb-2">Prontuário &amp; Suporte</h3>
+<p class="text-slate-600 text-sm leading-relaxed">
+          Acompanhe o histórico do pet, instruções pós-consulta, receitas anteriores e agendamento de retorno.
+        </p>
+<span class="mt-4 block text-xs font-semibold text-purple-600">Histórico vitalício do pet →</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HowItWorks -->
+<!-- BEGIN: SpecialistsCatalogWithPhotos -->
+<section class="py-20 bg-slate-50 border-t border-slate-200/80" id="especialistas">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+<div>
+<span class="text-brand-emerald font-bold text-xs uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+          Corpo Clínico Credenciado
+        </span>
+<h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-deep mt-2">
+          Veterinários Disponíveis para Consulta
+        </h2>
+<p class="text-slate-600 text-base mt-1">Médicos-veterinários com CRMV ativo, avaliações reais e atendimento humanizado</p>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3">
+<span class="text-xs font-semibold text-slate-500">Filtrar por:</span>
+<button class="text-xs bg-white border border-slate-200 font-bold px-3 py-1.5 rounded-lg text-brand-navy hover:bg-slate-50">Todos</button>
+<button class="text-xs bg-emerald-50 border border-emerald-300 font-bold px-3 py-1.5 rounded-lg text-emerald-800">Online Agora</button>
+</div>
+</div>
+<!-- Doctor Cards Grid with Photos -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dra. Juliana Mendes" class="w-18 h-18 w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5IG9XZKGpTUlztIjOZ1ror9GyGWu9opjwqv45gHBZpf_ZsD1qPope1s62l0nOe-_q5Od3OLOB2rz7miWG-YYK9pgdeNooQ4GKloiFuYdfrjeanNWTFkmy-mE4gXy0_OcQAYDdHpxHZB4gPhBHDq0Xt9V76kDMKizlKr31YpLuvjEJqEhoV89Xyvmv5eyhQeabKfGOb60fBFUWkkDOZjNTE9EBgaD_eLxE3Pz9pA_d"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Plantão Online Agora
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 4.9 <span class="text-slate-400 font-normal text-[10px]">(342)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dra. Juliana Mendes</h3>
+<p class="text-xs text-slate-500">CRMV-SP 42.189 • Clínica Geral</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Pronto Atendimento</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Cães e Gatos</span>
+<span class="text-[11px] bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded-md">Triagem Aguda</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Especialista em pronto socorro e diagnósticos rápidos de vômitos, tosse, indisposição e ingestão acidental.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Consulta Online</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 89,90</span>
+</div>
+<a class="custom-gradient-cta text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow hover:opacity-95 transition" href="#triage-box">
+            Consultar Agora
+          </a>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dr. Ricardo Antunes" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEe11Ur6Q4JbaYm3YH96CQKq6_VTjaGiI7Km_qGyCbwBPCVT3-PAEeHLDVGS7WvaJjskY2xLNLV_QkIi8HZWJXjyayMvp7yQRCxjlwNEnIGV72P9BATO41MgKLd3AIdhJi5axXK3snvl6WBrp7EVrKX97Dy3glBuuJ7w0Q9Lkhx4_VjnvtnnAB0aHdATEMeKtnzRF-RWz84VvD9e7xBT10_UWK8fD2eXkbVupB3dIZ"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                  Próximo às 14:30
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 5.0 <span class="text-slate-400 font-normal text-[10px]">(518)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dr. Ricardo Antunes</h3>
+<p class="text-xs text-slate-500">CRMV-RJ 28.940 • Dermatologia</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-amber-50 text-amber-800 font-medium px-2 py-0.5 rounded-md">Dermatite Atópica</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Alergias &amp; Coceira</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Otites Crônicas</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Mestre em Dermatologia Comparada pela USP. Diagnóstico de infecções fúngicas, queda de pelo e citologia prévia.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Especialidade</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 139,00</span>
+</div>
+<a class="bg-brand-ice hover:bg-brand-primary hover:text-white text-brand-primary text-xs font-bold px-4 py-2.5 rounded-xl transition" href="#triage-box">
+            Ver Agenda
+          </a>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dra. Letícia Carvalho" class="w-16 h-16 rounded-2xl object-cover border-2 border-purple-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAckIJ2-KzAHU_mJER0y29xkiqqN0gpzGpP90Cf6WCDf-5wL8qmHpnf_ll0uwEQMGH0dfGfcw0tyS3VLjgGsSDmcO-pw427OXIQChHZ68Vlijwi3ZNk7MmJYpnx6Hl-TdAngW8IUMalcD52bviVAPyoPzOH5ooZ_4KwzCXk9xPKaW5bgjKilxjGeWjmY4v5h-MVHRD8xdUlawiwrYa-FJYld4HY63nEXugkxogtmtbp"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                  Online Agora
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 4.9 <span class="text-slate-400 font-normal text-[10px]">(274)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dra. Letícia Carvalho</h3>
+<p class="text-xs text-slate-500">CRMV-MG 31.752 • Medicina Felina</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-purple-50 text-purple-800 font-medium px-2 py-0.5 rounded-md">Cat Friendly Certified</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Renal Felino</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">FIV / FeLV</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Atendimento sem estresse para gatos que odeiam sair de casa. Manejo comportamental e doenças do trato urinário.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Especialidade Felina</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 139,00</span>
+</div>
+<a class="custom-gradient-cta text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow hover:opacity-95 transition" href="#triage-box">
+            Consultar Agora
+          </a>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dr. Marcos Vinicius" class="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYQZxJlg-bGPNKjv_6eJlDAwDh5oIpyF3JiBnKxsR13YgQuOLI4zd1ir4aJCW4fn5a8g2Rzw6rMlQcFP_z5uPrrrJtNQ9SkcUuFso62BNnfHSjVcIZKcL2uhaV6IZc9o5KWqn9eAaht7-6v7GL9K7PfAp6SirphPdioGu87S6hKTXPNr2htLE_qNYKMZVvfPs2PJyEPEB4S9CvmVuSejKGJ3UpBeZK11I4dZlkEOm8"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                  Próximo às 16:00
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 4.9 <span class="text-slate-400 font-normal text-[10px]">(195)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dr. Marcos Vinicius</h3>
+<p class="text-xs text-slate-500">CRMV-PR 19.804 • Nutrologia Animal</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-green-50 text-green-800 font-medium px-2 py-0.5 rounded-md">Alimentação Natural</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Controle de Peso</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Suplementação</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Prescrição de dietas personalizadas para pets obesos, com sensibilidade alimentar ou idosos com cardiopatia.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Consulta Nutrológica</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 159,00</span>
+</div>
+<a class="bg-brand-ice hover:bg-brand-primary hover:text-white text-brand-primary text-xs font-bold px-4 py-2.5 rounded-xl transition" href="#triage-box">
+            Ver Agenda
+          </a>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dra. Beatriz Fontana" class="w-16 h-16 rounded-2xl object-cover border-2 border-rose-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCMpM2evksWMHSnytC1IZDg9uzfsQimWK_93Lv1RbFtnwILU96dFljYU38qDEjykqsFeJP3CBGiLewkAA_3QkreGUpbp97m3BcwOkMpOYyqu-GhytlfAG0GgpCByIgCffkpKYh9OMVLV4-M_gvARKGX7jstb-IciAH2vWS0_2Rfn9VpRGs5SoZ1ftsQpyUxAZOIUlxHQxUVdaBL47ZOFp9OmAAzWcKj0aSYY37CBJG"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                  Online Agora
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 5.0 <span class="text-slate-400 font-normal text-[10px]">(403)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dra. Beatriz Fontana</h3>
+<p class="text-xs text-slate-500">CRMV-RS 22.451 • Cardiologia</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-rose-50 text-rose-800 font-medium px-2 py-0.5 rounded-md">Tosse Cardíaca</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Pets Idosos</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Ajuste de Doses</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Monitoramento de sopros, arritmias e orientação imediata para animais que cansam rápido em passeios.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Consulta Cardiológica</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 165,00</span>
+</div>
+<a class="custom-gradient-cta text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow hover:opacity-95 transition" href="#triage-box">
+            Consultar Agora
+          </a>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="flex items-start gap-4 mb-4">
+<div class="relative">
+<img alt="Dr. Fernando Neves" class="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-400 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHZyj75gUNPvCF2QjCMVywX6X_FLPJreM4FkOYGGSH8aW8OFszRvDRU5KSPFzBqLDxJ-gw2BsbjCF7MJivbi1W32mplrJTc_D_igpRbC_s9gSQEWnZBZkDhgGv7iuOMCMWH_6AeniDlw5d9-UeXeuphSKsmF0QnQEWtC86wZSSjKH6dhgRrE_O3tOgaoIRM1UYaDJ0txyvTjTd9cOWVcLTp99UV18YQDqVFxQ98Ppv"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+                  Hoje às 17:30
+                </span>
+<span class="text-xs font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 4.8 <span class="text-slate-400 font-normal text-[10px]">(182)</span>
+</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep mt-1 group-hover:text-brand-primary transition">Dr. Fernando Neves</h3>
+<p class="text-xs text-slate-500">CRMV-SC 14.309 • Comportamento</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 mb-3">
+<span class="text-[11px] bg-indigo-50 text-indigo-800 font-medium px-2 py-0.5 rounded-md">Ansiedade Separação</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Medo de Barulhos</span>
+<span class="text-[11px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">Agressividade Leve</span>
+</div>
+<p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+            Terapia comportamental positiva com análise do ambiente residencial em vídeo para resolução de hábitos destrutivos.
+          </p>
+</div>
+<div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 block">Consulta Comportamental</span>
+<span class="text-lg font-extrabold text-brand-deep">R$ 149,00</span>
+</div>
+<a class="bg-brand-ice hover:bg-brand-primary hover:text-white text-brand-primary text-xs font-bold px-4 py-2.5 rounded-xl transition" href="#triage-box">
+            Ver Agenda
+          </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SpecialistsCatalogWithPhotos -->
+<!-- BEGIN: SectionPetShopsAndClinics -->
+<section class="py-20 bg-white relative overflow-hidden" id="parceiros">
+<div class="absolute -right-20 top-10 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="bg-gradient-to-br from-[#10344A] via-[#153B50] to-[#0A2333] rounded-3xl p-8 sm:p-12 lg:p-16 text-white shadow-2xl border border-white/10">
+<div class="max-w-3xl mb-12">
+<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">storefront</span>
+          Parceria B2B &amp; Varejo Pet
+        </span>
+<h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mt-3 leading-tight">
+          Seu Pet Shop conectado à Telemedicina DrVets
+        </h2>
+<p class="text-slate-300 text-base sm:text-lg mt-3 leading-relaxed">
+          Transforme sua loja física em um ponto de pronto atendimento com suporte veterinário 24 horas. Ganhe comissões recorrentes em cada consulta e direcione a compra de remédios para o seu balcão.
+        </p>
+</div>
+<!-- 3-Step Interactive Partnership Flow -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+<div class="w-10 h-10 rounded-xl bg-emerald-400/20 text-emerald-300 flex items-center justify-center font-bold text-lg mb-4">
+            1
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Credenciamento Rápido</h3>
+<p class="text-xs text-slate-300 leading-relaxed">
+            Cadastre seu CNPJ gratuitamente em 5 minutos. Fornecemos display de balcão e material de comunicação oficial.
+          </p>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+<div class="w-10 h-10 rounded-xl bg-cyan-400/20 text-brand-cyan flex items-center justify-center font-bold text-lg mb-4">
+            2
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">QR Code &amp; Totem na Loja</h3>
+<p class="text-xs text-slate-300 leading-relaxed">
+            Seu cliente aponta o celular para o QR Code no balcão e abre a teleconsulta na hora com um veterinário DrVets.
+          </p>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-emerald-400/50 transition">
+<div class="w-10 h-10 rounded-xl bg-blue-400/20 text-blue-300 flex items-center justify-center font-bold text-lg mb-4">
+            3
+          </div>
+<h3 class="text-lg font-bold text-white mb-2">Comissões + Venda do Remédio</h3>
+<p class="text-xs text-slate-300 leading-relaxed">
+            Receba comissão líquida por consulta e venda imediatamente os medicamentos e produtos receitados na sua farmácia.
+          </p>
+</div>
+</div>
+<!-- Partner Advantages Callout Bar -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10 mb-10 text-xs sm:text-sm">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+<span>Prescrição direcionada para sua loja</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+<span>Aumento de até 35% no ticket médio</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+<span>Dashboard financeiro com saques semanais</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<a class="custom-gradient-cta text-white font-bold px-8 py-3.5 rounded-full shadow-lg hover:scale-105 transition duration-200 text-sm sm:text-base flex items-center gap-2" href="#cadastro-parceiro">
+<span>Quero ser um Pet Shop Parceiro DrVets</span>
+<span class="text-lg">→</span>
+</a>
+<a class="bg-white/15 hover:bg-white/20 text-white font-semibold px-6 py-3.5 rounded-full border border-white/20 text-sm transition" href="#simular-ganhos">
+          Simular Faturamento Mensal
+        </a>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionPetShopsAndClinics -->
+<!-- BEGIN: SectionDrVetAds -->
+<section class="py-20 bg-[#F5F8FA] border-t border-slate-200/80" id="drvets-ads">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-6 space-y-6">
+<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-brand-primary text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">campaign</span>
+          Ecossistema DrVets Ads (B2B)
+        </span>
+<h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-deep leading-tight">
+          Conecte sua marca a milhares de tutores e veterinários qualificados
+        </h2>
+<p class="text-slate-600 text-base leading-relaxed">
+          DrVets Ads é a primeira rede de mídia digital integrada ao momento de consulta e cuidado do pet. Entregue soluções no exato instante em que o tutor busca tratamento, rações especiais e bem-estar.
+        </p>
+<div class="space-y-4 pt-2">
+<div class="flex items-start gap-3">
+<div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl mt-0.5">
+<span class="material-symbols-outlined text-[20px]">target</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-brand-deep">Segmentação Clínica Contextual</h3>
+<p class="text-xs text-slate-500">Exiba seu produto para perfis específicos: pets com dermatite, obesidade, animais idosos ou filhotes em vacinação.</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 bg-blue-100 text-brand-primary rounded-xl mt-0.5">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-brand-deep">Formatos Nativos e Éticos</h3>
+<p class="text-xs text-slate-500">Anúncios integrados à tela de resumo pós-consulta e sugestões de farmácia sem interferir na decisão do médico.</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 bg-cyan-100 text-teal-700 rounded-xl mt-0.5">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-brand-deep">Dashboard de ROI em Tempo Real</h3>
+<p class="text-xs text-slate-500">Métricas completas de alcance, conversão em farmácias parceiras e cliques com total transparência.</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-4 pt-4">
+<a class="bg-brand-deep hover:bg-brand-navy text-white font-bold px-7 py-3 rounded-full text-sm shadow transition duration-200 flex items-center gap-2" href="#anunciar">
+<span>Anunciar no DrVets Ads</span>
+<span>→</span>
+</a>
+<a class="text-xs font-bold text-brand-primary hover:text-brand-deep flex items-center gap-1" href="#midia-kit">
+            Baixar Mídia Kit 2026 (PDF)
+          </a>
+</div>
+</div>
+<!-- Preview Mockup Card for Ads Analytics -->
+<div class="lg:col-span-6">
+<div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/90 relative">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-teal text-white flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-xl">analytics</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-slate-800">Painel do Anunciante Pet</h4>
+<p class="text-[11px] text-slate-400">Campanha Ativa: Ração Hipoalergênica &amp; Suplementos</p>
+</div>
+</div>
+<span class="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-full border border-emerald-200">
+              CTR Médio 8.4%
+            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="text-xs text-slate-400 block">Tutores Impactados</span>
+<span class="text-2xl font-extrabold text-brand-deep">142.800</span>
+<span class="text-[10px] text-emerald-600 font-semibold">↑ +24% este mês</span>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<span class="text-xs text-slate-400 block">Conversões em Pet Shops</span>
+<span class="text-2xl font-extrabold text-brand-deep">12.430</span>
+<span class="text-[10px] text-emerald-600 font-semibold">Ticket Médio R$ 184</span>
+</div>
+</div>
+<!-- Sample Ad Placement Preview -->
+<div class="p-4 rounded-2xl border border-dashed border-emerald-300 bg-emerald-50/40">
+<div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-2">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-brand-teal">ad_units</span>
+                Formato Patrocinado em Pós-Consulta (Exemplo)
+              </span>
+<span class="text-emerald-700">Verificado</span>
+</div>
+<div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
+<div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center text-xl">
+                🦴
+              </div>
+<div class="flex-1">
+<p class="text-xs font-bold text-slate-800">Linha Dermato Care Premium</p>
+<p class="text-[11px] text-slate-500">Cupom de 20% OFF para a primeira compra com retirada local.</p>
+</div>
+<span class="text-xs font-bold text-brand-primary bg-blue-50 px-3 py-1.5 rounded-lg">Ver Oferta</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionDrVetAds -->
+<!-- BEGIN: SectionVeterinarianCockpit -->
+<section class="py-20 bg-white border-t border-slate-200/80" id="consultorio-vet">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<span class="text-brand-primary font-bold text-xs uppercase tracking-wider bg-brand-ice px-3.5 py-1.5 rounded-full border border-brand-primary/20">
+        Empoderamento Médico-Veterinário
+      </span>
+<h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-deep mt-3">
+        Tenha seu Consultório Veterinário Virtual Exclusivo na DrVets
+      </h2>
+<p class="text-slate-600 text-base sm:text-lg mt-3">
+        Tudo o que você precisa para clinicar online com autonomia, segurança jurídica e receita previsível. Atenda de casa ou expanda a capacidade do seu consultório físico.
+      </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+<!-- Left Features List -->
+<div class="lg:col-span-5 space-y-5">
+<div class="p-4 rounded-2xl border border-slate-200/80 hover:border-brand-teal hover:bg-slate-50/50 transition duration-200">
+<div class="flex items-center gap-3 mb-1.5">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">video_camera_front</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep">Sala de Teleconsulta HD Integrada</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed pl-11">
+            Conexão sem latência com criptografia ponta a ponta e sala de espera automática para organizar seus pacientes.
+          </p>
+</div>
+<div class="p-4 rounded-2xl border border-slate-200/80 hover:border-brand-teal hover:bg-slate-50/50 transition duration-200">
+<div class="flex items-center gap-3 mb-1.5">
+<div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep">Prontuário Cloud &amp; Histórico Clínico</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed pl-11">
+            Anamnese estruturada com upload de exames laboratoriais, fotos e linha do tempo de evolução do paciente.
+          </p>
+</div>
+<div class="p-4 rounded-2xl border border-slate-200/80 hover:border-brand-teal hover:bg-slate-50/50 transition duration-200">
+<div class="flex items-center gap-3 mb-1.5">
+<div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep">Prescrição ICP-Brasil Automática</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed pl-11">
+            Emita receitas simples e de controle especial com assinatura eletrônica oficial, enviadas por WhatsApp e SMS ao tutor.
+          </p>
+</div>
+<div class="p-4 rounded-2xl border border-slate-200/80 hover:border-brand-teal hover:bg-slate-50/50 transition duration-200">
+<div class="flex items-center gap-3 mb-1.5">
+<div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+</div>
+<h3 class="text-base font-bold text-brand-deep">Gestão Financeira &amp; Honorários Livres</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed pl-11">
+            Defina o valor da sua consulta e receba os pagamentos diretamente na sua conta bancária sem riscos de inadimplência.
+          </p>
+</div>
+<div class="pt-3">
+<a class="custom-gradient-cta text-white font-bold px-7 py-3.5 rounded-full shadow-md hover:scale-105 transition duration-200 text-sm flex items-center justify-center gap-2" href="#cadastrar-crmv">
+<span>Abrir meu Consultório Virtual na DrVets</span>
+<span>→</span>
+</a>
+</div>
+</div>
+<!-- Right Visual Telehealth Cockpit Preview -->
+<div class="lg:col-span-7">
+<div class="bg-gradient-to-tr from-[#123145] to-[#1A4560] rounded-3xl p-5 sm:p-7 shadow-2xl border border-slate-700 text-white relative">
+<div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4 text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-red-500"></span>
+<span class="w-3 h-3 rounded-full bg-amber-500"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+<span class="font-mono text-slate-300 ml-2 text-[11px]">drvets.com.br/cockpit/dra-camila</span>
+</div>
+<span class="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-semibold text-[11px] border border-emerald-400/30">
+              CRMV-SP Ativo • Conexão Criptografada
+            </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- Video Box -->
+<div class="md:col-span-7 bg-slate-900 rounded-2xl overflow-hidden relative border border-white/10 min-h-[220px]">
+<img alt="Vídeo chamada com paciente Theo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1E_wFpZWtYwC_T_gdVcUmYcHoKEPmZvL4tTADuVNNBB6Kc9JFQK-Fri5-8TDURppsXyUUR7ZFdF-3BAwdFsca9KMUNpVPute7Dqck1k8RRuUK_MTY950PWZ8w4kAHZVsW6Qc49EliMlqUmDH13g174YZ86gldFfSHv7Uzeb1ucPwjFfLNNxOATlGDN7k69oxP7vqxRviHcPZ3wr96zMXXv9dRlCX6wYGrwCjxSFTI"/>
+<div class="absolute top-2.5 left-2.5 bg-brand-deep/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+<span>EM ATENDIMENTO • Theo (Golden)</span>
+</div>
+<!-- Doctor small PIP -->
+<div class="absolute bottom-2.5 right-2.5 w-20 h-24 rounded-xl overflow-hidden border-2 border-emerald-400 shadow-md">
+<img alt="Dra. Camila em atendimento" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQQMW8zZQHRnck5kHM2WeewRkFQqAHOzh9zFlfGxdg2yqFz_l_09tsGnSeZuKzADeX_THRnt09qW3kzo2WmU73TaagO190jMd9CPM9tiqpembmnXj0GMpz7agSXV0KKiYn9mQnh8_4gm6K1zNXDZvfPM3fagwBzaaVyb_MFuVzJIVY-VG8llNREjgLOqCVXfh1uOLRXU-VjeoIhtMj7xre7DFjCNjdJZ8PYCZ-5PLp"/>
+</div>
+</div>
+<!-- Side Consultation Notes & Prescriber -->
+<div class="md:col-span-5 bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex flex-col justify-between text-xs">
+<div class="space-y-2.5">
+<div class="flex items-center justify-between pb-2 border-b border-white/10">
+<span class="font-bold text-white">Prontuário Ativo</span>
+<span class="text-emerald-400 font-bold">ICP-Brasil ✓</span>
+</div>
+<div class="text-[11px] text-slate-300 space-y-1">
+<p><strong class="text-white">Tutor:</strong> Carlos Eduardo</p>
+<p><strong class="text-white">Queixa:</strong> Coceira intensa dorso e orelha</p>
+<p><strong class="text-white">Diagnóstico:</strong> Hipersensibilidade alimentar</p>
+</div>
+<div class="bg-black/30 p-2.5 rounded-xl border border-white/10 space-y-1 text-[11px]">
+<p class="font-bold text-cyan-300">Receita Gerada:</p>
+<p class="text-slate-300">• Apoquel 16mg - 1 cp/dia (14 dias)</p>
+<p class="text-slate-300">• Loção Otológica Calmante</p>
+</div>
+</div>
+<button class="w-full mt-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span>Assinar e Enviar Receita</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionVeterinarianCockpit -->
+<!-- BEGIN: SecurityLegalSection -->
+<section class="py-16 bg-slate-50 border-y border-slate-200/70">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-gradient-to-br from-[#10344A] to-[#0A2333] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-teal/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-8 space-y-4">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold">
+<span class="material-symbols-outlined text-[15px]">verified_user</span>
+            Segurança e Rigor Técnico Resolução CFMV nº 1.465/2022
+          </div>
+<h2 class="text-2xl sm:text-3xl font-display font-bold leading-snug">
+            Telemedicina Veterinária Ética, Segura e Validada por Órgãos Oficiais
+          </h2>
+<p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Todos os profissionais cadastrados na DrVets passam por auditoria obrigatória de registro profissional no Conselho Regional de Medicina Veterinária (CRMV). Nossas prescrições contam com assinatura digital qualificada padrão ICP-Brasil, aceitas legalmente em farmácias humanas e veterinárias em todo o território nacional.
+          </p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+<div class="flex items-center gap-2">
+<span class="text-brand-lightGreen font-bold">✓</span>
+<span>Dados protegidos por LGPD</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-brand-lightGreen font-bold">✓</span>
+<span>Receituário com QR Code</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-brand-lightGreen font-bold">✓</span>
+<span>Salas de Vídeo Criptografadas</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col items-center justify-center p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 text-center">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-primary to-brand-teal flex items-center justify-center mb-4 shadow-lg text-white">
+<span class="material-symbols-outlined text-3xl">verified</span>
+</div>
+<h3 class="font-bold text-white text-base">Selo DrVets Autenticado</h3>
+<p class="text-xs text-slate-300 mt-1 mb-4">Verifique instantaneamente a credencial de qualquer veterinário antes do atendimento.</p>
+<a class="text-xs font-bold text-brand-cyan hover:underline" href="#consultar-crmv">
+            Consultar registro de veterinário →
+          </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SecurityLegalSection -->
+<!-- BEGIN: Testimonials -->
+<section class="py-20 bg-white" id="depoimentos">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-2xl mx-auto mb-14">
+<span class="text-brand-primary font-bold text-xs uppercase tracking-wider bg-brand-ice px-3 py-1 rounded-full">Histórias Reais</span>
+<h2 class="text-3xl font-display font-extrabold text-brand-deep mt-2">
+        O que dizem os tutores que usam a DrVets
+      </h2>
+<p class="text-slate-500 text-sm mt-2">
+        Milhares de cães, gatos e famílias atendidos com carinho no conforto do seu lar.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Review 1 -->
+<div class="bg-[#F9FBFC] p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+<div>
+<div class="flex text-amber-400 mb-3 text-sm">★★★★★</div>
+<p class="text-slate-700 text-sm italic leading-relaxed">
+            "Meu cachorro Pipoca começou a tossir e se engasgar tarde da noite de domingo. Em menos de 7 minutos eu estava em chamada com a Dra. Mariana. Ela me acalmou, identificou o quadro alérgico e mandou a receita pro meu celular. Salvou nossa noite!"
+          </p>
+</div>
+<div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-200/60">
+<img alt="Rodrigo F." class="w-11 h-11 rounded-full object-cover border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX0IUn4hoi5c5d6JfPfuSkr5cNxaoe3BLI59XXLTaMpE_BBxKjEEla92CpNSZgfFngXWRHWftCR-Ni6Owb0WmeZmXLQf4vt7wDswdYDp8LK8R5SpyVFEECvTbdyF7j9AhPNSTfmXQew7NPdvV62MuVkRqFdCAy5KvmlX9c2Rm1arHPi00FBXzOfbhkLgX-i6WCD1a9Un5uFJB6VlLaf_2NeBfaNsXSasaYRASWkgSy"/>
+<div>
+<p class="text-xs font-bold text-slate-800">Rodrigo F. &amp; Pipoca (Spitz)</p>
+<p class="text-[11px] text-slate-400">São Paulo, SP • Atendimento Plantão</p>
+</div>
+</div>
+</div>
+<!-- Review 2 -->
+<div class="bg-[#F9FBFC] p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+<div>
+<div class="flex text-amber-400 mb-3 text-sm">★★★★★</div>
+<p class="text-slate-700 text-sm italic leading-relaxed">
+            "Levar minha gata Mia ao veterinário sempre foi um trauma gigante: ela hiperventilava no carro. A teleconsulta da DrVets foi a melhor descoberta. O veterinário observou ela calma no sofá e resolveu o problema de pele com extrema delicadeza."
+          </p>
+</div>
+<div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-200/60">
+<img alt="Beatriz M." class="w-11 h-11 rounded-full object-cover border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzgWRAXl0rGkZwRCRGkgrnik-BCaQabOb5BC0Li8W4GcIAfMkG3nVj12cGtRRizogEhvKu8NdYjv5vx124X7I5ghC_Vs5Zh6AG_VwddbONHY-48wr7zFxZi71Q3A2kC5Q_Qr2OyHMu6ZHNNyrTgQDmRjY9f-BQsTeKoq71F4JBv549Kg_chXr_jExKx9Wk5tpSFHEavpEfsP4SzaFqJhaeTYJa2gZUWyCjAs9zMLJF"/>
+<div>
+<p class="text-xs font-bold text-slate-800">Beatriz M. &amp; Mia (Persa)</p>
+<p class="text-[11px] text-slate-400">Curitiba, PR • Medicina Felina</p>
+</div>
+</div>
+</div>
+<!-- Review 3 -->
+<div class="bg-[#F9FBFC] p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+<div>
+<div class="flex text-amber-400 mb-3 text-sm">★★★★★</div>
+<p class="text-slate-700 text-sm italic leading-relaxed">
+            "Sou médico humano e sei avaliar seriedade clínica. A plataforma DrVets é impecável: anamnese aprofundada, prontuário detalhado e prescrição digital aceita sem nenhum questionamento na drogaria."
+          </p>
+</div>
+<div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-200/60">
+<img alt="Dr. Gustavo A." class="w-11 h-11 rounded-full object-cover border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh89kihD4BzVf8ztNNzEiPpZ-bF5deapgg1xpCOU1Y9ZkemZBFm2JPSqrCsZBnuek7mgwtratc2Om5yiwXzOKpvkjfJ2ld_g7baPnuB-UMcHuvFdEE-6hjm8_6W5mjN1XL--bbkW_rrYuZrRaK_ZtuJtdgAvltD8NT4XJ_leeRkNRmaCktbV-7vCV5eHZKmq-thkahpZfyX3JQbOKAxz1iM2bPQglL7fuzDNGL18lL"/>
+<div>
+<p class="text-xs font-bold text-slate-800">Dr. Gustavo A. &amp; Bob (Golden)</p>
+<p class="text-[11px] text-slate-400">Belo Horizonte, MG • Nutrologia</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Testimonials -->
+<!-- BEGIN: BottomCtaBanner -->
+<section class="py-16 bg-slate-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="relative rounded-3xl bg-gradient-to-r from-brand-primary via-[#049CB7] to-brand-teal p-8 sm:p-14 text-white overflow-hidden shadow-2xl">
+<div class="relative z-10 max-w-2xl space-y-5">
+<span class="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-wider">
+          Seu pet sempre por perto
+        </span>
+<h2 class="text-3xl sm:text-4xl font-display font-extrabold leading-tight">
+          Não espere os sintomas piorarem. Fale com um veterinário agora mesmo.
+        </h2>
+<p class="text-white/90 text-sm sm:text-base leading-relaxed">
+          Tenha a tranquilidade de contar com assistência veterinária 24 horas por dia, 7 dias por semana, direto do seu smartphone ou computador.
+        </p>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="bg-white text-brand-deep hover:bg-slate-50 font-bold px-8 py-3.5 rounded-full shadow-lg transition duration-200 text-base flex items-center gap-2" href="#triage-box">
+<span class="material-symbols-outlined text-brand-primary text-xl">videocam</span>
+<span>Chamar Plantonista Agora</span>
+</a>
+<div class="text-xs text-white/90 flex items-center gap-2">
+<span>✓ Sem taxa de adesão</span>
+<span>•</span>
+<span>✓ Atendimento em minutos</span>
+</div>
+</div>
+</div>
+<!-- Subtle background paw decoration -->
+<div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+<svg class="w-96 h-96 fill-white" viewbox="0 0 24 24">
+<circle cx="5" cy="9" r="2.2"></circle>
+<circle cx="10" cy="5" r="2.2"></circle>
+<circle cx="15" cy="5" r="2.2"></circle>
+<circle cx="20" cy="9" r="2.2"></circle>
+<path d="M12 11c-3.3 0-6 2.2-6 5.5 0 2.2 1.8 3.5 3.5 3.5 1.5 0 2.2-.8 2.5-.8s1 .8 2.5.8c1.7 0 3.5-1.3 3.5-3.5 0-3.3-2.7-5.5-6-5.5z"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- END: BottomCtaBanner -->
+<!-- BEGIN: MainFooter -->
+<footer class="bg-brand-navy text-slate-300 pt-16 pb-12 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+<!-- Brand Info -->
+<div class="lg:col-span-2 space-y-4">
+<div class="bg-white p-2.5 rounded-2xl w-fit">
+<img alt="DrVets Tele Veterinária" class="h-12 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV9q5mcPTtwheB7x80hHZmK-gtZsoKpeMx75JTHUkmXV-bVeMZkfkewU_Jxpkx-G_SdoZcWskRJ-ROa50XRA9zChBtQ1V5oNy3nNkRLl18YzieG58IkUHlKdxQMzN8d3eH3seiHcnI7uiOi83Ovon9BmhC2XQNgIDvNdYfk2B30-xJfqCFMSRIurRWEnplf8ArhRiImPaYK14-p7dYAX4HRip8WwkhklILf0PAfPNTTZt8KGKO25tPYw"/>
+</div>
+<p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+          Plataforma pioneira em telemedicina e suporte veterinário digital. Conectamos tutores e pet shops aos melhores médicos-veterinários do Brasil com segurança técnica, ética e validação jurídica.
+        </p>
+<div class="text-xs text-brand-teal space-y-1">
+<p>✓ Conforme a Resolução CFMV nº 1.465/2022</p>
+<p>✓ Responsável Técnico Médico Veterinário: Dr. A. Silveira - CRMV-SP 38.412</p>
+</div>
+</div>
+<!-- Links: Tutores -->
+<div>
+<p class="text-white font-bold text-sm tracking-wider uppercase mb-4">Para Tutores</p>
+<ul class="space-y-2.5 text-sm">
+<li><a class="hover:text-white transition" href="#triage-box">Plantão Veterinário 24h</a></li>
+<li><a class="hover:text-white transition" href="#especialistas">Catálogo de Especialistas</a></li>
+<li><a class="hover:text-white transition" href="#como-funciona">Como Funciona a Consulta</a></li>
+<li><a class="hover:text-white transition" href="#parceiros">Pet Shops Credenciados</a></li>
+<li><a class="hover:text-white transition" href="#duvidas">Perguntas Frequentes</a></li>
+</ul>
+</div>
+<!-- Links: Profissionais & B2B -->
+<div>
+<p class="text-white font-bold text-sm tracking-wider uppercase mb-4">Para Profissionais</p>
+<ul class="space-y-2.5 text-sm">
+<li><a class="hover:text-white transition" href="#consultorio-vet">Consultório Virtual Veterinário</a></li>
+<li><a class="hover:text-white transition" href="#cadastrar-crmv">Cadastrar meu CRMV</a></li>
+<li><a class="hover:text-white transition" href="#parceiros">Seja um Pet Shop Parceiro</a></li>
+<li><a class="hover:text-white transition" href="#drvets-ads">DrVets Ads (Anunciantes)</a></li>
+<li><a class="hover:text-white transition" href="#prescricao">Assinatura Digital ICP-Brasil</a></li>
+</ul>
+</div>
+<!-- Links: Atendimento & Legal -->
+<div>
+<p class="text-white font-bold text-sm tracking-wider uppercase mb-4">Atendimento</p>
+<ul class="space-y-2.5 text-sm">
+<li class="flex items-center gap-2">
+<span class="text-brand-lightGreen">💬</span>
+<span>WhatsApp: (11) 98765-4321</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="text-brand-cyan">✉️</span>
+<span>contato@drvets.com.br</span>
+</li>
+<li class="pt-2"><a class="hover:text-white transition" href="#termos">Termos de Uso</a></li>
+<li><a class="hover:text-white transition" href="#privacidade">Política de Privacidade (LGPD)</a></li>
+<li><a class="hover:text-white transition" href="#seguranca">Segurança e Criptografia</a></li>
+</ul>
+</div>
+</div>
+<!-- Copyright Notice -->
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+<p>© 2026 DrVets Tele Veterinária Ltda. CNPJ: 45.892.120/0001-90. Todos os direitos reservados.</p>
+<div class="flex items-center gap-4">
+<span>Seu pet sempre por perto ❤️</span>
+<span>•</span>
+<span>Brasil</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>
