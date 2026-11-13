@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#cbe6fc","tertiary-fixed":"#72f8e0","inverse-surface":"#183344","secondary-fixed":"#c7e7ff","outline":"#6d7a75","surface-bright":"#f6faff","on-primary-fixed":"#002019","error":"#ba1a1a","primary":"#006b57","surface-container-high":"#d4ebff","surface-container-low":"#ebf5ff","inverse-on-surface":"#e5f2ff","surface-container":"#dff0ff","secondary-container":"#c0e4ff","on-primary-fixed-variant":"#005141","inverse-primary":"#5ddbbb","error-container":"#ffdad6","on-secondary-container":"#44677d","on-surface-variant":"#3d4945","primary-container":"#13a88a","on-primary-container":"#003529","on-tertiary-fixed-variant":"#005046","on-tertiary":"#ffffff","tertiary-fixed-dim":"#52dbc5","tertiary-container":"#00a894","secondary-fixed-dim":"#a7cbe5","on-surface":"#001e2e","on-secondary":"#ffffff","surface-dim":"#c2def4","background":"#f6faff","on-secondary-fixed-variant":"#274a60","surface-tint":"#006b57","on-error-container":"#93000a","secondary":"#406279","on-tertiary-container":"#00352d","on-tertiary-fixed":"#00201b","surface":"#f6faff","on-background":"#001e2e","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-variant":"#cbe6fc","tertiary":"#006b5d","on-secondary-fixed":"#001e2e","primary-fixed":"#7cf8d6","on-primary":"#ffffff","outline-variant":"#bccac3","primary-fixed-dim":"#5ddbbb"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","margin-mobile":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","gutter-mobile":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter":"1.5rem","margin":"2rem"},"fontFamily":{"body-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},"fontSize":{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 flex items-center px-space-lg gap-space-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-2xl">medical_services</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">B2B</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Portal de Anunciantes</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-xl bg-surface-container-low flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-xl">verified</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Parceiro Credenciado</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[170px]">PetLove Farma &amp; Clin</span></div></div></div><nav class="flex-1 px-space-md py-space-sm space-y-1 overflow-y-auto" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span class="font-label-lg text-label-lg">Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="anuncios-e-campanhas" href="#"><span class="material-symbols-outlined text-xl">campaign</span><span class="font-label-lg text-label-lg">Anúncios &amp; Campanhas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="receitas-e-pedidos" href="#"><span class="material-symbols-outlined text-xl">receipt_long</span><span class="font-label-lg text-label-lg">Receitas &amp; Pedidos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="exames-e-laudos" href="#"><span class="material-symbols-outlined text-xl">vital_signs</span><span class="font-label-lg text-label-lg">Exames &amp; Laudos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="catalogo-e-precos" href="#"><span class="material-symbols-outlined text-xl">inventory_2</span><span class="font-label-lg text-label-lg">Catálogo &amp; Preços</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="faturamento-e-repasses" href="#"><span class="material-symbols-outlined text-xl">payments</span><span class="font-label-lg text-label-lg">Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="configuracoes-de-integracao-erp" href="#"><span class="material-symbols-outlined text-xl">sync_alt</span><span class="font-label-lg text-label-lg">Configurações de Integração ERP</span></a></nav><div class="p-space-md mt-auto"><div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-lg">support_agent</span><span class="font-label-md text-label-md font-semibold">Canal B2B DrVet</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Suporte técnico e homologação de APIs clínicas.</p><a class="mt-space-xs inline-flex items-center gap-1 font-label-md text-label-md text-primary font-semibold hover:underline" data-path="suporte-b2b" href="#">Abrir Chamado <span class="material-symbols-outlined text-sm">arrow_forward</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-bright/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-sm rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-primary text-xl">store</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Unidade Operacional</span><div class="flex items-center gap-space-xs cursor-pointer"><span class="font-label-lg text-label-lg text-on-surface font-semibold">PetLove Farma - CD Moema</span><span class="material-symbols-outlined text-on-surface-variant text-base">expand_more</span></div></div></div><div class="hidden xl:flex items-center gap-space-xs px-space-md py-space-sm rounded-full bg-surface-container-low text-primary"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-md text-label-md font-semibold">Destaque Patrocinado Ativo</span><span class="font-label-sm text-label-sm px-space-xs rounded bg-surface-container-highest text-on-secondary-fixed">Válido até 31/12</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><button aria-label="Notificações em tempo real" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-bright"></span></div><div class="h-8 w-px bg-outline-variant/40"></div><div class="flex items-center gap-space-sm"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-lg text-label-lg text-on-surface font-bold leading-tight">Dr. Marcelo Antunes</span><span class="font-label-sm text-label-sm text-on-surface-variant">Gestor Comercial &amp; Credenciamento</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Section: Header, Wallet & Quick Stats -->
+<section class="p-space-lg xl:p-space-xl flex flex-col gap-space-lg bg-surface">
+<!-- Header Level & Direct Actions -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs max-w-3xl">
+<div class="flex items-center gap-space-xs text-primary font-label-md">
+<span class="material-symbols-outlined text-lg">campaign</span>
+<span class="tracking-wide uppercase font-bold text-label-sm">Painel de Mídia Programática &amp; Geolocalizada</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-extrabold">
+          Gestão de Campanhas &amp; Banners • <span class="text-primary">DrVet Ads</span>
+</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Crie, ative e mensure o desempenho de campanhas patrocinadas, banners no app do tutor e impulsionamento de receitas médicas no seu raio de entrega prioritário.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-secondary-container font-label-lg text-label-lg shadow-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span>
+<span>Histórico &amp; Recibos PJ</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all shadow-primary-container/20 hover:scale-[1.02]" id="btn-novo-anuncio">
+<span class="material-symbols-outlined text-xl">add_circle</span>
+<span class="font-bold">Novo Banner / Campanha +</span>
+</button>
+</div>
+</div>
+<!-- Dual Balance & Budget Cards Container -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Balance Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary-fixed/30 pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
+<span>Saldo Pré-Pago de Anúncios</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Disponível</span>
+</div>
+<div class="mt-space-sm mb-space-xs">
+<div class="font-headline-lg text-headline-lg font-extrabold text-on-surface tracking-tight">R$ 1.350,00</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Consumo médio diário: R$ 105,00/dia</span>
+</div>
+<div class="pt-space-sm flex items-center justify-between">
+<button class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline">
+<span class="material-symbols-outlined text-base">bolt</span> Recarga Imediata (PIX / Boleto PJ)
+          </button>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Taxa 0%</span>
+</div>
+</div>
+<!-- Monthly Cap Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-secondary text-xl">calendar_month</span>
+<span>Investimento Mensal Programado</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Limite Teto</span>
+</div>
+<div class="mt-space-sm mb-space-xs">
+<div class="font-headline-lg text-headline-lg font-extrabold text-on-surface tracking-tight">R$ 800,00<span class="font-label-md text-label-md text-on-surface-variant font-normal"> /mês</span></div>
+<div class="w-full bg-surface-container-high h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 61.25%;"></div>
+</div>
+</div>
+<div class="pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Utilizado: R$ 490,00 (61.2%)</span>
+<span class="font-semibold text-primary">Resta R$ 310,00</span>
+</div>
+</div>
+<!-- Live Auction & Impression Speed Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-tertiary-container text-xl">sensors</span>
+<span>Leilão no Raio de Entrega</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary font-bold">100% Conectado</span>
+</div>
+</div>
+<div class="my-space-xs flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">near_me</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">São Paulo - Zonas Sul &amp; Oeste</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Prioridade alta em Moema, Pinheiros e Itaim</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>Share de Impressões: <strong>44%</strong></span>
+<span class="text-tertiary font-bold">Posição #1 na Região</span>
+</div>
+</div>
+</div>
+<!-- Media Performance KPIs Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+<!-- Metric 1: CTR -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">CTR Médio (Cliques/Visualizações)</span>
+<span class="material-symbols-outlined text-primary text-xl">ads_click</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl font-bold text-on-surface">4.8%</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold">+2.7% vs Benchmark</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Benchmark do setor veterinário: 2.1%</p>
+</div>
+<!-- Metric 2: CPC -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">CPC Médio Ponderado</span>
+<span class="material-symbols-outlined text-secondary text-xl">monetization_on</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl font-bold text-on-surface">R$ 0,42</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-bold">-18% vs Mês Ant.</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Custo por clique hipersegmentado</p>
+</div>
+<!-- Metric 3: Impressions -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">Impressões Ativas Hoje</span>
+<span class="material-symbols-outlined text-primary text-xl">visibility</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl font-bold text-on-surface">18.420</span>
+<span class="font-label-sm text-label-sm text-primary font-bold inline-flex items-center">
+<span class="material-symbols-outlined text-sm">trending_up</span> Tempo Real
+          </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Exibições validadas no app tutor</p>
+</div>
+<!-- Metric 4: Attributed GMV & ROAS -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">GMV Direto (Receitas/Pedidos)</span>
+<span class="material-symbols-outlined text-tertiary text-xl">shopping_cart_checkout</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl font-bold text-primary">R$ 42.680</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold">ROAS 31.6x</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Receitas convertidas com checkout DrVet</p>
+</div>
+</div>
+</section>
+<!-- Campaigns Center: Navigation, Filters and Data Table -->
+<section class="p-space-lg xl:p-space-xl flex flex-col gap-space-md">
+<!-- Filter Bar and Campaign Status Tabs -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-lowest p-space-sm rounded-xl shadow-sm">
+<!-- Tabs -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 lg:pb-0">
+<button class="px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md font-bold whitespace-nowrap shadow-sm">
+          Todas as Campanhas (6)
+        </button>
+<button class="px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md font-medium whitespace-nowrap transition-colors">
+          Em Veiculação (3)
+        </button>
+<button class="px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md font-medium whitespace-nowrap transition-colors">
+          Pausadas (1)
+        </button>
+<button class="px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md font-medium whitespace-nowrap transition-colors">
+          Agendadas (1)
+        </button>
+<button class="px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md font-medium whitespace-nowrap transition-colors flex items-center gap-1">
+<span>Em Análise</span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</button>
+</div>
+<!-- Search & Date Filter -->
+<div class="flex items-center gap-space-sm">
+<div class="relative flex items-center min-w-[240px]">
+<span class="material-symbols-outlined absolute left-3 text-outline text-lg">search</span>
+<input class="w-full pl-9 pr-space-md py-2 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-container" placeholder="Buscar por nome ou formato..." type="text"/>
+</div>
+<div class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">date_range</span>
+<span>Últimos 30 dias</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Campaigns Main Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-space-md px-space-md font-semibold">Campanha &amp; Formato</th>
+<th class="py-space-md px-space-md font-semibold">Segmentação &amp; Alcance</th>
+<th class="py-space-md px-space-md font-semibold">Orçamento &amp; Consumo</th>
+<th class="py-space-md px-space-md font-semibold">Métricas (Impressões / CTR)</th>
+<th class="py-space-md px-space-md font-semibold">Conversão (GMV)</th>
+<th class="py-space-md px-space-md font-semibold">Status</th>
+<th class="py-space-md px-space-md font-semibold text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-md text-body-md text-on-surface">
+<!-- Row 1: Primavera Antipulgas -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean promotional banner mockup showing veterinary tick and flea treatment packaging with a playful golden retriever in a modern clinic aesthetic, soft teal gradient background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHlB5c9bOsNu2Q6G2_8TtrowQysDeP0w9fRlczzGMXQE6k--4VVk3KGdgt7oXNWncr9AE5PSGewBIBc3hHmyjpU3aGGTdeSpEAk6mGYCoEBeUyDpJHmYU9P9GYlln0XG7o6hGsvGUEXOiwXaUtfBDUDJCL6NE0KNI5cgJLAjFbcJAf3K6mfLnEF_4YlxBFbDlbZ04IGPs3fV4ml7_-AgrWLHHHwUG3sj8zDrmKwHPW"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface truncate">Campanha Primavera Antipulgas &amp; Carrapatos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-sm">view_carousel</span> Banner Carrossel Topo (Home App)
+                    </span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
+<span class="material-symbols-outlined text-primary text-sm">radar</span> Raio 25km (Moema, Jardins, Pinheiros)
+                  </div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tutores de cães &gt; 5kg • Perfil Prevenção</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 min-w-[130px]">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="font-bold">R$ 35,00/dia</span>
+<span class="text-on-surface-variant">R$ 490 / R$ 1.050</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 46%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="font-label-md text-label-md font-bold text-on-surface">48.200 Impressões</div>
+<div class="font-body-sm text-body-sm text-primary flex items-center gap-1">
+<span>2.410 Cliques</span>
+<span class="px-1 py-0.2 rounded bg-primary-fixed text-on-primary-fixed font-bold text-label-sm">5.0% CTR</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">284 pedidos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">R$ 18.460 em vendas</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-dim after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">Ativa</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Editar Campanha">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Duplicar">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Relatório de Desempenho">
+<span class="material-symbols-outlined text-lg">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Destaque Pós-Teleconsulta -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A veterinary digital prescription card illustration with certified seal and pharmaceutical dropper bottle, calm clinical background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCinSriIHfPx-eu6jUXrUAtyxHHh2BpQ3z58KoA-QrK7hcAHJvAsnCn3vHTreSDj8GV5tKHqmixXufpGYd6BejjlNF2k68UNXtdQB9n0yOcQwAODMev4Hb7VyBsKpQPgJtbF5Aljs29IW9xW5oImTX6IO9AfM9rKNKWYgiZlW1-6DD2NGXXOQbVAv9M8bmL9VSA2miUU8nv4zl0nNQDHNIWLrLKg4SKks-xQADNYtM4"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface truncate">Destaque Pós-Teleconsulta: 15% OFF Manipulados</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1 mt-0.5 font-semibold">
+<span class="material-symbols-outlined text-sm">verified_user</span> Checkout Receita Digital ICP-Brasil
+                    </span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span> Prescrição médica em até 60 min
+                  </div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pacientes com fórmula prescrita pós-consulta</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 min-w-[130px]">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="font-bold">R$ 50,00/dia</span>
+<span class="text-on-surface-variant">R$ 820 / R$ 1.500</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 55%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="font-label-md text-label-md font-bold text-on-surface">12.600 Impressões</div>
+<div class="font-body-sm text-body-sm text-primary flex items-center gap-1">
+<span>3.240 Cliques</span>
+<span class="px-1 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold text-label-sm">25.7% CTR 🔥</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-primary">642 pedidos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">R$ 24.220 em vendas</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-dim after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">Ativa</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Editar Campanha">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Duplicar">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Relatório Detalhado">
+<span class="material-symbols-outlined text-lg">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Plantão Noturno & Urgência -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-inverse-surface flex items-center justify-center text-primary-fixed shrink-0">
+<span class="material-symbols-outlined text-2xl">notifications_active</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface truncate">Plantão Noturno &amp; Urgência Pet (22h às 06h)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-sm">send_to_mobile</span> Push Notif. Geolocalizado + Banner
+                    </span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
+<span class="material-symbols-outlined text-primary text-sm">share_location</span> Raio 15km • Plantão 24h Express
+                  </div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tutores com busca por Pronto Atendimento</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 min-w-[130px]">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="font-bold">R$ 20,00/dia</span>
+<span class="text-on-surface-variant">R$ 260 / R$ 600</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 43%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="font-label-md text-label-md font-bold text-on-surface">8.450 Impressões</div>
+<div class="font-body-sm text-body-sm text-primary flex items-center gap-1">
+<span>812 Cliques</span>
+<span class="px-1 py-0.2 rounded bg-surface-container-highest text-on-secondary-fixed font-bold text-label-sm">9.6% CTR</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">94 atendimentos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Taxa Entrega &lt; 40 min</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-dim after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">Ativa</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Editar Campanha">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Duplicar">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Relatório Detalhado">
+<span class="material-symbols-outlined text-lg">analytics</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Cuidados Articulares Pipoca & Raças Grandes -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A packaging bottle of omega 3 supplements for senior dogs with a calm labrador retriever resting peacefully, modern soft teal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAepzNiQTCCpTO61LpXxgFHGjE2b96Y2ktkRUfOYWbLZYTt4vC4Zxz4JzO86MCgNc9w0uLaiYQriZTg9pvGkwhyNJOiyzMYsLTRve_lYAPZTaYMQSL4lcBxmy0kwE-OZteaOLfWUM0ZYmUVBbF7Emmrj2COh5C4OVew5oL_P1ThjzFa4o1ovUlM4rrkBHsgU-PgL_AhdN-94b1rtnmUKdAlt_0_1oW5CCA347DCPR3e"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface truncate">Cuidados Articulares &amp; Raças Grandes (Ômega-3)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-sm">grid_view</span> Banner Nativo no Feed
+                    </span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
+<span class="material-symbols-outlined text-outline text-sm">tune</span> Cães idosos (7+ anos) &gt; 20kg
+                  </div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Toda Região Metropolitana SP</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 min-w-[130px]">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="font-bold">R$ 40,00/dia</span>
+<span class="text-on-surface-variant">Agendada</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-fixed-dim h-full rounded-full" style="width: 0%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant italic">Inicia em 01/Nov</span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant">-</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">Agendada</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Editar Campanha">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Duplicar">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Promoção Vermífugos Filhotes -->
+<tr class="hover:bg-surface-container-low/50 transition-colors opacity-75">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-outline shrink-0">
+<span class="material-symbols-outlined text-2xl">medication</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface truncate">Promoção Vermífugos Filhotes</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-sm">ad_units</span> Intersticial Pós-Agendamento
+                    </span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
+<span class="material-symbols-outlined text-outline text-sm">pets</span> Cães e Gatos até 12 meses
+                  </div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Raio 10km da Unidade</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 min-w-[130px]">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="font-bold">R$ 15,00/dia</span>
+<span class="text-on-surface-variant">R$ 210 gastos</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<div class="font-label-md text-label-md font-semibold text-on-surface">5.120 Impressões</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">210 Cliques (4.1%)</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">38 pedidos</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-dim after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">Pausada</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Reativar Campanha">
+<span class="material-symbols-outlined text-lg">play_arrow</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors hover:text-on-surface" title="Excluir ou Arquivar">
+<span class="material-symbols-outlined text-lg">archive</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Bottom Summary & Pagination -->
+<div class="p-space-md bg-surface-container-lowest border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-on-surface-variant">
+<span>Mostrando 5 de 6 campanhas cadastradas neste CD</span>
+<div class="flex items-center gap-space-xs">
+<button class="px-3 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high">Anterior</button>
+<span class="px-3 py-1 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-bold">1</span>
+<button class="px-3 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high">Próxima</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Creative Studio & Mockup Builder -->
+<section class="p-space-lg xl:p-space-xl flex flex-col gap-space-lg">
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Formatos de Mídia DrVet</span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
+        Formatos de Alto Impacto para Farmácias &amp; Laboratórios
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+        Conecte seus produtos no momento exato da decisão de compra do tutor: durante a teleconsulta, no recebimento da prescrição digital e na timeline diária do app.
+      </p>
+</div>
+<!-- 4 Formats Grid with Mobile Mockup Side Preview -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Formats Cards (Left 7 Cols) -->
+<div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Format A -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high group-hover:bg-primary-container group-hover:text-on-primary text-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-2xl">view_carousel</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">Home Feed</span>
+</div>
+<div class="mt-space-md">
+<h3 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">A) Banner na Home do Tutor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Destaque carrossel 300x120px exibido imediatamente quando o tutor abre o app DrVet no seu raio de cobertura.
+            </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>CTR Médio: <strong>4.2%</strong></span>
+<span class="text-primary font-bold inline-flex items-center gap-1">Criar <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+</div>
+</div>
+<!-- Format B (Recommended Star) -->
+<div class="p-space-md rounded-xl bg-primary-container/10 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary font-label-sm text-label-sm px-2 py-0.5 rounded-bl-lg font-bold">
+            Mais Rentável
+          </div>
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+</div>
+</div>
+<div class="mt-space-md">
+<h3 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">B) Checkout Receita ICP-Brasil</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Botão de compra prioritária em 1-clique exibido quando o veterinário prescreve produtos que constam no seu catálogo.
+            </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>CTR Médio: <strong class="text-primary">25.7%</strong></span>
+<span class="text-primary font-bold inline-flex items-center gap-1">Criar <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+</div>
+</div>
+<!-- Format C -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high group-hover:bg-primary-container group-hover:text-on-primary text-secondary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-2xl">notifications_active</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">Push Notif</span>
+</div>
+<div class="mt-space-md">
+<h3 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">C) Push Geolocalizado</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Disparo segmentado por raio de km ou CEP no horário de delivery programado, promoções de vacinação ou plantão 24h.
+            </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>Abertura: <strong>14.8%</strong></span>
+<span class="text-primary font-bold inline-flex items-center gap-1">Criar <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+</div>
+</div>
+<!-- Format D -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between group">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high group-hover:bg-primary-container group-hover:text-on-primary text-tertiary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-2xl">video_camera_front</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">Sala de Espera</span>
+</div>
+<div class="mt-space-md">
+<h3 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">D) Sala de Espera Telecare</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Banner de alta retenção exibido enquanto o tutor aguarda a conexão do médico veterinário para a consulta virtual.
+            </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>Atenção: <strong>&gt; 90s</strong></span>
+<span class="text-primary font-bold inline-flex items-center gap-1">Criar <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+</div>
+</div>
+</div>
+<!-- Live Mockup Simulation Panel (Right 5 Cols) -->
+<div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">smartphone</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Preview em Tempo Real (App do Tutor)</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">iOS / Android</span>
+</div>
+<!-- Phone Shell Container -->
+<div class="mx-auto w-full max-w-[320px] bg-inverse-surface p-2.5 rounded-[2.5rem] shadow-xl">
+<div class="w-full bg-background rounded-[2rem] overflow-hidden flex flex-col text-on-surface">
+<!-- Simulated Mobile App Top Header -->
+<div class="bg-surface-container-lowest px-4 py-3 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-sm">pets</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface leading-none">Pipoca (Golden)</span>
+<span class="text-[10px] text-on-surface-variant">Moema, SP</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-lg">notifications</span>
+</div>
+<!-- Mobile App Content Area with Ads Preview -->
+<div class="p-3 flex flex-col gap-3">
+<!-- Banner Carrossel Preview -->
+<div class="relative rounded-xl overflow-hidden shadow-sm bg-gradient-to-r from-primary to-primary-container text-on-primary p-3 flex flex-col justify-between min-h-[110px]">
+<div class="flex items-center justify-between">
+<span class="text-[10px] bg-white/20 backdrop-blur-md px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Patrocinado • PetLove</span>
+<span class="material-symbols-outlined text-xs">open_in_new</span>
+</div>
+<div>
+<div class="text-xs font-extrabold leading-tight">Campanha Antipulgas</div>
+<div class="text-[10px] opacity-90">Entrega rápida em até 2 horas em Moema. 15% OFF com cupom DRVET.</div>
+</div>
+<div class="self-end mt-1">
+<span class="text-[10px] bg-white text-primary font-bold px-2 py-0.5 rounded-full shadow-sm">Comprar Agora</span>
+</div>
+</div>
+<!-- Prescribed Digital Card Preview -->
+<div class="bg-surface-container-lowest p-2.5 rounded-xl shadow-sm flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="text-[10px] font-bold">Receita DrVet Emitida</span>
+</div>
+<span class="text-[9px] text-on-surface-variant">Há 12 min</span>
+</div>
+<div class="text-[11px] font-semibold text-on-surface">Amoxicilina + Clavulanato 250mg</div>
+<!-- Sponsored Pharmacy Offer Injection -->
+<div class="p-2 rounded-lg bg-surface-container-low flex items-center justify-between gap-1">
+<div class="flex items-center gap-1.5 min-w-0">
+<div class="w-6 h-6 rounded bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xs">local_pharmacy</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-[10px] font-bold text-on-surface truncate">PetLove Farma CD Moema</span>
+<span class="text-[9px] text-primary font-semibold">Entrega Hoje • R$ 68,90</span>
+</div>
+</div>
+<button class="px-2 py-1 rounded-full bg-primary-container text-on-primary text-[10px] font-bold shrink-0">
+                    Pedir
+                  </button>
+</div>
+</div>
+<!-- Mock feed cards -->
+<div class="bg-surface-container-lowest p-2.5 rounded-xl shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-base">vaccines</span>
+<span class="text-[10px] text-on-surface-variant font-medium">Carteira de vacinação em dia</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+<span>Validação automática de dimensões &amp; resolução Retina</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Regulatory Compliance Banner (CFMV & Ethics) -->
+<footer class="p-space-lg xl:p-space-xl">
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-2xl">policy</span>
+</div>
+<div class="flex flex-col gap-0.5 max-w-3xl">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Conformidade Ética &amp; Regulatória CFMV</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">Resolução 1.465/2022</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Em conformidade com a Resolução CFMV nº 1.465/2022 e Código de Ética Veterinária: proibida a veiculação de medicamentos controlados de uso restrito sem receita médica obrigatória prévia. Todas as campanhas passam por auditoria farmacêutica automatizada em até 2 horas.
+          </p>
+</div>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md font-semibold whitespace-nowrap">
+        Manual Ético CFMV
+      </button>
+</div>
+</footer>
+</div>
+<script>
+  // Simple quick interactivity for status toggles and visual feedback
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const row = e.target.closest('tr');
+        const badge = row ? row.querySelector('td:nth-last-child(2) span') : null;
+        if (badge) {
+          if (e.target.checked) {
+            badge.textContent = 'Ativa';
+            badge.className = 'px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold';
+            if (row) row.classList.remove('opacity-75');
+          } else {
+            badge.textContent = 'Pausada';
+            badge.className = 'px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold';
+            if (row) row.classList.add('opacity-75');
+          }
+        }
+      });
+    });
+
+    const newBtn = document.getElementById('btn-novo-anuncio');
+    if (newBtn) {
+      newBtn.addEventListener('click', () => {
+        alert('Abrindo o assistente de criação rápida de campanhas DrVet Ads.');
+      });
+    }
+  });
+</script></main></div></body></html>

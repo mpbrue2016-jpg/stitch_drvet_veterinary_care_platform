@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"background":"#f6faff","on-secondary":"#ffffff","on-background":"#001e2e","surface-container-lowest":"#ffffff","tertiary":"#006b5d","primary-fixed":"#7cf8d6","error-container":"#ffdad6","error":"#ba1a1a","on-primary-container":"#003529","secondary-fixed-dim":"#a7cbe5","surface":"#f6faff","on-tertiary-container":"#00352d","on-surface-variant":"#3d4945","on-tertiary":"#ffffff","surface-container-low":"#ebf5ff","inverse-surface":"#183344","surface-dim":"#c2def4","secondary-container":"#c0e4ff","secondary-fixed":"#c7e7ff","tertiary-fixed":"#72f8e0","surface-container-highest":"#cbe6fc","secondary":"#406279","surface-container":"#dff0ff","inverse-on-surface":"#e5f2ff","on-primary":"#ffffff","tertiary-container":"#00a894","on-secondary-fixed":"#001e2e","on-primary-fixed-variant":"#005141","surface-bright":"#f6faff","outline-variant":"#bccac3","outline":"#6d7a75","on-secondary-container":"#44677d","inverse-primary":"#5ddbbb","primary-fixed-dim":"#5ddbbb","on-secondary-fixed-variant":"#274a60","on-error":"#ffffff","primary":"#006b57","surface-container-high":"#d4ebff","on-tertiary-fixed":"#00201b","on-tertiary-fixed-variant":"#005046","surface-tint":"#006b57","on-primary-fixed":"#002019","tertiary-fixed-dim":"#52dbc5","on-surface":"#001e2e","on-error-container":"#93000a","primary-container":"#13a88a","surface-variant":"#cbe6fc"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin-mobile":"1rem","gutter":"1.5rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter-mobile":"1rem","space-md":"1rem","space-xl":"2.5rem","margin":"2rem","space-lg":"1.5rem"},"fontFamily":{"label-lg":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"]},"fontSize":{"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}]}}}};</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Sair ou minimizar consulta" class="w-11 h-11 shrink-0 flex items-center justify-center rounded-full bg-surface-container-high/60 text-on-surface hover:bg-surface-container-highest transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">close_fullscreen</span></button><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error/10 text-error font-label-sm text-label-sm"><span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>Ao Vivo - Sala 1</span><span class="hidden sm:inline font-headline-sm text-headline-sm text-on-surface truncate">Teleconsulta Ao Vivo</span></div><div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm"><span class="material-symbols-outlined text-primary text-[14px]">lock</span><span>Criptografado</span><span class="text-outline-variant">•</span><span class="material-symbols-outlined text-primary text-[14px]">hd</span><span>HD 60fps</span></div></div></div><div class="flex items-center gap-space-sm shrink-0"><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm"><span class="material-symbols-outlined text-[16px]">wifi</span><span class="font-label-sm text-label-sm">Excelente</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 bg-surface"><div class="flex flex-col w-full relative select-none pb-safe">
+<!-- In-Call Floating Status Header / Partnership Scrim -->
+<div class="px-gutter-mobile pt-space-xs pb-space-sm flex flex-col gap-space-xs z-20">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-ping"></span>
+<span class="w-2 h-2 rounded-full bg-primary -ml-3"></span>
+<span class="font-label-sm text-label-sm text-primary tracking-wide">AO VIVO</span>
+<span class="font-label-sm text-label-sm text-outline">•</span>
+<span class="font-label-md text-label-md text-on-surface tabular-nums" id="call-timer">04:18</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button aria-label="Alterar saída de áudio" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-secondary shadow-sm active:scale-95 transition-transform" id="toggle-audio-route">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+<span class="font-label-sm text-label-sm font-semibold">Viva-voz</span>
+</button>
+<button aria-label="Dados do Paciente" class="w-8 h-8 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform" id="toggle-pet-hud">
+<span class="material-symbols-outlined text-[18px] text-primary">pets</span>
+</button>
+</div>
+</div>
+<!-- Partner Banner / Voucher alert -->
+<div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-secondary-container/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[16px] shrink-0">storefront</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-secondary-container font-bold truncate">Pet Care Vila Mariana • Balcão</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container/80 truncate">Cupom VILAMARIANA-INVERNO2026 (-15%)</span>
+</div>
+</div>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-xs">
+        + R$ 30 Bônus
+      </span>
+</div>
+</div>
+<!-- Video Viewport Area (Simulated WebRTC Stage) -->
+<div class="relative w-full aspect-[4/5] max-h-[500px] overflow-hidden rounded-2xl shadow-md mx-auto bg-inverse-surface">
+<!-- Main Remote Stream (Veterinarian: Dra. Camila) -->
+<div class="w-full h-full bg-cover bg-center relative" data-alt="Close up professional portrait of Dra Camila smiling warmly wearing scrub uniform and clinical stethoscope in modern clean pet hospital office background with gentle bright daylight and soft focus medical monitor" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiZwH1_hAVgK1U1HOgskoEktaU8R_MnYMhROk35o4t-ISRhkCgYE1MbyyRwX0Kraw0LYlG2-NFR7_NUUfz-PFVTsvbblcQrJaZ9xrQm_K8AezdrYJZIW4JgRjowSWN5Atm0CHlcA1OrgNRWGKOtrAWz9v4hWTG4enXXzg-Eh1m54pIHSk97FzIlqPZfvv5vYIV2bEDhnQmoYtjT94PzOxMmV_tYaWgFw2agDEw439N')">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-inverse-surface/30 pointer-events-none"></div>
+<!-- Remote Stream Top Metadata -->
+<div class="absolute top-3 left-3 flex flex-col gap-1 z-10">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-inverse-surface/70 backdrop-blur-md text-inverse-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+<span class="font-label-md text-label-md font-bold">Dra. Camila Vasconcellos</span>
+<span class="font-label-sm text-label-sm text-primary-fixed font-semibold">CRMV-SP 38.912</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-inverse-surface/50 backdrop-blur-md text-inverse-on-surface/90 text-[11px] font-label-sm w-fit">
+<span class="material-symbols-outlined text-[13px] text-tertiary-fixed">verified</span>
+<span>Dermatologia &amp; Clínica Integrativa</span>
+</div>
+</div>
+<!-- Live WebRTC Quality indicator -->
+<div class="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-inverse-surface/60 backdrop-blur-md text-inverse-on-surface text-[11px] font-label-sm z-10">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span>
+<span class="font-semibold">HD 1080p</span>
+<span class="text-inverse-on-surface/50">|</span>
+<span>28ms</span>
+</div>
+<!-- Remote Audio Visualizer Wave (Active Talking Doctor) -->
+<div class="absolute bottom-4 left-3 flex items-center gap-2 z-10">
+<div class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-inverse-surface/75 backdrop-blur-md text-inverse-on-surface shadow-sm">
+<span class="material-symbols-outlined text-primary-fixed text-[16px]">mic</span>
+<div class="flex items-end gap-0.5 h-3 w-4">
+<span class="w-0.5 h-2 bg-primary-fixed rounded-full animate-bounce"></span>
+<span class="w-0.5 h-3 bg-primary-fixed rounded-full animate-bounce [animation-delay:150ms]"></span>
+<span class="w-0.5 h-1.5 bg-primary-fixed rounded-full animate-bounce [animation-delay:300ms]"></span>
+</div>
+<span class="font-label-sm text-label-sm ml-1 text-inverse-on-surface">Falando...</span>
+</div>
+</div>
+<!-- Local Inset Preview (Picture-in-Picture: Pipoca) -->
+<div class="absolute bottom-3 right-3 w-32 h-44 rounded-xl overflow-hidden shadow-xl z-20 transition-all duration-300">
+<div class="w-full h-full bg-cover bg-center relative" data-alt="Detailed warm lighting shot of Pipoca a sweet golden retriever dog sitting calm on living room rug showing left front paw clearly for clinical checkup" id="pip-video-feed" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC2J9IZbbsWiZdLf74fGqmcbkSaUx5OLbUMQBo9VnArCsM62zk6wAAbolrNGZ0UPJ0XxK1orLsfeMhUWgDDvuPhx32MtQbOIZ522DmRiwWbl_0ZRzeSnUACgiAUA0CCWfsTBgzno3KCjd01NM8qWjQE0DcbxOjxv6qkA1XwzxJl5auTRzPnUfMZrU5WUtTqgwn7LDO9_VHbMMGJVsSFIlE0XlssaZ6hCvrFEZypZ8-h')">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/75 via-transparent to-transparent"></div>
+<!-- PiP Mini Controls -->
+<div class="absolute top-1.5 right-1.5 flex gap-1">
+<button class="w-6 h-6 rounded-full bg-inverse-surface/80 text-inverse-on-surface flex items-center justify-center hover:bg-inverse-surface transition-colors" id="camera-flip-btn" title="Alternar Câmera Traseira/Frontal">
+<span class="material-symbols-outlined text-[13px]">flip_camera_ios</span>
+</button>
+<button class="w-6 h-6 rounded-full bg-inverse-surface/80 text-inverse-on-surface flex items-center justify-center hover:bg-inverse-surface transition-colors" id="torch-toggle-btn" title="Lanterna para Exame">
+<span class="material-symbols-outlined text-[13px]" id="torch-icon">flashlight_off</span>
+</button>
+</div>
+<!-- PiP Label -->
+<div class="absolute bottom-1.5 left-1.5 right-1.5 flex flex-col">
+<span class="font-label-sm text-label-sm text-inverse-on-surface font-bold leading-tight truncate">Pipoca</span>
+<div class="flex items-center gap-1 text-[9px] text-primary-fixed">
+<span class="w-1 h-1 rounded-full bg-primary-fixed"></span>
+<span class="font-semibold">Câmera Traseira</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Realtime Clinical Drawer & Triage Assistance Tabs -->
+<div class="mt-space-sm px-gutter-mobile flex flex-col gap-space-sm">
+<!-- Quick Clinical Status Bar / Urgent Direct Message -->
+<div class="p-3 rounded-xl bg-surface-container-low shadow-sm flex items-start gap-2.5">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-md text-label-md text-primary font-bold">Instrução da Dra. Camila</span>
+<span class="font-label-sm text-label-sm text-outline">Agora</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mt-0.5 leading-snug">
+          "Juliana, por favor aproxime um pouco mais a câmera da patinha esquerda dele. Notei leve eritema interdigital."
+        </p>
+</div>
+<button class="px-2.5 py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-xs shrink-0 self-center" onclick="document.getElementById('chat-modal').classList.remove('hidden')">
+        Responder
+      </button>
+</div>
+<!-- Tabbed Clinical Cards (Ficha Rápida & Prescrição Ativa) -->
+<div class="flex flex-col gap-2">
+<!-- Ficha Compacta do Pet -->
+<div class="bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[16px]">sound_detection_dog_barking</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">Pipoca Mendes</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Golden</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 anos • 28,4 kg • Macho não castrado</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold">
+            Prurido Atópico
+          </span>
+</div>
+<div class="grid grid-cols-3 gap-1.5 pt-1">
+<div class="p-2 rounded-lg bg-surface-container-low flex flex-col items-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Temperatura</span>
+<span class="font-label-md text-label-md text-on-surface font-bold mt-0.5">38.6 °C</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low flex flex-col items-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Alergia</span>
+<span class="font-label-md text-label-md text-error font-bold mt-0.5">Frango</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low flex flex-col items-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Conveniado</span>
+<span class="font-label-md text-label-md text-primary font-bold mt-0.5">DrVet Plus</span>
+</div>
+</div>
+</div>
+<!-- Prescrição Digital em Andamento -->
+<div class="bg-surface-container-lowest rounded-xl p-3 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/30 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Prescrição Digital &amp; Laudo</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">
+              Assinatura digital ICP-Brasil sendo emitida
+            </span>
+</div>
+</div>
+<button class="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-semibold active:opacity-90" id="open-rx-preview">
+<span>Ver Rascunho</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Regulatory Compliance Notice -->
+<div class="px-gutter-mobile mt-space-sm mb-space-md">
+<div class="flex items-center justify-center gap-1.5 py-1 text-center">
+<span class="material-symbols-outlined text-outline text-[14px]">shield</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">
+        Telemedicina Veterinária CFMV nº 1.465/2022 • Gravação Segura
+      </span>
+</div>
+</div>
+<!-- Sticky Bottom Ergonomic Telehealth HUD Dock -->
+<div class="sticky bottom-0 z-40 w-full px-gutter-mobile pb-3 pt-2 bg-surface/90 backdrop-blur-xl shadow-lg">
+<div class="max-w-md mx-auto flex items-center justify-between gap-2 px-3 py-2 rounded-full bg-surface-container-lowest shadow-md">
+<!-- Mic Toggle -->
+<button aria-label="Microfone Ligado" class="w-12 h-12 rounded-full flex flex-col items-center justify-center bg-surface-container-high text-on-surface active:scale-95 transition-transform" id="btn-toggle-mic">
+<span class="material-symbols-outlined text-[22px]" id="icon-mic">mic</span>
+<span class="text-[9px] font-label-sm mt-0.5">Mudo</span>
+</button>
+<!-- Video Toggle -->
+<button aria-label="Câmera Ligada" class="w-12 h-12 rounded-full flex flex-col items-center justify-center bg-surface-container-high text-on-surface active:scale-95 transition-transform" id="btn-toggle-cam">
+<span class="material-symbols-outlined text-[22px]" id="icon-cam">videocam</span>
+<span class="text-[9px] font-label-sm mt-0.5">Vídeo</span>
+</button>
+<!-- Flip Camera button -->
+<button aria-label="Alternar Câmera do Pet" class="w-12 h-12 rounded-full flex flex-col items-center justify-center bg-surface-container-high text-on-surface active:scale-95 transition-transform" id="btn-flip-stream">
+<span class="material-symbols-outlined text-[22px]">cameraswitch</span>
+<span class="text-[9px] font-label-sm mt-0.5">Inverter</span>
+</button>
+<!-- Chat Drawer Trigger -->
+<button aria-label="Abrir Chat de Apoio" class="w-12 h-12 rounded-full flex flex-col items-center justify-center bg-surface-container-high text-on-surface relative active:scale-95 transition-transform" id="btn-open-chat">
+<span class="material-symbols-outlined text-[22px]">forum</span>
+<span class="w-2.5 h-2.5 rounded-full bg-error absolute top-2 right-2 shadow-xs"></span>
+<span class="text-[9px] font-label-sm mt-0.5">Chat</span>
+</button>
+<!-- End Call Button (Emergency red action) -->
+<button aria-label="Encerrar Consulta" class="w-13 h-12 px-3 rounded-full flex items-center justify-center gap-1 bg-error text-on-error shadow-sm active:scale-95 transition-transform" id="btn-end-call">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">call_end</span>
+<span class="font-label-sm text-label-sm font-bold">Sair</span>
+</button>
+</div>
+</div>
+<!-- Modal: Live Chat Drawer -->
+<div class="hidden fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex flex-col justify-end" id="chat-modal">
+<div class="w-full max-w-lg mx-auto bg-surface rounded-t-2xl p-4 shadow-xl flex flex-col max-h-[663px]">
+<div class="flex items-center justify-between pb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">stethoscope</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Chat da Consulta</h3>
+<span class="font-label-sm text-label-sm text-primary">Dra. Camila Vasconcellos • CRMV-SP 38.912</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center" onclick="document.getElementById('chat-modal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-3 py-2 text-body-sm font-body-sm">
+<div class="flex gap-2">
+<div class="p-3 rounded-2xl rounded-tl-sm bg-surface-container-lowest shadow-xs max-w-[85%] text-on-surface">
+<span class="font-label-sm text-label-sm text-primary block mb-0.5">Dra. Camila</span>
+            Olá Juliana! Já estou visualizando o Pipoca com boa clareza. Me conte há quantos dias começou essa coceira.
+            <span class="block text-[10px] text-outline text-right mt-1">14:20</span>
+</div>
+</div>
+<div class="flex justify-end">
+<div class="p-3 rounded-2xl rounded-tr-sm bg-primary text-on-primary shadow-xs max-w-[85%]">
+            Doutora, começou há cerca de 3 dias, depois que voltamos de um passeio no parque. Ele não para de lamber a pata.
+            <span class="block text-[10px] text-primary-fixed text-right mt-1">14:21</span>
+</div>
+</div>
+<div class="flex gap-2">
+<div class="p-3 rounded-2xl rounded-tl-sm bg-surface-container-lowest shadow-xs max-w-[85%] text-on-surface">
+<span class="font-label-sm text-label-sm text-primary block mb-0.5">Dra. Camila</span>
+            Juliana, por favor aproxime um pouco mais a câmera da patinha esquerda dele. Notei leve eritema interdigital.
+            <span class="block text-[10px] text-outline text-right mt-1">14:22</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center gap-2">
+<input class="flex-1 px-4 py-2.5 rounded-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" id="chat-input" placeholder="Escreva uma mensagem ou envie foto..." type="text"/>
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm active:scale-95 transition-transform" id="send-chat-msg">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Prescrição & Encaminhamento Prévia -->
+<div class="hidden fixed inset-0 z-50 bg-inverse-surface/50 backdrop-blur-sm flex flex-col justify-end" id="rx-modal">
+<div class="w-full max-w-lg mx-auto bg-surface rounded-t-2xl p-5 shadow-xl flex flex-col max-h-[751px]">
+<div class="flex items-center justify-between pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">verified</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Rascunho de Prescrição</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">ICP-Brasil Veterinária Homologada</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center" onclick="document.getElementById('rx-modal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 overflow-y-auto py-2">
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary font-bold">1. Oclacitinib (Apoquel) 16mg</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Uso Oral</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">Administrar 1 comprimido a cada 12 horas durante 7 dias para alívio imediato do prurido e eritema cutâneo.</p>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary font-bold">2. Shampoo Clorexidina + Miconazol 2%</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Uso Tópico</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">Banho morno terapêutico na patinha a cada 3 dias, deixando agir por 10 minutos antes de enxaguar bem.</p>
+</div>
+<div class="p-3 rounded-xl bg-secondary-container/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-secondary-container text-[18px]">local_pharmacy</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container font-medium">
+            Disponível para entrega imediata na farmácia da Pet Care Vila Mariana com 15% OFF aplicado.
+          </span>
+</div>
+</div>
+<button class="mt-3 w-full py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-sm" onclick="document.getElementById('rx-modal').classList.add('hidden')">
+        Entendido • Voltar à Chamada
+      </button>
+</div>
+</div>
+<!-- Modal: Confirmation to End Call -->
+<div class="hidden fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center p-4" id="end-call-modal">
+<div class="w-full max-w-xs bg-surface rounded-2xl p-5 shadow-2xl flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[26px]">call_end</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Encerrar Consulta?</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
+        A receita digital e o comprovante do voucher Pet Care Vila Mariana serão enviados automaticamente no seu WhatsApp e DrVet App.
+      </p>
+<div class="flex flex-col gap-2 w-full mt-4">
+<button class="w-full py-2.5 rounded-full bg-error text-on-error font-label-lg text-label-lg font-bold shadow-sm" id="confirm-end-call">
+          Sim, Encerrar Agora
+        </button>
+<button class="w-full py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold" onclick="document.getElementById('end-call-modal').classList.add('hidden')">
+          Continuar na Consulta
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple Teleconsultation In-Room Interactive Logic
+  (function initTeleconsultation() {
+    // Timer counter simulation
+    let seconds = 258; // 04:18
+    const timerElem = document.getElementById('call-timer');
+    if (timerElem) {
+      setInterval(() => {
+        seconds++;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerElem.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // Mic Toggle State
+    let micMuted = false;
+    const btnMic = document.getElementById('btn-toggle-mic');
+    const iconMic = document.getElementById('icon-mic');
+    if (btnMic && iconMic) {
+      btnMic.addEventListener('click', () => {
+        micMuted = !micMuted;
+        if (micMuted) {
+          iconMic.textContent = 'mic_off';
+          btnMic.classList.remove('bg-surface-container-high', 'text-on-surface');
+          btnMic.classList.add('bg-error-container', 'text-error');
+        } else {
+          iconMic.textContent = 'mic';
+          btnMic.classList.add('bg-surface-container-high', 'text-on-surface');
+          btnMic.classList.remove('bg-error-container', 'text-error');
+        }
+      });
+    }
+
+    // Video Toggle State
+    let camOff = false;
+    const btnCam = document.getElementById('btn-toggle-cam');
+    const iconCam = document.getElementById('icon-cam');
+    if (btnCam && iconCam) {
+      btnCam.addEventListener('click', () => {
+        camOff = !camOff;
+        if (camOff) {
+          iconCam.textContent = 'videocam_off';
+          btnCam.classList.remove('bg-surface-container-high', 'text-on-surface');
+          btnCam.classList.add('bg-error-container', 'text-error');
+        } else {
+          iconCam.textContent = 'videocam';
+          btnCam.classList.add('bg-surface-container-high', 'text-on-surface');
+          btnCam.classList.remove('bg-error-container', 'text-error');
+        }
+      });
+    }
+
+    // Torch / Inspection Flashlight Toggle
+    let torchActive = false;
+    const btnTorch = document.getElementById('torch-toggle-btn');
+    const iconTorch = document.getElementById('torch-icon');
+    if (btnTorch && iconTorch) {
+      btnTorch.addEventListener('click', () => {
+        torchActive = !torchActive;
+        iconTorch.textContent = torchActive ? 'flashlight_on' : 'flashlight_off';
+        btnTorch.classList.toggle('text-primary-fixed', torchActive);
+      });
+    }
+
+    // Modal Triggering
+    const btnOpenChat = document.getElementById('btn-open-chat');
+    const chatModal = document.getElementById('chat-modal');
+    if (btnOpenChat && chatModal) {
+      btnOpenChat.addEventListener('click', () => {
+        chatModal.classList.remove('hidden');
+      });
+    }
+
+    const btnRx = document.getElementById('open-rx-preview');
+    const rxModal = document.getElementById('rx-modal');
+    if (btnRx && rxModal) {
+      btnRx.addEventListener('click', () => {
+        rxModal.classList.remove('hidden');
+      });
+    }
+
+    const btnEndCall = document.getElementById('btn-end-call');
+    const endModal = document.getElementById('end-call-modal');
+    if (btnEndCall && endModal) {
+      btnEndCall.addEventListener('click', () => {
+        endModal.classList.remove('hidden');
+      });
+    }
+
+    const confirmEnd = document.getElementById('confirm-end-call');
+    if (confirmEnd) {
+      confirmEnd.addEventListener('click', () => {
+        window.history.back();
+      });
+    }
+  })();
+</script></main></body></html>

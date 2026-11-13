@@ -1,0 +1,33 @@
+﻿# Configuracoes privadas e variaveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Chaves, certificados e credenciais
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+
+# Dependencias e arquivos gerados
+supabase/.temp/
+node_modules/
+.next/
+dist/
+build/
+coverage/
+out/
+*.log
+*.tsbuildinfo
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuracoes pessoais do editor
+.vscode/
+.idea/

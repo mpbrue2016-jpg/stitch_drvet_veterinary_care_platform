@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#002019", "on-surface-variant": "#3d4945", "on-tertiary-fixed-variant": "#005046", "primary-fixed-dim": "#5ddbbb", "secondary-fixed-dim": "#a7cbe5", "surface-variant": "#cbe6fc", "on-background": "#001e2e", "on-error-container": "#93000a", "outline": "#6d7a75", "inverse-primary": "#5ddbbb", "on-error": "#ffffff", "primary": "#006b57", "on-primary-container": "#003529", "secondary-fixed": "#c7e7ff", "surface-container-lowest": "#ffffff", "surface": "#f6faff", "on-secondary-fixed-variant": "#274a60", "tertiary-container": "#00a894", "surface-dim": "#c2def4", "on-tertiary-fixed": "#00201b", "on-primary": "#ffffff", "inverse-surface": "#183344", "background": "#f6faff", "surface-container-high": "#d4ebff", "surface-tint": "#006b57", "error": "#ba1a1a", "primary-container": "#13a88a", "primary-fixed": "#7cf8d6", "tertiary": "#006b5d", "on-secondary-fixed": "#001e2e", "surface-container": "#dff0ff", "tertiary-fixed-dim": "#52dbc5", "outline-variant": "#bccac3", "on-secondary-container": "#44677d", "on-tertiary-container": "#00352d", "error-container": "#ffdad6", "on-primary-fixed-variant": "#005141", "surface-bright": "#f6faff", "inverse-on-surface": "#e5f2ff", "tertiary-fixed": "#72f8e0", "on-tertiary": "#ffffff", "secondary-container": "#c0e4ff", "on-surface": "#001e2e", "surface-container-low": "#ebf5ff", "surface-container-highest": "#cbe6fc", "on-secondary": "#ffffff", "secondary": "#406279" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2.5rem" }, "fontFamily": { "headline-sm": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-20 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><span class="material-symbols-outlined text-[24px]">pets</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm tracking-tight text-primary">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm uppercase">Pro</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">Telemedicina Clínica</span></div></div></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Prática Médica</div><nav class="mt-space-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="painel-geral" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span>Início / Dashboard</a><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="agenda-consultas" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">calendar_clock</span>Agenda &amp; Consultas</div><span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">4 hoje</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="prontuarios-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">folder_shared</span>Prontuários &amp; Pacientes</a><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="teleconsulta-ao-vivo" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px] text-tertiary-container">videocam</span>Sala de Teleconsulta</div><span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="prescricao-icp-brasil" href="#"><span class="material-symbols-outlined text-[20px]">verified</span>Receitas &amp; ICP-Brasil</a></nav></div><div class="px-space-md pt-space-md"><div class="px-space-sm py-space-xs font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Gestão &amp; Sistema</div><nav class="mt-space-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="faturamento-repasses" href="#"><span class="material-symbols-outlined text-[20px]">payments</span>Faturamento &amp; Repasses</a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="configuracoes-integracoes" href="#"><span class="material-symbols-outlined text-[20px]">settings_ethernet</span>Conexão Supabase</a></nav></div></div><div class="p-space-md m-space-md rounded-xl bg-surface-container-lowest shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><div class="flex items-center justify-between mb-space-xs"><div class="flex items-center gap-space-xs text-primary font-label-sm text-label-sm font-bold"><span class="material-symbols-outlined text-[16px]">security</span>CRMV Ativo</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">SP 42.189</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Assinador digital ICP-Brasil pareado e certificado A1 pronto.</p></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md flex-1 max-w-xl"><div class="w-full flex items-center gap-space-sm px-space-md py-2 bg-surface-container-lowest rounded-full shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">search</span><input class="w-full bg-transparent border-0 focus:outline-none font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/70" placeholder="Buscar paciente, microchip, tutor ou CRMV..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-full bg-surface-container-lowest shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span><span class="font-label-sm text-label-sm text-primary font-bold">Supabase Realtime Conectado</span></div><button class="relative p-2 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button><div class="h-8 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/><div class="flex flex-col text-left"><div class="flex items-center gap-1"><span class="font-label-lg text-label-lg text-on-surface">Dra. Camila Vasconcellos</span><span class="material-symbols-outlined text-[16px] text-primary">verified</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">Médica Veterinária Geral &amp; Triage</span></div></div></div></header><main class="relative pt-20 w-full min-h-screen bg-background"><div class="flex flex-col w-full">
+<!-- Sub-Header Context & Breadcrumbs -->
+<section class="px-space-lg py-space-md bg-surface-container-low/60 border-b-0 backdrop-blur-sm">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<nav class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md flex-wrap">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">folder_shared</span> Prontuários
+        </a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Pacientes Caninos</a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<span class="font-bold text-primary flex items-center gap-1">
+          Pipoca <span class="text-on-surface-variant font-normal">#CAN-2022-7711</span>
+</span>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<span class="text-on-surface font-semibold">SOAP Consolidado &amp; Histórico</span>
+</nav>
+<div class="flex items-center gap-space-xs self-start sm:self-auto">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest shadow-sm text-on-tertiary-fixed-variant font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+<span>Supabase CDC Ativo</span>
+<span class="text-outline-variant">•</span>
+<span class="font-mono text-[10px] text-on-surface-variant">Sync 14:35:12 BRT</span>
+</div>
+<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-mono text-[10px]">SHA256: 7f8c...9a41</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Patient Identity Banner Card -->
+<section class="px-space-lg pt-space-lg pb-space-md">
+<div class="max-w-7xl mx-auto">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<!-- Subtle background tint glow -->
+<div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg relative z-10">
+<!-- Left: Avatar & Pet Profile Data -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="relative">
+<img class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-md" data-alt="Close-up portrait of a healthy Golden Retriever female named Pipoca, soft warm sunlight, alert and calm expression, glistening golden honey coat, clean clinical veterinary photography style with gentle depth of field, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABu0bKLJSqWwGXfCqEiEBjqTQqmNtSnpcFYUnljP0_ZpiY7U8baxMxBK6x49dizSaQl47_lqD16pUQNnXXYeJPmT0TdB4Nq7jwL3vREcjeP1rWTzYqfEmvWd0PoqXPllN3RMTMWCBhpTbMX8aJjletKEvjtVkKjM3Y7eM5pqj32uQlpQGpvIsTz9jP1ayqKgKLtySxRveL03IJAafDz-ogzzrHEHdGWP-smHhgfpZH"/>
+<span class="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex flex-wrap items-center gap-space-xs">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Pipoca</h1>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Golden Retriever</span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">female</span> Fêmea Castrada
+                </span>
+</div>
+<div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">cake</span> 4 anos e 2 meses
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">qr_code_2</span> Microchip: <span class="font-mono text-on-surface font-semibold">981.098.112.441.198</span>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span> Tutora: <span class="font-semibold text-on-surface">Juliana Mendes Santana</span> (CPF 284.***.***-09)
+                </span>
+</div>
+<div class="pt-1 flex flex-wrap items-center gap-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-bold">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                  Tratamento em Fase de Manutenção • Remissão Clínica Atópica
+                </div>
+<span class="text-on-surface-variant font-label-sm text-label-sm">WhatsApp +55 (11) 98721-4402 (Verificado)</span>
+</div>
+</div>
+</div>
+<!-- Right: Biometrics Metrics & Quick Vitals -->
+<div class="flex items-center gap-3 sm:gap-4 bg-surface-container-low/70 p-space-md rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Peso Aferido</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold">28,15</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">kg</span>
+</div>
+<div class="inline-flex items-center gap-1 text-[11px] font-bold text-tertiary-container mt-0.5">
+<span class="material-symbols-outlined text-[13px]">trending_down</span>
+<span>-250g (estável)</span>
+</div>
+</div>
+<div class="w-px h-12 bg-surface-container-high"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Escala PVAS</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-primary font-extrabold">2.8</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">/10</span>
+</div>
+<span class="text-[11px] font-semibold text-on-surface-variant mt-0.5">Prurido Leve/Normal</span>
+</div>
+<div class="w-px h-12 bg-surface-container-high"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">CRMV Resp.</span>
+<span class="font-label-md text-label-md font-bold text-on-surface mt-0.5">SP 42.189</span>
+<span class="text-[11px] text-on-surface-variant">Dra. Camila V.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2-Column Clinical Layout: 68% / 32% -->
+<section class="px-space-lg pb-24">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- MAIN CLINICAL COLUMN (Left - 8 cols / ~68%) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- 1. Positive Evolution Banner with Pruritus Sparkline -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Evolução Clínica de Sucesso</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Redução substancial do índice PVAS (Pruritus Visual Analog Scale) em 15 dias de indução</p>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Indução:</span>
+<span class="font-label-md text-label-md font-bold text-error line-through">8.5/10</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">arrow_forward</span>
+<span class="font-label-md text-label-md font-bold text-tertiary-container">2.8/10</span>
+</div>
+</div>
+<!-- PVAS Inline Data Visualization Curve -->
+<div class="bg-surface-container-low/50 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">Curva Diária de Intensidade do Prurido Podal &amp; Abdominal</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">-67% no escore total</span>
+</div>
+<div class="w-full h-28 relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 600 90">
+<defs>
+<lineargradient id="pvasGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#00a894" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#00a894" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid guide lines -->
+<line stroke="#d4ebff" stroke-dasharray="4,4" stroke-width="1" x1="0" x2="600" y1="18" y2="18"></line>
+<line stroke="#d4ebff" stroke-dasharray="4,4" stroke-width="1" x1="0" x2="600" y1="50" y2="50"></line>
+<line stroke="#d4ebff" stroke-width="1" x1="0" x2="600" y1="80" y2="80"></line>
+<!-- Area fill -->
+<path d="M 0 15 Q 80 18, 150 30 T 300 55 T 450 70 T 600 75 L 600 90 L 0 90 Z" fill="url(#pvasGradient)"></path>
+<!-- Stroke line -->
+<path d="M 0 15 Q 80 18, 150 30 T 300 55 T 450 70 T 600 75" fill="none" stroke="#00a894" stroke-linecap="round" stroke-width="3"></path>
+<!-- Points -->
+<circle cx="0" cy="15" fill="#ba1a1a" r="4.5"></circle>
+<circle cx="150" cy="30" fill="#006b57" r="3.5"></circle>
+<circle cx="300" cy="55" fill="#006b57" r="3.5"></circle>
+<circle cx="450" cy="70" fill="#006b57" r="3.5"></circle>
+<circle cx="600" cy="75" fill="#00a894" r="5"></circle>
+</svg>
+</div>
+<div class="flex justify-between items-center text-[11px] font-label-sm text-on-surface-variant pt-2 border-t-0">
+<span>Dia 01 (Indução 2x/dia • PVAS 8.5)</span>
+<span>Dia 05 (PVAS 6.2)</span>
+<span>Dia 10 (PVAS 4.0)</span>
+<span class="font-bold text-primary">Hoje: Dia 15 (Retorno • PVAS 2.8)</span>
+</div>
+</div>
+</div>
+<!-- 2. Recent Return Consultation & SOAP Notes (#ATD-2026-1049-RET) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-md border-b-0">
+<div class="flex items-center gap-space-sm">
+<span class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold font-label-md">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</span>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Retorno Clínico &amp; Manutenção Recente</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-mono text-[11px] font-bold">#ATD-2026-1049-RET</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Teleconsulta síncrona finalizada hoje • Duração: 28min 14s</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm self-start sm:self-auto font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Concluído &amp; Assinado
+            </span>
+</div>
+<!-- Structured SOAP Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md mt-space-md">
+<!-- S: Subjetivo -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">S</span>
+                  Subjetivo (Relato Tutora)
+                </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-[10px] font-bold text-tertiary-container">Adesão 100%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+                Juliana reporta cessação completa do lambimento compulsivo nos dígitos anteriores direitos e esquerdos. Pipoca voltou a repousar noites completas sem despertares com prurido. Sem episódios eméticos ou alterações de fezes decorrentes do maleato de oclacitinib.
+              </p>
+</div>
+<!-- O: Objetivo -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">O</span>
+                  Objetivo (Inspeção Vídeo HD)
+                </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-[10px] font-bold text-primary">Câmera 1080p</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+                Inspeção remota assistida pela tutora em close-up podal: Ausência de eritema interdigital ativo, crostas ou secreção exsudativa. Pele rosada clara, repilação satisfatória em áreas alopécias peri-ungueais. Escore corporal 5/9, hidratada, mucosa rósea.
+              </p>
+</div>
+<!-- A: Avaliação -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">A</span>
+                  Avaliação Médica
+                </span>
+<span class="text-[10px] font-mono text-on-surface-variant font-bold">CID-Vet: L20.9</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+                Dermatite atópica canina com excelente resposta à fase de indução de 14 dias. Remissão clínica de prurido estabelecida. Critérios satisfeitos para transição imediata para o protocolo de <strong class="text-on-surface">manutenção crônica em dose única diária (desmame seguro)</strong>.
+              </p>
+</div>
+<!-- P: Plano -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px]">P</span>
+                  Plano Terapêutico
+                </span>
+<span class="text-[10px] font-bold text-primary">60 dias vigência</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+                1. Desmame do Apoquel 16mg de 2x/dia para 1x/dia pela manhã. 2. Manutenção da barreira cutânea com Mousse Calm semanal. 3. Suplementação de ácidos graxos essenciais. 4. Retorno agendado para 60 dias ou SOS prurido &gt; 5.
+              </p>
+</div>
+</div>
+<!-- Highlight Prescription Card: #REC-2026-9921-ICP -->
+<div class="mt-space-lg rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low p-space-md shadow-[0_4px_16px_-2px_rgba(21,59,80,0.06)]">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-9 h-9 rounded-xl bg-tertiary-container text-on-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">verified</span>
+</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Receita Digital ICP-Brasil PAdES</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-mono text-[10px] font-bold">#REC-2026-9921-ICP</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary-container font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">gavel</span> Certificação Digital ITI / CFMV Válida
+                  </span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">mark_chat_read</span>
+<span>WhatsApp: Entregue &amp; Lido às 14:32</span>
+</div>
+</div>
+<!-- Prescribed Medications List -->
+<div class="flex flex-col gap-2.5 mt-space-sm">
+<!-- Item 1 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between bg-surface-container-lowest p-3 rounded-lg gap-2">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs">1</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Apoquel (Maleato de Oclacitinib) 16mg</span>
+<span class="px-2 py-0.2 rounded-full bg-surface-container text-primary text-[10px] font-bold">Fase de Manutenção</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Administrar 1 comprimido por via oral a cada 24 horas (pela manhã) durante 60 dias consecutivos.</span>
+</div>
+</div>
+<div class="text-right sm:pl-4">
+<span class="font-label-sm text-label-sm font-bold text-on-surface block">60 comp. (3 caixas)</span>
+<span class="text-[10px] text-on-surface-variant">Uso Contínuo</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between bg-surface-container-lowest p-3 rounded-lg gap-2">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs">2</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Douxo S3 Calm Mousse 150ml</span>
+<span class="px-2 py-0.2 rounded-full bg-surface-container text-primary text-[10px] font-bold">Tópico Barreira</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Aplicar 2 pumps em regiões interdigitais e abdômen 1 vez por semana, sem enxágue.</span>
+</div>
+</div>
+<div class="text-right sm:pl-4">
+<span class="font-label-sm text-label-sm font-bold text-on-surface block">1 Frasco 150ml</span>
+<span class="text-[10px] text-on-surface-variant">Higiene Cutânea</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between bg-surface-container-lowest p-3 rounded-lg gap-2">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs">3</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Ômega-3 EPA/DHA 1000mg Pet</span>
+<span class="px-2 py-0.2 rounded-full bg-surface-container text-primary text-[10px] font-bold">Nutracêutico</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Fornecer 1 cápsula gelatinosa misturada ao alimento a cada 24 horas.</span>
+</div>
+</div>
+<div class="text-right sm:pl-4">
+<span class="font-label-sm text-label-sm font-bold text-on-surface block">60 cápsulas</span>
+<span class="text-[10px] text-on-surface-variant">Anti-inflamatório Natural</span>
+</div>
+</div>
+</div>
+<!-- Action buttons for the prescription -->
+<div class="flex flex-wrap items-center gap-2 mt-space-md pt-space-xs">
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-tertiary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">visibility</span> Visualizar Documento PAdES
+              </button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-bold hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span> Baixar PDF Assinado (.pades)
+              </button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container">share</span> Rastrear Despacho WhatsApp
+              </button>
+</div>
+</div>
+</div>
+<!-- 3. Collapsible Historical Timeline Section -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Histórico Pregresso &amp; Linha do Tempo</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Atendimentos anteriores, mídias teleclínicas arquivadas e exames laboratoriais</p>
+</div>
+<button class="flex items-center gap-1 text-primary font-label-md text-label-md font-bold hover:underline" id="toggle-timeline-btn">
+<span>Recolher Histórico</span>
+<span class="material-symbols-outlined text-[18px] transition-transform" id="timeline-icon">expand_less</span>
+</button>
+</div>
+<div class="space-y-space-md" id="timeline-content">
+<!-- Timeline Item 1: Initial Teleconsultation -->
+<div class="relative pl-7 before:content-[''] before:absolute before:left-2.5 before:top-3 before:bottom-0 before:w-0.5 before:bg-surface-container-high">
+<span class="absolute left-0 top-1 w-5 h-5 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]">medical_services</span>
+</span>
+<div class="bg-surface-container-low/50 rounded-xl p-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Teleconsulta Inicial de Triage Dermatológica</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-mono text-[10px] font-bold">#ATD-2026-1049</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">15 dias atrás • 18/02/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mb-space-sm">
+                  Queixa inicial de prurido podal intenso (PVAS 8.5/10), eritema difuso nas 4 patas com alopecia peridigital decorrente de lambedura constante há 21 dias. Diagnóstico presuntivo de Dermatite Atópica Canina com hipersensibilidade alimentar associada.
+                </p>
+<!-- Attached items of consult 1 -->
+<div class="flex flex-wrap gap-2 pt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">description</span> Prescrição Indução (#REC-2026-9842)
+                  </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">assignment_turned_in</span> Atestado Médico (#ATE-2026-7719)
+                  </span>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2: LiveKit Stream Video Archive -->
+<div class="relative pl-7 before:content-[''] before:absolute before:left-2.5 before:top-3 before:bottom-0 before:w-0.5 before:bg-surface-container-high">
+<span class="absolute left-0 top-1 w-5 h-5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]">play_circle</span>
+</span>
+<div class="bg-surface-container-low/50 rounded-xl p-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Gravação de Teleconsulta LiveKit Criptografada</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-mono text-[10px]">URL Assinada S3</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">32m 45s • MP4 1080p (248 MB)</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-2.5 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-tertiary-container">lock</span>
+<span class="font-mono text-xs text-on-surface truncate max-w-xs sm:max-w-md">#REC-VIDEO-20261011-849204.mp4</span>
+</div>
+<button class="inline-flex items-center gap-1 text-primary hover:text-tertiary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span> Reproduzir
+                  </button>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3: Lab Exams & Tape Stripping -->
+<div class="relative pl-7">
+<span class="absolute left-0 top-1 w-5 h-5 rounded-full bg-secondary-fixed-dim text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]">biotech</span>
+</span>
+<div class="bg-surface-container-low/50 rounded-xl p-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Citologia de Fita Adesiva (Tape Stripping Podal)</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Negativo p/ Malassezia</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">19/02/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Laboratório Veterinário Anhembi: Raros cocos gram-positivos compatíveis com microbiota comensal. Ausência de leveduras ou ácaros (Demodex canis / Sarcoptes sp.).
+                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SIDEBAR RIGHT COLUMN (Right - 4 cols / ~32%) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- 1. Valid Digital Documents Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b-0">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_special</span>
+              Documentos Digitais
+            </h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold">3 itens</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Doc 1: Active -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 flex flex-col gap-1.5">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Receita de Manutenção</span>
+<span class="font-mono text-[11px] text-primary font-bold">#REC-2026-9921-ICP</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[10px] font-bold">Válida (60d)</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant text-[11px] pt-1">
+<span>Expira: 03/05/2026</span>
+<span class="font-semibold text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">qr_code</span> Validar ITI
+                </span>
+</div>
+</div>
+<!-- Doc 2: Resting Certificate -->
+<div class="p-space-sm rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-1.5">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Atestado de Repouso Podal</span>
+<span class="font-mono text-[11px] text-on-surface-variant font-medium">#ATE-2026-7719</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold">Concluído</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant text-[11px] pt-1">
+<span>Vigência: 15 dias (expirado)</span>
+<span class="hover:text-primary cursor-pointer flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">visibility</span> Ver
+                </span>
+</div>
+</div>
+<!-- Doc 3: Superseded -->
+<div class="p-space-sm rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-1.5 opacity-70">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Receita de Indução Anterior</span>
+<span class="font-mono text-[11px] text-on-surface-variant font-medium">#REC-2026-9842</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-bold">Substituída</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant text-[11px] pt-1">
+<span>Substituída por #REC-9921</span>
+<span class="line-through text-[10px]">Inativa</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Pet Pharmacy & Adherence Integration -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">local_pharmacy</span>
+              Farmácias Parceiras
+            </h3>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">API Conectada</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low/50 space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-bold text-on-surface">PetLove Farma Integrada</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary text-[10px] font-bold">15% OFF DrVet</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Kit de Manutenção 60 dias (Apoquel 16mg + Douxo Mousse + Ômega-3) já despachado pela tutora Juliana.
+            </p>
+<div class="flex items-center gap-2 pt-1 text-[11px] font-semibold text-primary">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">local_shipping</span>
+<span>Pedido #PL-94812: Em trânsito para entrega</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">notifications_active</span> Próximo Alerta Tutora:
+            </span>
+<span class="font-bold text-on-surface">03/04/2026</span>
+</div>
+<span class="text-[11px] text-on-surface-variant block mt-0.5">Disparo automático de reposição de Apoquel (30d antes do término).</span>
+</div>
+<!-- 3. Technical Audit & Supabase Realtime CDC Data -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+              Auditoria Supabase CDC
+            </h3>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-ping"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Registro imutável em Postgres com Row Level Security (RLS) habilitada</p>
+<!-- Code Snippet / JSON CDC Inspection -->
+<div class="bg-inverse-surface text-inverse-on-surface p-3 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto">
+<span class="text-tertiary-fixed font-bold">// public.prontuarios_cdc</span><br/>
+            {<br/>
+              "paciente_id": <span class="text-secondary-fixed">"CAN-2022-7711"</span>,<br/>
+              "atendimento_id": <span class="text-secondary-fixed">"ATD-1049-RET"</span>,<br/>
+              "receita_hash": <span class="text-tertiary-fixed">"sha256:7f8c9a..."</span>,<br/>
+              "crmv_signatario": <span class="text-secondary-fixed">"SP-42189"</span>,<br/>
+              "status": <span class="text-primary-fixed">"COMMITTED_SYNC"</span><br/>
+            }
+          </div>
+<div class="mt-2 text-[10px] text-outline text-right">RLS Policy: <code class="text-on-surface font-semibold">crmv_match_strict</code></div>
+</div>
+<!-- 4. Next Clinical Steps & Actions -->
+<div class="bg-gradient-to-br from-surface-container-low to-surface-container rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center gap-2 mb-1.5">
+<span class="material-symbols-outlined text-[20px] text-primary">event_repeat</span>
+<span class="font-label-md text-label-md font-bold uppercase tracking-wider text-primary">Próximo Passo Clínico</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Retorno de Manutenção</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-space-md">
+            Avaliação clínica de 60 dias para monitoramento hepático/renal de rotina e aferição de escore dermatológico continuado.
+          </p>
+<div class="flex flex-col gap-2">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold hover:bg-tertiary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span> + Nova Evolução / Exame
+            </button>
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-surface-container-lowest text-on-surface font-label-lg text-label-lg font-bold hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span> Agendar Retorno na Grade
+            </button>
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">print</span> Imprimir Prontuário Geral Completo
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky Bottom Global Action Bar -->
+<div class="fixed bottom-0 left-72 right-0 bg-surface/90 backdrop-blur-xl border-t-0 shadow-[0_-4px_20px_rgba(21,59,80,0.08)] py-space-sm px-space-lg z-30">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Pipoca • Atendimento Concluído</span>
+<span class="text-[11px] text-on-surface-variant">Prontuário sincronizado com a nuvem do DrVet Pro</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md font-semibold hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span> Voltar à Lista
+        </a>
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span> Ver Agenda &amp; Consultas
+        </a>
+<a class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary-container text-on-primary font-label-md text-label-md font-bold hover:bg-primary transition-colors shadow-md" href="#">
+<span class="material-symbols-outlined text-[18px]">videocam</span> Abrir Sala de Teleconsulta
+        </a>
+</div>
+</div>
+</div>
+<!-- Inline Vanilla Script for Interactive Timeline Toggling -->
+<script>
+    (function() {
+      const toggleBtn = document.getElementById('toggle-timeline-btn');
+      const timelineContent = document.getElementById('timeline-content');
+      const timelineIcon = document.getElementById('timeline-icon');
+      let isCollapsed = false;
+
+      if (toggleBtn && timelineContent && timelineIcon) {
+        toggleBtn.addEventListener('click', function() {
+          isCollapsed = !isCollapsed;
+          if (isCollapsed) {
+            timelineContent.style.display = 'none';
+            toggleBtn.querySelector('span:first-child').textContent = 'Expandir Histórico';
+            timelineIcon.textContent = 'expand_more';
+          } else {
+            timelineContent.style.display = 'block';
+            toggleBtn.querySelector('span:first-child').textContent = 'Recolher Histórico';
+            timelineIcon.textContent = 'expand_less';
+          }
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

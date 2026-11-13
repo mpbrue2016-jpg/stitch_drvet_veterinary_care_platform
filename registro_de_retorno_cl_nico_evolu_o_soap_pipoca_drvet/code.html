@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#002019", "on-surface-variant": "#3d4945", "on-tertiary-fixed-variant": "#005046", "primary-fixed-dim": "#5ddbbb", "secondary-fixed-dim": "#a7cbe5", "surface-variant": "#cbe6fc", "on-background": "#001e2e", "on-error-container": "#93000a", "outline": "#6d7a75", "inverse-primary": "#5ddbbb", "on-error": "#ffffff", "primary": "#006b57", "on-primary-container": "#003529", "secondary-fixed": "#c7e7ff", "surface-container-lowest": "#ffffff", "surface": "#f6faff", "on-secondary-fixed-variant": "#274a60", "tertiary-container": "#00a894", "surface-dim": "#c2def4", "on-tertiary-fixed": "#00201b", "on-primary": "#ffffff", "inverse-surface": "#183344", "background": "#f6faff", "surface-container-high": "#d4ebff", "surface-tint": "#006b57", "error": "#ba1a1a", "primary-container": "#13a88a", "primary-fixed": "#7cf8d6", "tertiary": "#006b5d", "on-secondary-fixed": "#001e2e", "surface-container": "#dff0ff", "tertiary-fixed-dim": "#52dbc5", "outline-variant": "#bccac3", "on-secondary-container": "#44677d", "on-tertiary-container": "#00352d", "error-container": "#ffdad6", "on-primary-fixed-variant": "#005141", "surface-bright": "#f6faff", "inverse-on-surface": "#e5f2ff", "tertiary-fixed": "#72f8e0", "on-tertiary": "#ffffff", "secondary-container": "#c0e4ff", "on-surface": "#001e2e", "surface-container-low": "#ebf5ff", "surface-container-highest": "#cbe6fc", "on-secondary": "#ffffff", "secondary": "#406279" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2.5rem" }, "fontFamily": { "headline-sm": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-20 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><span class="material-symbols-outlined text-[24px]">pets</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm tracking-tight text-primary">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm uppercase">Pro</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">Telemedicina Clínica</span></div></div></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Prática Médica</div><nav class="mt-space-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="painel-geral" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span>Início / Dashboard</a><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="agenda-consultas" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">calendar_clock</span>Agenda &amp; Consultas</div><span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">4 hoje</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="prontuarios-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">folder_shared</span>Prontuários &amp; Pacientes</a><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="teleconsulta-ao-vivo" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px] text-tertiary-container">videocam</span>Sala de Teleconsulta</div><span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="prescricao-icp-brasil" href="#"><span class="material-symbols-outlined text-[20px]">verified</span>Receitas &amp; ICP-Brasil</a></nav></div><div class="px-space-md pt-space-md"><div class="px-space-sm py-space-xs font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Gestão &amp; Sistema</div><nav class="mt-space-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold shadow-[0_4px_16px_-2px_rgba(21,59,80,0.08)]"><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="faturamento-repasses" href="#"><span class="material-symbols-outlined text-[20px]">payments</span>Faturamento &amp; Repasses</a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="configuracoes-integracoes" href="#"><span class="material-symbols-outlined text-[20px]">settings_ethernet</span>Conexão Supabase</a></nav></div></div><div class="p-space-md m-space-md rounded-xl bg-surface-container-lowest shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><div class="flex items-center justify-between mb-space-xs"><div class="flex items-center gap-space-xs text-primary font-label-sm text-label-sm font-bold"><span class="material-symbols-outlined text-[16px]">security</span>CRMV Ativo</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">SP 42.189</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Assinador digital ICP-Brasil pareado e certificado A1 pronto.</p></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md flex-1 max-w-xl"><div class="w-full flex items-center gap-space-sm px-space-md py-2 bg-surface-container-lowest rounded-full shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">search</span><input class="w-full bg-transparent border-0 focus:outline-none font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/70" placeholder="Buscar paciente, microchip, tutor ou CRMV..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-full bg-surface-container-lowest shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span><span class="font-label-sm text-label-sm text-primary font-bold">Supabase Realtime Conectado</span></div><button class="relative p-2 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-[0_4px_16px_-2px_rgba(21,59,80,0.04)]"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button><div class="h-8 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/><div class="flex flex-col text-left"><div class="flex items-center gap-1"><span class="font-label-lg text-label-lg text-on-surface">Dra. Camila Vasconcellos</span><span class="material-symbols-outlined text-[16px] text-primary">verified</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">Médica Veterinária Geral &amp; Triage</span></div></div></div></header><main class="relative pt-20 w-full min-h-screen bg-background"><div class="flex flex-col w-full">
+<!-- Sub-header Bar: Breadcrumb + Sync Status HUD -->
+<div class="px-space-lg py-space-md bg-surface-container-low shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">folder_shared</span> Prontuários
+        </a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Pacientes</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="font-bold text-on-surface">Pipoca (#CAN-2022-7711)</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Retorno &amp; Evolução SOAP</span>
+</div>
+<div class="flex items-center gap-space-sm mt-0.5">
+<h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-space-xs">
+          Registro Clínico de Retorno
+          <span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">#ATD-2026-1049-RET</span>
+</h1>
+</div>
+</div>
+<!-- Badges Database Info -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Supabase CDC Realtime (24ms)</span>
+</div>
+<div class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-high text-on-secondary-fixed-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">database</span>
+<span>tabela: <code class="font-bold">prontuario_evolucoes</code></span>
+</div>
+<div class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-lowest shadow-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">fingerprint</span>
+<span class="font-mono text-[10px]">9f8210e4-2026-drvet</span>
+</div>
+</div>
+</div>
+<div class="p-space-lg max-w-[1440px] w-full mx-auto flex flex-col gap-space-lg">
+<!-- 1. Ficha Resumo do Paciente (Banner Superior) -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm relative overflow-hidden">
+<div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-primary-fixed/20 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg">
+<!-- Identificação Pet + Foto -->
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-20 h-20 rounded-xl object-cover shadow-md" data-alt="A cheerful, healthy Golden Retriever named Pipoca sitting upright with clean shiny honey-gold fur and clear alert dark eyes in a bright veterinary clinic context, studio lighting, calm professional pet healthcare aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDucRSuHDpkDDOJkgh-JzkQSmFs5Sw8kg2kQZPDuH19TXAkHMwVAS4KeGSqv1fZrCubBzgga80DY9L94nV4zvM5B0139vAKNDmkXJfIkQ4PEI2RjJH8q4uS1hBvC5rAoQV7icS8Nq6VhMLpvvHW8W13nmWglvQg-sDOBDUu5COT3C_ZfuOpXSYYGYSHhq8xLs6Y_FFRjdkH0pLyBfBEBXTo4hf5ufzs99WQZ5c0D_0k"/>
+<span class="absolute -bottom-1 -right-1 p-1 bg-primary text-on-primary rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[16px] block">verified</span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface">Pipoca</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Canino • Golden Retriever</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-secondary-fixed-variant font-label-sm text-label-sm">4 anos e 2 meses</span>
+</div>
+<div class="flex flex-wrap items-center gap-y-1 gap-x-space-md mt-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">qr_code_2</span> Microchip: <strong class="text-on-surface font-mono">982.009.108.441.902</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span> Tutora: <strong class="text-on-surface">Juliana Mendes Santana</strong> (CPF ***.824.918-**)
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span> (11) 98412-4411
+              </span>
+</div>
+</div>
+</div>
+<!-- Métricas Clínicas Comparativas -->
+<div class="flex items-center gap-space-md flex-wrap lg:flex-nowrap bg-surface-container-low p-space-md rounded-xl">
+<!-- Peso -->
+<div class="flex flex-col pr-space-md">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Peso Inicial vs Atual</span>
+<div class="flex items-baseline gap-space-xs mt-0.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono">28,40 kg</span>
+<span class="material-symbols-outlined text-[18px] text-primary">arrow_forward</span>
+<span class="font-headline-sm text-headline-sm text-primary font-mono font-bold" id="badge-peso-atual">28,15 kg</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary mt-0.5 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> -250g (estável)
+            </span>
+</div>
+<!-- Divisor -->
+<div class="hidden sm:block w-px h-12 bg-outline-variant/40"></div>
+<!-- Diagnóstico Base -->
+<div class="flex flex-col pr-space-md">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Diagnóstico Base</span>
+<span class="font-label-lg text-label-lg text-on-surface mt-0.5 font-bold">Dermatite Atópica Canina</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">CID-Vet L20.9 (Sazonal)</span>
+</div>
+<!-- Divisor -->
+<div class="hidden sm:block w-px h-12 bg-outline-variant/40"></div>
+<!-- Escala PVAS -->
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Escala de Prurido (PVAS)</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm line-through">8.5/10 Grave</span>
+<span class="material-symbols-outlined text-[16px] text-primary">trending_flat</span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center gap-1" id="badge-pvas-atual">
+<span class="material-symbols-outlined text-[14px]">sentiment_satisfied</span> 2.8/10 Remissão
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Eficácia Apoquel D+15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Layout 2 Colunas: Formulário SOAP Principal (8 cols) + Metadados/Payload (4 cols) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- COLUNA PRINCIPAL: Formulário SOAP Estruturado (8 Cols) -->
+<form class="lg:col-span-8 flex flex-col gap-space-lg" id="form-soap" onsubmit="event.preventDefault(); submitSoapRecord();">
+<!-- Card S: Subjetivo -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-headline-sm text-headline-sm font-bold">S</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Subjetivo (Anamnese de Retorno)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Evolução dos sintomas relatados pela tutora após intervenção de 15 dias.</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm font-bold">Teleconsulta D+15</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-xs">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center justify-between">
+                Adesão Farmacológica
+                <span class="text-primary font-normal text-[11px]">Obrigatório</span>
+</label>
+<select class="px-space-sm py-2.5 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="adesao_tratamento" onchange="updateLivePayload()">
+<option selected="" value="TOTAL_100">Total (100% conforme prescrição)</option>
+<option value="PARCIAL_DOSE_PERDIDA">Parcial (1-2 doses esquecidas)</option>
+<option value="IRREGULAR">Irregular / Dificuldade de administração</option>
+<option value="INTERROMPIDO">Interrompido por efeito adverso</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Lambedura Interdigital</label>
+<select class="px-space-sm py-2.5 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="lambedura_patas" onchange="updateLivePayload()">
+<option value="CESSADA">Cessada completamente</option>
+<option selected="" value="RESIDUAL_ESPORADICA">Residual / Apenas pós-passeio</option>
+<option value="FREQUENTE">Persistente e frequente</option>
+<option value="COMPULSIVA">Compulsiva com lesão</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Tolerância Gástrica / Eventos</label>
+<select class="px-space-sm py-2.5 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="eventos_adversos" onchange="updateLivePayload()">
+<option selected="" value="NENHUM">Ausentes (Apetite e fezes normais)</option>
+<option value="EMESE_LEVE">Episódio isolado de vômito</option>
+<option value="FEZES_PASTOSAS">Fezes pastosas temporárias</option>
+<option value="LETARGIA">Letargia discreta pós-administração</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold">
+                Relato Minucioso da Tutora (Juliana M. Santana)
+              </label>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Capturado via WebRTC &amp; Chat</span>
+</div>
+<textarea class="w-full p-space-sm bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-on-surface-variant/60" id="subjetivo_relato" oninput="updateLivePayload()" rows="3">Tutora informa resposta excelente ao protocolo de indução (Apoquel 16mg q12h por 14 dias + Douxo Mousse 3x/semana). Não houve vômitos nem episódios diarreicos. Pipoca voltou a dormir noites inteiras sem se coçar e parou de roer as patas dianteiras. Apetite preservado e disposição física habitual nos passeios matinais.</textarea>
+</div>
+</div>
+<!-- Card O: Objetivo -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-sm text-headline-sm font-bold">O</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Objetivo (Exame Clínico Telepresencial)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Parâmetros biométricos aferidos, inspeção por vídeo HD e novas fotos enviadas.</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">Vídeo HD 1080p Validado</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<!-- Peso Atual -->
+<div class="flex flex-col gap-1.5 p-space-md bg-surface-container-low rounded-xl">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center justify-between">
+<span>Peso Atual na Balança Domiciliar (kg)</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm font-normal">Inicial: 28,40 kg</span>
+</label>
+<div class="relative">
+<input class="w-full px-space-sm py-2 bg-surface-container-lowest rounded-lg font-headline-sm text-headline-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-mono" id="peso_atual" oninput="handlePesoChange(this.value)" step="0.05" type="number" value="28.15"/>
+<span class="absolute right-3 top-3 text-on-surface-variant font-bold text-label-sm">KG</span>
+</div>
+<p class="text-[12px] text-primary flex items-center gap-1 font-medium mt-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Variação de -0,88% dentro da meta ponderal estável.
+              </p>
+</div>
+<!-- Slider Interativo PVAS -->
+<div class="flex flex-col gap-1.5 p-space-md bg-surface-container-low rounded-xl">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Nova Escala Prurido (PVAS 0-10)</label>
+<span class="font-headline-sm text-headline-sm text-primary font-bold" id="pvas_display">2.8 / 10</span>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container-highest rounded-lg cursor-pointer my-2" id="pvas_slider" max="10" min="0" oninput="handlePvasChange(this.value)" step="0.1" type="range" value="2.8"/>
+<div class="flex justify-between text-[11px] font-bold text-on-surface-variant">
+<span>0 (Normal / Sem coceira)</span>
+<span class="text-primary">2.8 (Leve / Remissão)</span>
+<span class="text-error">10 (Grave / Dilaceração)</span>
+</div>
+</div>
+</div>
+<!-- Checkbox Achados Dermatológicos -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Avaliação Específica de Pele e Anexos (Inspeção guiada em tempo real)</span>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary" id="achado_eritema" onchange="updateLivePayload()" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Regressão Completa de Eritema Ventral</span>
+<span class="text-[11px] text-on-surface-variant">Ausência de rubor em abdômen e virilha.</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary" id="achado_interdigital" onchange="updateLivePayload()" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Espaços Interdigitais Cicatrizados</span>
+<span class="text-[11px] text-on-surface-variant">Sem exsudato, crostas ou cromidrose salivar.</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary" id="achado_pelagem" onchange="updateLivePayload()" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Repilação Inicial (Pata Dianteira Direita)</span>
+<span class="text-[11px] text-on-surface-variant">Pelos curtos em fase anágena no leito periungueal.</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary accent-primary" id="achado_otite" onchange="updateLivePayload()" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Condutos Auditivos Livres de Secreção</span>
+<span class="text-[11px] text-on-surface-variant">Sem cerúmen acastanhado ou odor fétido.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Fotos Domiciliares Anexadas durante a Chamada -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">photo_library</span>
+                Evidências Fotográficas do Retorno (Storage Supabase: <code class="font-mono text-xs">/prontuarios/pipoca/atd-1049/</code>)
+              </span>
+<button class="text-primary hover:underline font-label-sm text-label-sm flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">upload_file</span> Anexar nova imagem
+              </button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm">
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img class="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up clinical photograph of a golden retriever dog paw with clean healthy skin between pink pads, healed from dermatitis, well lit natural veterinary macro perspective." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCItbfaPHY5XDVaJkfCQFHg-IfX5arZhrVkTj6RBk0I0afNIUOOYJRpoBWXEt3dzE4fJAwU-xIRI-jihuAUWqNtTQ2b8j18e4tMM4zi9cgrifa2UJefNN0xgapfqmfcT0AGxaV4x9GovJm4cyNxwn2TI_2JXpFyS0-kOaH7kircGnZ0MLIt8HyEsQgpyCTcx-nmaNyWSlQn8fIF3DsS-oQ3xh6cKsr-miZ60bG8gzQA"/>
+<div class="absolute bottom-0 inset-x-0 bg-surface/90 backdrop-blur-sm p-1 text-center">
+<span class="text-[10px] font-bold text-on-surface">Pata Ant. Dir. (D+15)</span>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img class="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Veterinary clinical photograph of golden retriever dog belly and groin showing clear pale healthy skin without red erythematous spots, clean groomed fur surroundings." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEZbaeX2DmOH-WTSQMvsuCYB0lMxLod8HrYJO40JE1ADxzVVEdGHao32oE2BgGtWJR0ae0frKSa07s-IlcNecbHwrgvnaumP9jyZyThcHG5Bg3Lm-2AERccFe6stcf9YVEsCvbQTUs6kMvVu6KeYKuoHDDR9m_MqaNNrtNtmC7dy4ad57R-pk55ucXKIYGtIqliv1r3PvZFVIQJc_eNyX6ddneNV23Z1Z6VpAbEL5a"/>
+<div class="absolute bottom-0 inset-x-0 bg-surface/90 backdrop-blur-sm p-1 text-center">
+<span class="text-[10px] font-bold text-on-surface">Região Ventral</span>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img class="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Macro photo of a dog's clean golden ear flap pinna and canal without inflammation or discharge, warm soft ambient lighting in home telecare context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQgNozR1jjpe_fkcV2goskQgFgm-mizeRBa1gVcE41vd1OhO1NH2UX7Q6f4RKzmrR5RB_IIGqrmLbBzbQRr64SQj_NKoMO5yDmQznlz6Af_W_MQK2dvvS7jg2NI1oo5QHTU8djOTT6QBYmifCLM8-1Qz4gC4wlzft8H3QfXb5mOQOOEDSmKAZNNvipZFvNUFfP9Q6mu9axFP_3sGjLlJpBNQ_Lf6UUu5ZmvEBc-lV3"/>
+<div class="absolute bottom-0 inset-x-0 bg-surface/90 backdrop-blur-sm p-1 text-center">
+<span class="text-[10px] font-bold text-on-surface">Conduto Auricular</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-24 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer text-center p-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[24px] text-primary">add_a_photo</span>
+<span class="text-[11px] font-bold mt-1">Upload Foto HD</span>
+<span class="text-[9px]">Sincronização S3 Bucket</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card A: Avaliação Clínica -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-tertiary text-on-tertiary flex items-center justify-center font-headline-sm text-headline-sm font-bold">A</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Avaliação (Conclusão &amp; Raciocínio Clínico)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Julgamento da eficácia terapêutica e estratificação prognóstica.</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">
+              Remissão Aguda Atingida
+            </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Diagnóstico Evolutivo</label>
+<input class="px-space-sm py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-semibold" id="diagnostico_evolutivo" oninput="updateLivePayload()" type="text" value="Remissão Clínica Satisfatória de Dermatite Atópica Sazonal"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Status de Encerramento do Ciclo de Ataque</label>
+<select class="px-space-sm py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-semibold text-primary" id="status_evolucao" onchange="updateLivePayload()">
+<option selected="" value="CONTROLADO_MANUTENCAO">✓ Controlado - Liberado para Protocolo de Manutenção (Dose Mínima)</option>
+<option value="RESPOSTA_PARCIAL">Resposta Parcial - Manter indução por mais 7 dias</option>
+<option value="FALHA_TERAPEUTICA">Falha Terapêutica / Necessária Biópsia e Troca</option>
+<option value="AGUARDANDO_EXAMES">Aguardando Exames Complementares</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Comentários Técnicos Veterinários (CRMV-SP 42.189)</label>
+<textarea class="w-full p-space-sm bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-on-surface-variant/60" id="avaliacao_parecer" oninput="updateLivePayload()" rows="2">Paciente Golden Retriever atinge índice de prurido compatível com normalidade fisiológica (PVAS 2.8/10). Ausência de infecções secundárias bacterianas ou por Malassezia após higienização semanal tópica com fitoesfingosina. Aprovada redução de Apoquel para dose de manutenção de 24 em 24 horas.</textarea>
+</div>
+</div>
+<!-- Card P: Plano & Conduta Terapêutica -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-headline-sm text-headline-sm font-bold">P</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Plano Terapêutico &amp; Conduta de Manutenção</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Desmame farmacológico, prescrição digital e agendamento de telemonitoramento.</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold">Regime Crônico Controlado</span>
+</div>
+<div class="flex flex-col gap-space-md pt-space-xs">
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">medication</span>
+                Regime Farmacológico de Transição (Aprovado com Tutora)
+              </span>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm text-body-sm font-body-sm">
+<div class="p-space-sm bg-surface-container-lowest rounded-lg shadow-sm">
+<div class="flex items-center justify-between">
+<strong class="text-on-surface font-bold">1. Apoquel (Maleato de Oclacitinib) 16mg</strong>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Uso Oral</span>
+</div>
+<p class="text-on-surface-variant text-[13px] mt-1">
+                    Passar de 1 comprimido a cada 12 horas para <strong class="text-primary font-bold">1 comprimido a cada 24 horas</strong> (pela manhã, com alimento), durante 60 dias ininterruptos.
+                  </p>
+</div>
+<div class="p-space-sm bg-surface-container-lowest rounded-lg shadow-sm">
+<div class="flex items-center justify-between">
+<strong class="text-on-surface font-bold">2. Douxo S3 Calm Mousse</strong>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">Tópico</span>
+</div>
+<p class="text-on-surface-variant text-[13px] mt-1">
+                    Reduzir de 3x por semana para <strong class="text-primary font-bold">1x a 2x por semana</strong> após escovação da pelagem seca, sem enxágue. Foco nas patas e flancos.
+                  </p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Próxima Reavaliação</label>
+<select class="px-space-sm py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium" id="prazo_retorno" onchange="updateLivePayload()">
+<option selected="" value="60_DIAS">Em 60 dias (Rotina de Manutenção)</option>
+<option value="30_DIAS">Em 30 dias (Ajuste intermediário)</option>
+<option value="90_DIAS">Em 90 dias (Check-up semestral)</option>
+<option value="SOS_FLARE_UP">Sob Demanda (Em caso de crise/flare-up)</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Orientação de Banhos &amp; Alérgenos</label>
+<input class="px-space-sm py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="orientacoes_adicionais" oninput="updateLivePayload()" type="text" value="Evitar passeios em grama recém-cortada e secar patas após chuva."/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Canal de Dúvidas Tutora</label>
+<div class="flex items-center gap-2 px-space-sm py-2 bg-surface-container-low rounded-lg text-body-sm font-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Chat Assíncrono DrVet Liberado</span>
+</div>
+</div>
+</div>
+<!-- ICP-Brasil Switch / Checkbox -->
+<label class="flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-high/40 hover:bg-surface-container-high transition-colors cursor-pointer">
+<input checked="" class="w-5 h-5 mt-0.5 rounded text-primary accent-primary" id="emitir_receita_icp" onchange="updateLivePayload()" type="checkbox"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Emitir Receituário Digital ICP-Brasil Complementar</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span> Certificado A1 Ativo
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Gera automaticamente documento assinado digitalmente com QR Code de validação do Conselho Federal de Medicina Veterinária (CFMV) e envia por WhatsApp e E-mail à tutora.
+                </p>
+</div>
+</label>
+</div>
+</div>
+<!-- 5. Ações de Rodapé do Formulário -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md p-space-md rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">cloud_sync</span>
+<span>Rascunho salvo localmente às <strong class="text-on-surface font-mono" id="timestamp-rascunho">14:28:10</strong></span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<button class="px-space-md py-2.5 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg flex items-center gap-1" onclick="cancelarEdicao()" type="button">
+              Descartar
+            </button>
+<button class="px-space-md py-2.5 rounded-full bg-surface-container text-primary font-label-lg text-label-lg hover:bg-surface-container-high transition-colors flex items-center gap-1" onclick="salvarRascunho()" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark</span> Salvar Rascunho
+            </button>
+<button class="flex-1 sm:flex-none px-space-lg py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Gravar no Supabase &amp; Sincronizar</span>
+</button>
+</div>
+</div>
+</form>
+<!-- COLUNA LATERAL: Metadados Supabase, Payload JSON & Histórico (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Card: Payload JSON Live Preview (Supabase pg_insert) -->
+<div class="rounded-xl bg-inverse-surface text-inverse-on-surface p-space-md shadow-md flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">data_object</span>
+<span class="font-label-lg text-label-lg font-bold">Supabase Payload Preview</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary/30 text-primary-fixed font-mono text-[11px]">pg_insert ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/70 text-[12px]">
+            Schema correspondente da tabela <code class="text-primary-fixed">public.prontuario_evolucoes</code> com trigger de auditoria RLS por CRMV.
+          </p>
+<!-- Code Box -->
+<div class="bg-on-background/70 p-3 rounded-lg overflow-x-auto max-h-72 font-mono text-[11px] leading-relaxed text-tertiary-fixed border-0">
+<pre id="json-preview"></pre>
+</div>
+<div class="flex items-center justify-between text-[11px] text-inverse-on-surface/60 pt-1">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span> RLS: Dra. Camila (Owner)
+            </span>
+<button class="text-primary-fixed hover:underline flex items-center gap-1" onclick="copiarPayload()" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar JSON
+            </button>
+</div>
+</div>
+<!-- Card: Histórico Clínico Anterior de Pipoca -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">history_edu</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Documentos &amp; Histórico</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">2 anteriores</span>
+</div>
+<div class="flex flex-col gap-space-xs mt-1">
+<!-- Item 1: Prescrição Inicial -->
+<a class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-lg bg-primary-fixed text-on-primary-fixed group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px] block">prescriptions</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Prescrição #REC-2026-9842</span>
+<span class="text-[11px] text-on-surface-variant">Apoquel 16mg (Indução) • Há 15 dias</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">open_in_new</span>
+</a>
+<!-- Item 2: Atestado / Relatório -->
+<a class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-lg bg-secondary-fixed text-on-secondary-fixed group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[18px] block">article</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Atestado #ATE-2026-7719</span>
+<span class="text-[11px] text-on-surface-variant">Afastamento de Banho &amp; Tosa • D-15</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">open_in_new</span>
+</a>
+<!-- Item 3: Exame Citológico -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between opacity-85">
+<div class="flex items-center gap-space-sm">
+<span class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] block">biotech</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Citologia de Fita Adesiva</span>
+<span class="text-[11px] text-on-surface-variant">Malassezia pachydermatis (Negativo)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold">Laboratório Vet</span>
+</div>
+</div>
+</div>
+<!-- Card: Assinatura Digital & Credenciais CRMV -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-bold font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Auditoria &amp; Autoria Médica</span>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-headline-sm">
+              CV
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Dra. Camila Vasconcellos Silva</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">CRMV-SP 42.189</span>
+<span class="text-[11px] text-on-surface-variant">Especialista em Dermatologia &amp; Telemedicina</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 text-[12px] text-on-surface-variant pt-1">
+<div class="flex items-center justify-between">
+<span>Token de Sessão:</span>
+<span class="font-mono text-on-surface font-bold">sb_usr_9981a</span>
+</div>
+<div class="flex items-center justify-between">
+<span>IP de Assinatura:</span>
+<span class="font-mono text-on-surface">189.40.211.55</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Conformidade:</span>
+<span class="text-primary font-bold">Resolução CFMV nº 1.465/2022</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Notification Container (Hidden by default, triggered via JS) -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none" id="toast-success">
+<div class="flex items-center gap-space-sm px-space-lg py-space-md rounded-xl bg-primary text-on-primary shadow-xl">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold">Evolução SOAP Persistida!</span>
+<span class="text-[12px] text-primary-fixed">Registro #ATD-2026-1049-RET sincronizado no Supabase com sucesso.</span>
+</div>
+</div>
+</div>
+<!-- Client-side Logic Script for Dynamic Payload, PVAS & Toast -->
+<script>
+    function getFormData() {
+      return {
+        id: "9f8210e4-2026-drvet-evolucao",
+        paciente_id: "CAN-2022-7711",
+        atendimento_id: "ATD-2026-1049-RET",
+        tipo: "RETORNO_TELECONSULTA_DERMATO",
+        crmv_veterinario: "SP 42.189",
+        data_registro: new Date().toISOString(),
+        soap_data: {
+          subjetivo: {
+            relato: document.getElementById('subjetivo_relato')?.value || "",
+            adesao: document.getElementById('adesao_tratamento')?.value || "TOTAL_100",
+            lambedura_patas: document.getElementById('lambedura_patas')?.value || "RESIDUAL_ESPORADICA",
+            eventos_adversos: document.getElementById('eventos_adversos')?.value || "NENHUM"
+          },
+          objetivo: {
+            peso_kg: parseFloat(document.getElementById('peso_atual')?.value) || 28.15,
+            pvas_score: parseFloat(document.getElementById('pvas_slider')?.value) || 2.8,
+            achados: {
+              eritema_ausente: document.getElementById('achado_eritema')?.checked ?? true,
+              interdigitais_cicatrizadas: document.getElementById('achado_interdigital')?.checked ?? true,
+              repilacao_ativa: document.getElementById('achado_pelagem')?.checked ?? true,
+              otite_ausente: document.getElementById('achado_otite')?.checked ?? true
+            },
+            fotos_count: 3
+          },
+          avaliacao: {
+            diagnostico_evolutivo: document.getElementById('diagnostico_evolutivo')?.value || "",
+            status_clinico: document.getElementById('status_evolucao')?.value || "CONTROLADO_MANUTENCAO",
+            parecer: document.getElementById('avaliacao_parecer')?.value || ""
+          },
+          plano: {
+            protocolo: "Apoquel 16mg q24h 60d + Douxo Mousse semanal",
+            prazo_retorno: document.getElementById('prazo_retorno')?.value || "60_DIAS",
+            emitir_receita_icp: document.getElementById('emitir_receita_icp')?.checked ?? true
+          }
+        },
+        supabase_metadata: {
+          schema: "public",
+          table: "prontuario_evolucoes",
+          cdc_channel: "realtime:prontuarios",
+          rls_status: "verified"
+        }
+      };
+    }
+
+    function updateLivePayload() {
+      const data = getFormData();
+      const preview = document.getElementById('json-preview');
+      if (preview) {
+        preview.textContent = JSON.stringify(data, null, 2);
+      }
+    }
+
+    function handlePvasChange(val) {
+      const display = document.getElementById('pvas_display');
+      const badge = document.getElementById('badge-pvas-atual');
+      if (display) display.textContent = val + " / 10";
+      if (badge) badge.innerHTML = '<span class="material-symbols-outlined text-[14px]">sentiment_satisfied</span> ' + val + '/10 Remissão';
+      updateLivePayload();
+    }
+
+    function handlePesoChange(val) {
+      const badge = document.getElementById('badge-peso-atual');
+      if (badge && val) {
+        badge.textContent = val + " kg";
+      }
+      updateLivePayload();
+    }
+
+    function salvarRascunho() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('pt-BR');
+      const tsSpan = document.getElementById('timestamp-rascunho');
+      if (tsSpan) tsSpan.textContent = timeStr;
+      
+      const toast = document.getElementById('toast-success');
+      if (toast) {
+        const title = toast.querySelector('.text-label-lg');
+        const desc = toast.querySelector('.text-\\[12px\\]');
+        if (title) title.textContent = "Rascunho Salvo Localmente";
+        if (desc) desc.textContent = "Dados armazenados no IndexedDB do navegador às " + timeStr;
+        toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+        }, 3200);
+      }
+    }
+
+    function submitSoapRecord() {
+      const toast = document.getElementById('toast-success');
+      if (toast) {
+        const title = toast.querySelector('.text-label-lg');
+        const desc = toast.querySelector('.text-\\[12px\\]');
+        if (title) title.textContent = "Evolução SOAP Persistida!";
+        if (desc) desc.textContent = "Transação atômica confirmada no Supabase PostgreSQL.";
+        toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+        }, 4000);
+      }
+    }
+
+    function copiarPayload() {
+      const data = getFormData();
+      navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+      alert("Payload JSON copiado para a área de transferência.");
+    }
+
+    function cancelarEdicao() {
+      if (confirm("Deseja realmente descartar as alterações não gravadas?")) {
+        window.history.back();
+      }
+    }
+
+    // Inicializa preview na carga da página
+    document.addEventListener("DOMContentLoaded", () => {
+      updateLivePayload();
+    });
+    // Executa imediatamente para garantir exibição
+    updateLivePayload();
+  </script>
+</div></main></div></body></html>

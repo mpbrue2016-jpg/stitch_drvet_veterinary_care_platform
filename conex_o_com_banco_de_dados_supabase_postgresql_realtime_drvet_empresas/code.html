@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#cbe6fc","tertiary-fixed":"#72f8e0","inverse-surface":"#183344","secondary-fixed":"#c7e7ff","outline":"#6d7a75","surface-bright":"#f6faff","on-primary-fixed":"#002019","error":"#ba1a1a","primary":"#006b57","surface-container-high":"#d4ebff","surface-container-low":"#ebf5ff","inverse-on-surface":"#e5f2ff","surface-container":"#dff0ff","secondary-container":"#c0e4ff","on-primary-fixed-variant":"#005141","inverse-primary":"#5ddbbb","error-container":"#ffdad6","on-secondary-container":"#44677d","on-surface-variant":"#3d4945","primary-container":"#13a88a","on-primary-container":"#003529","on-tertiary-fixed-variant":"#005046","on-tertiary":"#ffffff","tertiary-fixed-dim":"#52dbc5","tertiary-container":"#00a894","secondary-fixed-dim":"#a7cbe5","on-surface":"#001e2e","on-secondary":"#ffffff","surface-dim":"#c2def4","background":"#f6faff","on-secondary-fixed-variant":"#274a60","surface-tint":"#006b57","on-error-container":"#93000a","secondary":"#406279","on-tertiary-container":"#00352d","on-tertiary-fixed":"#00201b","surface":"#f6faff","on-background":"#001e2e","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-variant":"#cbe6fc","tertiary":"#006b5d","on-secondary-fixed":"#001e2e","primary-fixed":"#7cf8d6","on-primary":"#ffffff","outline-variant":"#bccac3","primary-fixed-dim":"#5ddbbb"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","margin-mobile":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","gutter-mobile":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter":"1.5rem","margin":"2rem"},"fontFamily":{"body-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},"fontSize":{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 flex items-center px-space-lg gap-space-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-2xl">medical_services</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">Empresas</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Portal de Pagamentos &amp; Cobrança</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-xl bg-surface-container-low flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-xl">verified</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Parceiro Credenciado</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[170px]">PetLove Farma &amp; Clin</span></div></div></div><nav class="flex-1 px-space-md py-space-sm space-y-1 overflow-y-auto" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span class="font-label-lg text-label-lg">Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="anuncios-e-campanhas" href="#"><span class="material-symbols-outlined text-xl">campaign</span><span class="font-label-lg text-label-lg">Anúncios &amp; Campanhas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="receitas-e-pedidos" href="#"><span class="material-symbols-outlined text-xl">receipt_long</span><span class="font-label-lg text-label-lg">Receitas &amp; Pedidos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="exames-e-laudos" href="#"><span class="material-symbols-outlined text-xl">vital_signs</span><span class="font-label-lg text-label-lg">Exames &amp; Laudos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="catalogo-e-precos" href="#"><span class="material-symbols-outlined text-xl">inventory_2</span><span class="font-label-lg text-label-lg">Catálogo &amp; Preços</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="faturamento-e-repasses" href="#"><span class="material-symbols-outlined text-xl">payments</span><span class="font-label-lg text-label-lg">Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl bg-primary-container text-on-primary font-semibold shadow-sm transition-all" data-path="configuracoes-de-integracao-erp" href="#"><span class="material-symbols-outlined text-xl">sync_alt</span><span class="font-label-lg text-label-lg">Webhooks &amp; Pagamentos</span></a></nav><div class="p-space-md mt-auto"><div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-lg">support_agent</span><span class="font-label-md text-label-md font-semibold">Canal B2B DrVet</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Suporte técnico e homologação de APIs financeiras.</p><a class="mt-space-xs inline-flex items-center gap-1 font-label-md text-label-md text-primary font-semibold hover:underline" data-path="suporte-b2b" href="#">Abrir Chamado <span class="material-symbols-outlined text-sm">arrow_forward</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-bright/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-sm rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-primary text-xl">store</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Unidade Operacional</span><div class="flex items-center gap-space-xs cursor-pointer"><span class="font-label-lg text-label-lg text-on-surface font-semibold">PetLove Farma - CD Moema</span><span class="material-symbols-outlined text-on-surface-variant text-base">expand_more</span></div></div></div><div class="hidden xl:flex items-center gap-space-xs px-space-md py-space-sm rounded-full bg-surface-container-low text-primary"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-md text-label-md font-semibold">Destaque Patrocinado Ativo</span><span class="font-label-sm text-label-sm px-space-xs rounded bg-surface-container-highest text-on-secondary-fixed">Válido até 31/12</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><button aria-label="Notificações em tempo real" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-bright"></span></div><div class="h-8 w-px bg-outline-variant/40"></div><div class="flex items-center gap-space-sm"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-lg text-label-lg text-on-surface font-bold leading-tight">Dr. Marcelo Antunes</span><span class="font-label-sm text-label-sm text-on-surface-variant">Gestor Comercial &amp; Credenciamento</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Subtle decorative ambient glow contained within parent -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-40 right-10 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-80 -left-20 w-80 h-80 bg-surface-container-highest/40 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+<!-- Breadcrumb, Header & Global Actions Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex flex-col gap-1.5 min-w-0">
+<!-- Monospaced Breadcrumb Hierarchy -->
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm tracking-wide">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">dashboard</span>
+<span>Visão Geral</span>
+</a>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface-variant">Configurações de Banco</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">database</span>
+<span>Supabase BaaS &amp; PostgreSQL</span>
+</span>
+</div>
+<!-- Title with Live Badges -->
+<div class="flex flex-wrap items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">
+              Conexão com Supabase
+            </h1>
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                Supabase v2 Homologado
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-xs">storage</span>
+                PostgreSQL 15.6
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">format_image_left</span>
+                RLS Ativo (100% Cobertura)
+              </span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+            Sincronização bidirecional, autenticação de corpo clínico, persistência em tempo real dos webhooks de pagamentos e buckets de receitas com assinatura digital ICP-Brasil.
+          </p>
+</div>
+<!-- Action Pill Buttons -->
+<div class="flex flex-wrap items-center gap-2.5 self-start lg:self-center shrink-0">
+<button class="px-4 py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-all shadow-sm flex items-center gap-2 active:scale-95" id="btn-ping" onclick="triggerPingTest()" type="button">
+<span class="material-symbols-outlined text-primary text-base" id="ping-icon">network_ping</span>
+<span id="ping-text">Testar Ping PostgREST</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-low text-primary font-mono text-[10px]" id="ping-badge">28ms</span>
+</button>
+<button class="px-3.5 py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all shadow-sm flex items-center gap-1.5" onclick="promptRegenerateJwt()" type="button">
+<span class="material-symbols-outlined text-base">restart_alt</span>
+<span>Regerar JWT Secret</span>
+</button>
+<button class="px-5 py-2 rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2" onclick="saveSupabaseVault()" type="button">
+<span class="material-symbols-outlined text-base">verified_user</span>
+<span>Salvar no Vault &amp; Sincronizar</span>
+</button>
+</div>
+</div>
+<!-- Quick Metrics Strip -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">speed</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider truncate">Latência REST</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">28 ms</span>
+<span class="text-primary font-label-sm text-label-sm font-semibold">Ótima</span>
+</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl">cable</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider truncate">Pooler Supavisor</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">4 / 20</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Conexões</span>
+</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">sensors</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider truncate">Realtime Broadcast</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">3 canais</span>
+<span class="text-primary font-label-sm text-label-sm font-semibold">&lt; 85ms</span>
+</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-xl">cloud_queue</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider truncate">Storage Buckets</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">14.8 GB</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">2 Buckets</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Layout: Form & Credential Manager (8 cols) + Modules & Health Monitor (4 cols) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Credential Configuration & Security Form (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Main Credentials Card -->
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm space-y-6">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">hub</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">
+                    Credenciais do Projeto &amp; Pooler de Banco
+                  </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Configuração direta do cliente Supabase v2 e túnel criptografado para o PostgreSQL da DrVet.
+                  </p>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>TLS 1.3 Homologado</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Field 1: Project URL -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" for="supabase-url">
+<span>Project URL (Endpoint PostgREST &amp; BaaS)</span>
+</label>
+<span class="text-primary font-label-sm text-label-sm font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>HTTPS / SSL Válido (Let's Encrypt Authority)</span>
+</span>
+</div>
+<div class="relative flex items-center">
+<span class="absolute left-3.5 text-primary material-symbols-outlined text-lg">link</span>
+<input class="w-full pl-10 pr-24 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-mono text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container transition-all" id="supabase-url" type="text" value="https://drvet-telemedicina.supabase.co"/>
+<div class="absolute right-2 flex items-center gap-1">
+<button class="px-2 py-1 rounded-lg hover:bg-surface-container-high text-on-surface-variant text-label-sm font-medium transition-colors flex items-center gap-1" onclick="copyToClipboard('https://drvet-telemedicina.supabase.co', this)" type="button">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span>Copiar</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between text-label-sm font-mono text-on-surface-variant px-1">
+<span class="text-primary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>Subdomínio roteado: us-east-1.aws</span>
+</span>
+<span>Porta 443 (HTTP/2 enabled)</span>
+</div>
+</div>
+<!-- Field 2: Anon / Public Key -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" for="supabase-anon-key">
+<span>Project API Key (Public Anon Key)</span>
+</label>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1 font-mono">
+<span class="material-symbols-outlined text-xs">key</span>
+<span>JWT v2 • Sujeito a RLS</span>
+</span>
+</div>
+<div class="relative flex items-center">
+<span class="absolute left-3.5 text-secondary material-symbols-outlined text-lg">public</span>
+<input class="w-full pl-10 pr-24 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-mono text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container transition-all truncate" id="supabase-anon-key" readonly="" type="text" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRydmV0LXRlbGVtZWRpY2luYSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA5ODIxMTAwLCJleHAiOjIwMjU0ODEwMDB9.7T84P0LzF_e51pQh89yKnmvC719XwDrvetAlpha"/>
+<div class="absolute right-2 flex items-center gap-1">
+<button class="px-2 py-1 rounded-lg hover:bg-surface-container-high text-on-surface-variant text-label-sm font-medium transition-colors flex items-center gap-1" onclick="copyToClipboard(document.getElementById('supabase-anon-key').value, this)" type="button">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span>Copiar</span>
+</button>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant px-1">
+                  Chave segura para utilização nos aplicativos clientes (App do Veterinário e App do Tutor). Protegida por Row Level Security em todas as consultas.
+                </p>
+</div>
+<!-- Field 3: Service Role Key (Secret Bypass) -->
+<div class="space-y-1.5 p-4 rounded-xl bg-surface-container-low/50">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5" for="supabase-service-key">
+<span class="material-symbols-outlined text-error text-base">lock</span>
+<span>Service Role Key (Secret / Bypass RLS para Backend DrVet)</span>
+</label>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">vpn_key</span>
+<span>AES-256 no Vault</span>
+</span>
+</div>
+<div class="relative flex items-center">
+<span class="absolute left-3.5 text-error material-symbols-outlined text-lg">admin_panel_settings</span>
+<input class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface font-mono text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container transition-all" id="supabase-service-key" readonly="" type="password" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRydmV0LXRlbGVtZWRpY2luYSIsInJvbGUiOiJzZXJ2aWNlX3JvbGUiLCJpYXQiOjE3MDk4MjExMDAsImV4cCI6MjAyNTQ4MTAwMH0.B91Xk24M_SecureDrVetBackendMasterSecretBypassRLS"/>
+<div class="absolute right-2 flex items-center gap-1">
+<button class="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant transition-colors" onclick="toggleVisibility('supabase-service-key', this)" title="Revelar/Ocultar chave" type="button">
+<span class="material-symbols-outlined text-base">visibility</span>
+</button>
+<button class="px-2 py-1 rounded-lg hover:bg-surface-container text-on-surface-variant text-label-sm font-medium transition-colors flex items-center gap-1" onclick="copyToClipboard(document.getElementById('supabase-service-key').value, this)" type="button">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1 text-label-sm text-on-surface-variant">
+<span class="text-error font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">warning</span>
+<span>Atenção:</span>
+</span>
+<span>Nunca exponha esta chave no frontend client-side. Utilizada exclusivamente pelas funções de webhooks de repasse financeiro e emissão de laudos.</span>
+</div>
+</div>
+<!-- Field 4: Direct Connection String & Supavisor Pooler -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span>Direct Connection (Porta 5432)</span>
+</label>
+<span class="text-primary font-mono text-xs font-semibold">PostgreSQL Session</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full px-3 py-2 rounded-xl bg-surface-container-low text-on-surface font-mono text-body-sm focus:outline-none truncate" readonly="" type="text" value="postgresql://postgres:[SENHA]@db.drvet-telemedicina.supabase.co:5432/postgres"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Para migrações e DDL estrutural.</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span>Supavisor Connection Pooler (Porta 6543)</span>
+</label>
+<span class="text-primary font-mono text-xs font-semibold">PGBouncer Transacional</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full px-3 py-2 rounded-xl bg-surface-container-low text-on-surface font-mono text-body-sm focus:outline-none truncate" readonly="" type="text" value="postgresql://postgres.drvet:[SENHA]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Para APIs serverless com split de pagamentos em alta concorrência.</span>
+</div>
+</div>
+<!-- Database Password Card State -->
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest/60 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">password</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Senha do Banco de Dados (Database Password)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Última rotação há 14 dias via Vault HSM DrVet</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+<span>Criptografado &amp; Ativo</span>
+</span>
+<button class="px-3 py-1 rounded-lg hover:bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold transition-colors" onclick="alert('Iniciando modal de rotação segura de senha com backup automático no Supabase.');" type="button">
+                    Alterar
+                  </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Schema & Realtime Handshake Console -->
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm space-y-4">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-inverse-surface text-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">terminal</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                    Console de Diagnóstico &amp; Verificação de Handshake
+                  </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Execução remota da rotina de integridade PostgREST e Extensões Vetoriais.
+                  </p>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold flex items-center gap-1.5 transition-colors" onclick="runSqlHealthCheck()" type="button">
+<span class="material-symbols-outlined text-sm text-primary">play_arrow</span>
+<span>Re-executar Teste SQL</span>
+</button>
+</div>
+<!-- Terminal / Code Window -->
+<div class="rounded-xl bg-inverse-surface text-inverse-on-surface p-4 font-mono text-body-sm shadow-inner space-y-2">
+<div class="flex items-center justify-between border-b border-surface-container-highest/10 pb-2 text-xs text-surface-container-high">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed"></span>
+<span class="ml-2 font-semibold text-tertiary-fixed">drvet-telemedicina@supabase:~$ psql</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-primary-fixed font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed animate-pulse"></span>
+                    HANDSHAKE OK
+                  </span>
+<span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-tertiary-fixed text-[11px]">28ms</span>
+</div>
+</div>
+<!-- Terminal Output Display -->
+<div class="space-y-1.5 pt-1 text-xs" id="terminal-content">
+<p class="text-tertiary-fixed flex items-center gap-1">
+<span class="text-surface-container-high">&gt;</span>
+<span>SELECT check_supabase_health();</span>
+</p>
+<div class="p-2.5 rounded-lg bg-black/40 text-primary-fixed space-y-1">
+<p class="text-inverse-on-surface">{</p>
+<p class="pl-4"><span class="text-secondary-fixed">"status"</span>: <span class="text-tertiary-fixed">"ONLINE"</span>,</p>
+<p class="pl-4"><span class="text-secondary-fixed">"db_version"</span>: <span class="text-tertiary-fixed">"PostgreSQL 15.6 on aarch64-unknown-linux-gnu"</span>,</p>
+<p class="pl-4"><span class="text-secondary-fixed">"supavisor_pool_size"</span>: <span class="text-primary-fixed">20</span>,</p>
+<p class="pl-4"><span class="text-secondary-fixed">"active_connections"</span>: <span class="text-primary-fixed">4</span>,</p>
+<p class="pl-4"><span class="text-secondary-fixed">"latency_ms"</span>: <span class="text-primary-fixed">28</span>,</p>
+<p class="pl-4"><span class="text-secondary-fixed">"extensions"</span>: [<span class="text-tertiary-fixed">"uuid-ossp"</span>, <span class="text-tertiary-fixed">"pgcrypto"</span>, <span class="text-tertiary-fixed">"vector"</span>, <span class="text-tertiary-fixed">"pg_stat_statements"</span>],</p>
+<p class="pl-4"><span class="text-secondary-fixed">"rls_enforced_tables"</span>: <span class="text-primary-fixed">14</span></p>
+<p class="text-inverse-on-surface">}</p>
+</div>
+<p class="text-surface-container-high text-[11px] pt-1">
+                  Query executada via PostgREST RPC autenticado • (1 row returned, 28ms)
+                </p>
+</div>
+</div>
+<!-- Health Checklist with Realtime Status Items -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Project URL &amp; SSL Acessíveis</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">HTTP 200 OK via PostgREST na porta 443 com certificado ativo.</span>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Chaves Anon e Service Role</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Assinatura HMAC SHA-256 válida para o projeto drvet-telemedicina.</span>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Túnel Pooler Transacional</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Portas 5432 e 6543 (Supavisor) ativas com failover georredundante.</span>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Extensão pgvector Ativa</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Habilitada para indexação semântica e triagem preditiva de sintomas clínicos.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Modules Integration & Recent DB Operations (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Integrated Modules Card -->
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">layers</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Módulos Supabase</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-semibold">4/4 Ativos</span>
+</div>
+<div class="space-y-3">
+<!-- Module 1: Auth -->
+<div class="p-3.5 rounded-xl bg-surface-container-low space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">badge</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Auth &amp; Identidade Médica</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Autenticação JWT de veterinários com validação CRMV, MFA via TOTP e conformidade LGPD para tutores.
+                </p>
+<div class="flex items-center gap-2 text-label-sm text-secondary font-mono">
+<span>Provider: Email + MagicLink</span>
+<span>•</span>
+<span>MFA: Ativo</span>
+</div>
+</div>
+<!-- Module 2: Schemas & Tables -->
+<div class="p-3.5 rounded-xl bg-surface-container-low space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">table_chart</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Database &amp; Schemas</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Tabelas com RLS ativo: <code class="text-xs bg-surface-container-highest/60 px-1 py-0.5 rounded text-on-surface font-mono">tb_consultas</code>, <code class="text-xs bg-surface-container-highest/60 px-1 py-0.5 rounded text-on-surface font-mono">tb_receitas_digitais</code>, <code class="text-xs bg-surface-container-highest/60 px-1 py-0.5 rounded text-on-surface font-mono">tb_gateway_configs</code> e <code class="text-xs bg-surface-container-highest/60 px-1 py-0.5 rounded text-on-surface font-mono">tb_empresas_parceiras</code>.
+                </p>
+<div class="flex items-center gap-2 text-label-sm text-secondary font-mono">
+<span>14 Tabelas</span>
+<span>•</span>
+<span>RLS: 100% Cobertura</span>
+</div>
+</div>
+<!-- Module 3: Realtime Listeners -->
+<div class="p-3.5 rounded-xl bg-surface-container-low space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">sync_alt</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Realtime Change Stream</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Transmissão imediata de confirmações de pagamento (Asaas/Mercado Pago) e status de fila de teleconsultas em &lt; 100ms.
+                </p>
+<div class="flex items-center gap-2 text-label-sm text-secondary font-mono">
+<span>Replication: Enabled</span>
+<span>•</span>
+<span>Wal2json v2</span>
+</div>
+</div>
+<!-- Module 4: Storage S3 Buckets -->
+<div class="p-3.5 rounded-xl bg-surface-container-low space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-lg">inventory_2</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Supabase Storage S3</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Buckets criptografados em repouso: <span class="font-semibold text-on-surface">receitas-assinadas-icp</span> e <span class="font-semibold text-on-surface">exames-laudos-pdf</span> com URLs pré-assinadas com expiração programada.
+                </p>
+<div class="flex items-center gap-2 text-label-sm text-secondary font-mono">
+<span>2 Buckets Privados</span>
+<span>•</span>
+<span>KMS AES-256</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-Time Database Activity Logs -->
+<div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-xl">history</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Logs de Transações</h3>
+</div>
+<span class="text-primary font-mono text-xs font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                Live
+              </span>
+</div>
+<div class="space-y-2.5 font-mono text-xs">
+<!-- Log Item 1 -->
+<div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-primary font-bold">INSERT</span>
+<span class="text-on-surface-variant">há 2 min</span>
+</div>
+<div class="text-on-surface font-semibold truncate">public.tb_gateway_configs</div>
+<div class="text-on-surface-variant text-[11px] truncate">provider: 'asaas' | split: 2.9% | status: OK</div>
+</div>
+<!-- Log Item 2 -->
+<div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-secondary font-bold">UPDATE</span>
+<span class="text-on-surface-variant">há 5 min</span>
+</div>
+<div class="text-on-surface font-semibold truncate">public.tb_receitas_digitais</div>
+<div class="text-on-surface-variant text-[11px] truncate">status: 'ASSINADA_ICP' | id: 'rec_9921a'</div>
+</div>
+<!-- Log Item 3 -->
+<div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-bold">SELECT</span>
+<span class="text-on-surface-variant">há 9 min</span>
+</div>
+<div class="text-on-surface font-semibold truncate">public.tb_pets</div>
+<div class="text-on-surface-variant text-[11px] truncate">unidade: 'cd_moema_001' | count: 48 pets</div>
+</div>
+</div>
+<!-- Quick External Jump Links -->
+<div class="pt-3 border-t border-surface-container-highest/20 flex flex-col gap-2">
+<a class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold flex items-center justify-between transition-colors" href="https://supabase.com/dashboard" rel="noopener noreferrer" target="_blank">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">open_in_new</span>
+<span>Abrir Supabase Studio Oficial</span>
+</div>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">chevron_right</span>
+</a>
+<a class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold flex items-center justify-between transition-colors" href="#" onclick="alert('Manual de Migrações e Schemas DrVet v2.4 aberto em nova guia.'); return false;">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base">description</span>
+<span>Documentação de Migrations DrVet</span>
+</div>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">chevron_right</span>
+</a>
+<a class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold flex items-center justify-between transition-colors" href="#" onclick="alert('Canal direto DevOps DrVet acionado via Slack e Chamado Prioritário.'); return false;">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">support</span>
+<span>Acionar Suporte DevOps DrVet</span>
+</div>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Security & Encryption Banner at Bottom -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-lg">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Arquitetura de Isolamento Hospitalar DrVet</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Todas as transações veterinárias e prontuários possuem isolamento de tenant via RLS (Row Level Security) e chaves cifradas em repouso por Hardware Security Modules (HSM).
+            </span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-3 py-1 rounded-full bg-surface-container text-primary font-mono text-label-sm font-semibold">
+            PostgreSQL 15.6 • Supabase v2
+          </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function toggleVisibility(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.textContent = isPassword ? 'visibility_off' : 'visibility';
+    }
+  }
+
+  function copyToClipboard(text, btn) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm text-primary">check</span> <span class="text-primary font-bold">Copiado!</span>';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      });
+    } else {
+      alert('Texto copiado com sucesso!');
+    }
+  }
+
+  function triggerPingTest() {
+    const btn = document.getElementById('btn-ping');
+    const icon = document.getElementById('ping-icon');
+    const text = document.getElementById('ping-text');
+    const badge = document.getElementById('ping-badge');
+    
+    if (!btn || !icon || !text || !badge) return;
+
+    icon.classList.add('animate-spin');
+    text.textContent = 'Executando Handshake...';
+    badge.textContent = '...';
+
+    setTimeout(() => {
+      icon.classList.remove('animate-spin');
+      text.textContent = 'Testar Ping PostgREST';
+      const latencies = ['24ms', '28ms', '31ms', '22ms'];
+      const randomLatency = latencies[Math.floor(Math.random() * latencies.length)];
+      badge.textContent = randomLatency;
+      alert(`Handshake com Supabase PostgREST (HTTPS 443) efetuado com sucesso!\n• Status: 200 OK\n• Latência: ${randomLatency}\n• Protocolo: HTTP/2 TLS 1.3\n• Servidor: us-east-1 (AWS)`);
+    }, 700);
+  }
+
+  function promptRegenerateJwt() {
+    const confirmRegen = confirm('Atenção: A rotação do JWT Secret invalidará as sessões de veterinários e tutores ativas no momento.\nDeseja gerar um novo par de chaves JWT v2 com rotação automática no Vault?');
+    if (confirmRegen) {
+      alert('Nova chave JWT Secret provisionada no Supabase Vault com sucesso!\nAs credenciais foram propagadas de forma segura e os tokens antigos foram revogados.');
+    }
+  }
+
+  function runSqlHealthCheck() {
+    const terminal = document.getElementById('terminal-content');
+    if (!terminal) return;
+
+    terminal.classList.add('opacity-50');
+    setTimeout(() => {
+      terminal.classList.remove('opacity-50');
+      const latencies = [24, 28, 30, 26];
+      const randomMs = latencies[Math.floor(Math.random() * latencies.length)];
+      alert(`Rotina SQL SELECT check_supabase_health() finalizada.\n• Resultado: ONLINE\n• Latência de Pool: ${randomMs}ms\n• RLS: 14/14 tabelas protegidas.`);
+    }, 500);
+  }
+
+  function saveSupabaseVault() {
+    alert('Configurações salvas e criptografadas no Vault DrVet com sucesso!\n• Project URL atualizada\n• Sincronização do Supabase BaaS e Realtime ativada para PetLove Farma (CD Moema).');
+  }
+</script></main></div><div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xl overflow-y-auto" id="modal-gateway-wizard"><div class="relative w-full max-w-4xl bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden my-auto flex flex-col"><div class="flex items-center justify-between p-space-md bg-surface-container-low border-b border-surface-container-highest/10"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-xl">magic_button</span></div><div><div class="flex items-center gap-2"><h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Conectar Gateway de Pagamento &amp; Sincronizar Banco de Dados</h3><span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-label-sm font-semibold">Configuração Guiada em 2 Minutos</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Assistente inteligente para credenciamento de API e mapeamento de persistência de dados.</p></div></div><button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" onclick="document.getElementById('modal-gateway-wizard').style.display='none'" type="button"><span class="material-symbols-outlined text-lg">close</span></button></div><div class="p-space-lg space-y-space-md max-h-[768px] overflow-y-auto"><div class="space-y-space-xs p-space-md rounded-xl bg-surface-container-low/60 border border-surface-container-highest/20"><div class="flex items-center justify-between"><div class="flex items-center gap-2 text-primary"><span class="material-symbols-outlined text-lg">database</span><span class="font-label-lg text-label-lg font-bold text-on-surface">3. Mapeamento &amp; Persistência no Banco de Dados (Schema Direct Bind)</span></div><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-mono text-xs font-semibold">PostgreSQL 16 / Encrypted Vault</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ao confirmar, os parâmetros de comunicação serão salvos diretamente na tabela de gateways da unidade PetLove Farma (CD Moema).</p><div class="p-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface font-mono text-body-sm"><div class="flex items-center justify-between text-xs text-surface-container-high pb-1 border-b border-surface-container-highest/10"><span class="">TABELA DE DESTINO: public.tb_gateway_configs</span><div class="flex items-center gap-2"><span class="text-primary-fixed font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span> INSERT_READY • CONSTRAINTS OK</span><span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-tertiary-fixed font-mono text-xs">12ms</span></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-space-md gap-y-1 pt-2 text-xs"><div class="flex justify-between"><span class="text-tertiary-fixed">unidade_id (FK):</span><span class="text-secondary-fixed">'cd_moema_001'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">provider:</span><span class="text-secondary-fixed">'asaas'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">api_token_hash:</span><span class="text-primary-fixed">'SHA256:d8a9e...3c'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">sync_status:</span><span class="text-primary-fixed">'CONNECTED'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_wallet_id:</span><span class="text-secondary-fixed">'wallet_drvet_991'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_percentage (CHECK):</span><span class="text-primary-fixed">2.90%</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">pix_repasse_key:</span><span class="text-secondary-fixed truncate max-w-[170px]">'financeiro@petlovefarma.com.br'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">last_ping_latency:</span><span class="text-primary-fixed">'48ms'</span></div></div><div class="mt-2 pt-2 border-t border-surface-container-highest/10 text-xs text-surface-container-high font-mono flex items-center justify-between flex-wrap gap-1"><span class="">Constraints validadas: <span class="text-primary-fixed">NOT NULL</span>, <span class="text-primary-fixed">FOREIGN KEY(unidade_id)</span>, <span class="text-primary-fixed">CHECK(split &gt;= 0 AND split &lt;= 100)</span></span><span class="text-tertiary-fixed font-bold">1 row affected (12ms)</span></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-space-xs"><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Criptografar Chave de API no Vault com AES-256-GCM</span></label><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Auto-provisionar tabelas de Webhooks e Transações no BD</span></label></div></div><div class="space-y-space-xs"><label class="font-label-md text-label-md text-on-surface font-semibold">1. Selecione o Gateway / Provedor Financeiro</label><div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm"><div class="p-space-sm rounded-xl border-2 border-primary-container bg-surface-container-low/50 cursor-pointer flex items-start gap-space-sm relative shadow-sm"><span class="w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-xs mt-0.5"><span class="material-symbols-outlined text-sm font-bold">check</span></span><div class="flex-1"><div class="flex items-center justify-between"><span class="font-label-lg text-label-lg font-bold text-on-surface">Asaas Pagamentos</span><span class="px-2 py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm font-semibold">Recomendado</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Split Automático de Tarifas DrVet, PIX BaaS D+0/D+1 e Boletos de Cobrança.</p></div></div><div class="p-space-sm rounded-xl border border-surface-container-highest/40 bg-surface-container-lowest hover:bg-surface-container-low/40 cursor-pointer flex items-start gap-space-sm opacity-85 transition-colors"><span class="w-5 h-5 rounded-full border border-outline-variant flex items-center justify-center text-xs mt-0.5"></span><div class="flex-1"><div class="flex items-center justify-between"><span class="font-label-lg text-label-lg font-bold text-on-surface">Mercado Pago</span><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Cartões &amp; Point</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Checkout Transparente, Maquininhas Point presenciais e integração com QR Code.</p></div></div></div></div><div class="space-y-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><label class="font-label-md text-label-md text-on-surface font-semibold">2. Credenciais de API &amp; Ambiente de Conexão</label><span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-mono text-label-sm font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 5/5 Campos Validados em Tempo Real</span></div><div class="flex items-center bg-surface-container rounded-lg p-0.5 text-label-sm"><button class="px-2.5 py-1 rounded-md text-on-surface-variant hover:text-on-surface" type="button">Sandbox / Testes</button><button class="px-2.5 py-1 rounded-md bg-primary-container text-on-primary font-semibold shadow-sm flex items-center gap-1" type="button"><span class="w-1.5 h-1.5 rounded-full bg-white"></span> Produção (Live)</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-space-md"><div class="space-y-1"><div class="flex items-center justify-between"><label class="font-label-sm text-label-sm text-on-surface font-medium" for="wizard-api-key">Chave de API / Access Token (Produção)</label><span class="text-primary font-label-sm text-label-sm font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">verified</span> 64 chars • Asaas v3</span></div><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">key</span><input class="w-full pl-9 pr-10 py-2 rounded-lg bg-surface-container-low text-on-surface font-mono text-body-sm border border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container" id="wizard-api-key" readonly="" type="password" value="$aact_prod_99418290234120934812398572019482103984120938401923849102394"/><button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface" onclick="const el = document.getElementById('wizard-api-key'); el.type = el.type === 'password' ? 'text' : 'password';" type="button"><span class="material-symbols-outlined text-base">visibility</span></button></div><div class="flex items-center justify-between text-label-sm font-mono pt-0.5"><span class="text-primary flex items-center gap-1"><span class="material-symbols-outlined text-xs">check_circle</span> Formato Válido (Asaas API v3)</span><span class="text-on-surface-variant">Token verificado contra Produção</span></div></div><div class="space-y-1"><div class="flex items-center justify-between"><label class="font-label-sm text-label-sm text-on-surface font-medium" for="wizard-webhook-secret">Webhook Secret / Assinatura HMAC</label><span class="text-primary font-label-sm text-label-sm font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">security</span> 32 bytes SHA-256</span></div><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">shield_lock</span><input class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-mono text-body-sm border border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container" id="wizard-webhook-secret" readonly="" type="text" value="whsec_asaas_moema_882910fae19028cb912"/></div><div class="flex items-center justify-between text-label-sm font-mono pt-0.5"><span class="text-primary flex items-center gap-1"><span class="material-symbols-outlined text-xs">check_circle</span> Assinatura HMAC SHA-256 válida</span><span class="text-on-surface-variant">Integridade testada</span></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-1"><div class="space-y-1 md:col-span-1"><div class="flex items-center justify-between"><label class="font-label-sm text-label-sm text-on-surface font-medium" for="wizard-pix-key">Chave PIX de Repasse (BaaS)</label></div><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">qr_code_2</span><input class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-mono text-body-sm border border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container" id="wizard-pix-key" readonly="" type="text" value="financeiro@petlovefarma.com.br"/></div><div class="text-label-sm font-mono text-primary flex items-center gap-1 pt-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> Bacen DICT: PetLove Farma Ltda</div></div><div class="space-y-1"><div class="flex items-center justify-between"><label class="font-label-sm text-label-sm text-on-surface font-medium" for="wizard-wallet-id">Conta / Wallet ID Split</label><span class="text-primary font-mono text-xs">DrVet Wallet</span></div><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">account_balance_wallet</span><input class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-mono text-body-sm border border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container" id="wizard-wallet-id" readonly="" type="text" value="wallet_drvet_991"/></div><div class="text-label-sm font-mono text-primary flex items-center gap-1 pt-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> Validado no Bacen / Asaas Split</div></div><div class="space-y-1"><div class="flex items-center justify-between"><label class="font-label-sm text-label-sm text-on-surface font-medium" for="wizard-split-fee">Taxa Split Plataforma</label><span class="text-primary font-mono text-xs">Contrato B2B</span></div><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">percent</span><input class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-on-surface font-mono text-body-sm border border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container" id="wizard-split-fee" readonly="" type="text" value="2.9%"/></div><div class="text-label-sm font-mono text-primary flex items-center gap-1 pt-0.5"><span class="material-symbols-outlined text-xs">check_circle</span> Validado pelo contrato DrVet B2B</div></div></div><div class="mt-space-sm p-space-sm rounded-xl bg-primary-container/10 border border-primary-container/40 flex flex-col gap-1.5 animate-fadeIn shadow-sm"><div class="flex items-center justify-between flex-wrap gap-1"><div class="flex items-center gap-1.5 text-primary font-bold"><span class="material-symbols-outlined text-lg">check_circle</span><span class="font-label-md text-label-md">Conexão com a API Asaas (Produção v3) validada com sucesso!</span></div><span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary font-mono text-label-sm font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-surface-bright animate-pulse"></span> HTTP 200 OK • Handshake Bem-sucedido (48ms)</span></div><p class="font-body-sm text-body-sm text-on-surface">Token ativo com permissões de Split de Pagamentos, Cobrança PIX e Consulta de Saldo autorizadas.</p><div class="flex items-center flex-wrap gap-x-3 gap-y-1 pt-0.5 text-label-sm font-mono text-on-surface-variant border-t border-primary-container/20"><span class="">Conta Asaas: <strong class="text-on-surface">PetLove Farma Ltda (CNPJ 12.345.678/0001-90)</strong></span><span class="">•</span><span class="">TLS 1.3 Criptografado</span><span class="">•</span><span class="">IP Autorizado</span><span class="">•</span><span class="">Webhook Listener: ATIVO</span></div></div></div><div class="space-y-space-xs p-space-md rounded-xl bg-surface-container-low/60 border border-surface-container-highest/20"><div class="flex items-center justify-between"><div class="flex items-center gap-2 text-primary"><span class="material-symbols-outlined text-lg">database</span><span class="font-label-lg text-label-lg font-bold text-on-surface">3. Mapeamento &amp; Persistência no Banco de Dados (Schema Direct Bind)</span></div><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-mono text-xs font-semibold">PostgreSQL 16 / Encrypted Vault</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ao confirmar, os parâmetros de comunicação serão salvos diretamente na tabela de gateways da unidade PetLove Farma (CD Moema).</p><div class="p-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface font-mono text-body-sm"><div class="flex items-center justify-between text-xs text-surface-container-high pb-1 border-b border-surface-container-highest/10"><span class="">TABELA DE DESTINO: public.tb_gateway_configs</span><div class="flex items-center gap-2"><span class="text-primary-fixed font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span> INSERT_READY • CONSTRAINTS OK</span><span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-tertiary-fixed font-mono text-xs">12ms</span></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-space-md gap-y-1 pt-2 text-xs"><div class="flex justify-between"><span class="text-tertiary-fixed">unidade_id (FK):</span><span class="text-secondary-fixed">'cd_moema_001'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">provider:</span><span class="text-secondary-fixed">'asaas'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">api_token_hash:</span><span class="text-primary-fixed">'SHA256:d8a9e...3c'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">sync_status:</span><span class="text-primary-fixed">'CONNECTED'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_wallet_id:</span><span class="text-secondary-fixed">'wallet_drvet_991'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_percentage (CHECK):</span><span class="text-primary-fixed">2.90%</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">pix_repasse_key:</span><span class="text-secondary-fixed truncate max-w-[170px]">'financeiro@petlovefarma.com.br'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">last_ping_latency:</span><span class="text-primary-fixed">'48ms'</span></div></div><div class="mt-2 pt-2 border-t border-surface-container-highest/10 text-xs text-surface-container-high font-mono flex items-center justify-between flex-wrap gap-1"><span class="">Constraints validadas: <span class="text-primary-fixed">NOT NULL</span>, <span class="text-primary-fixed">FOREIGN KEY(unidade_id)</span>, <span class="text-primary-fixed">CHECK(split &gt;= 0 AND split &lt;= 100)</span></span><span class="text-tertiary-fixed font-bold">1 row affected (12ms)</span></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-space-xs"><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Criptografar Chave de API no Vault com AES-256-GCM</span></label><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Auto-provisionar tabelas de Webhooks e Transações no BD</span></label></div></div><div class="space-y-space-xs p-space-md rounded-xl bg-surface-container-low/60 border border-surface-container-highest/20"><div class="flex items-center justify-between"><div class="flex items-center gap-2 text-primary"><span class="material-symbols-outlined text-lg">database</span><span class="font-label-lg text-label-lg font-bold text-on-surface">3. Mapeamento &amp; Persistência no Banco de Dados (Schema Direct Bind)</span></div><span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-mono text-xs font-semibold">PostgreSQL 16 / Encrypted Vault</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ao confirmar, os parâmetros de comunicação serão salvos diretamente na tabela de gateways da unidade PetLove Farma (CD Moema).</p><div class="p-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface font-mono text-body-sm"><div class="flex items-center justify-between text-xs text-surface-container-high pb-1 border-b border-surface-container-highest/10"><span class="">TABELA DE DESTINO: public.tb_gateway_configs</span><div class="flex items-center gap-2"><span class="text-primary-fixed font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span> INSERT_READY • CONSTRAINTS OK</span><span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-tertiary-fixed font-mono text-xs">12ms</span></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-space-md gap-y-1 pt-2 text-xs"><div class="flex justify-between"><span class="text-tertiary-fixed">unidade_id (FK):</span><span class="text-secondary-fixed">'cd_moema_001'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">provider:</span><span class="text-secondary-fixed">'asaas'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">api_token_hash:</span><span class="text-primary-fixed">'SHA256:d8a9e...3c'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">sync_status:</span><span class="text-primary-fixed">'CONNECTED'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_wallet_id:</span><span class="text-secondary-fixed">'wallet_drvet_991'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">split_percentage (CHECK):</span><span class="text-primary-fixed">2.90%</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">pix_repasse_key:</span><span class="text-secondary-fixed truncate max-w-[170px]">'financeiro@petlovefarma.com.br'</span></div><div class="flex justify-between"><span class="text-tertiary-fixed">last_ping_latency:</span><span class="text-primary-fixed">'48ms'</span></div></div><div class="mt-2 pt-2 border-t border-surface-container-highest/10 text-xs text-surface-container-high font-mono flex items-center justify-between flex-wrap gap-1"><span class="">Constraints validadas: <span class="text-primary-fixed">NOT NULL</span>, <span class="text-primary-fixed">FOREIGN KEY(unidade_id)</span>, <span class="text-primary-fixed">CHECK(split &gt;= 0 AND split &lt;= 100)</span></span><span class="text-tertiary-fixed font-bold">1 row affected (12ms)</span></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-space-xs"><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Criptografar Chave de API no Vault com AES-256-GCM</span></label><label class="flex items-center gap-2 cursor-pointer"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary cursor-pointer accent-primary-container" type="checkbox"/><span class="font-label-sm text-label-sm text-on-surface">Auto-provisionar tabelas de Webhooks e Transações no BD</span></label></div></div></div><div class="p-space-md bg-surface-container-low border-t border-surface-container-highest/10 flex flex-col sm:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-2 text-primary font-label-sm text-label-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="">Validado via TLS 1.3 com mutual endpoint check</span></div><div class="flex items-center gap-space-sm w-full sm:w-auto"><button class="flex-1 sm:flex-initial px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5 border-primary-container" onclick="alert('Conexão com API do Asaas v3 testada com sucesso! Resposta: 200 OK (84ms).');" type="button"><span class="material-symbols-outlined text-base text-primary">verified</span><span class="text-primary font-bold">Conexão Verificada ✓</span></button><button class="flex-1 sm:flex-initial px-space-lg py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 ring-2" onclick="alert('Integração com Asaas salva com sucesso no banco de dados (tb_gateway_configs) e sincronização ativada!'); document.getElementById('modal-gateway-wizard').style.display='none';" type="button"><span class="material-symbols-outlined text-base animate-pulse">cloud_done</span><span class="">Salvar no Banco &amp; Ativar</span><span class="ml-2 px-1.5 py-0.5 rounded-full bg-surface-container-lowest text-primary text-xs font-bold">Pronto</span></button></div></div></div></div>
+</body></html>

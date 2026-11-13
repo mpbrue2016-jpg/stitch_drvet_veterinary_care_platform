@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-highest":"#cbe6fc","tertiary-fixed":"#72f8e0","inverse-surface":"#183344","secondary-fixed":"#c7e7ff","outline":"#6d7a75","surface-bright":"#f6faff","on-primary-fixed":"#002019","error":"#ba1a1a","primary":"#006b57","surface-container-high":"#d4ebff","surface-container-low":"#ebf5ff","inverse-on-surface":"#e5f2ff","surface-container":"#dff0ff","secondary-container":"#c0e4ff","on-primary-fixed-variant":"#005141","inverse-primary":"#5ddbbb","error-container":"#ffdad6","on-secondary-container":"#44677d","on-surface-variant":"#3d4945","primary-container":"#13a88a","on-primary-container":"#003529","on-tertiary-fixed-variant":"#005046","on-tertiary":"#ffffff","tertiary-fixed-dim":"#52dbc5","tertiary-container":"#00a894","secondary-fixed-dim":"#a7cbe5","on-surface":"#001e2e","on-secondary":"#ffffff","surface-dim":"#c2def4","background":"#f6faff","on-secondary-fixed-variant":"#274a60","surface-tint":"#006b57","on-error-container":"#93000a","secondary":"#406279","on-tertiary-container":"#00352d","on-tertiary-fixed":"#00201b","surface":"#f6faff","on-background":"#001e2e","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-variant":"#cbe6fc","tertiary":"#006b5d","on-secondary-fixed":"#001e2e","primary-fixed":"#7cf8d6","on-primary":"#ffffff","outline-variant":"#bccac3","primary-fixed-dim":"#5ddbbb"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","margin-mobile":"1rem","space-lg":"1.5rem","space-xl":"2.5rem","gutter-mobile":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter":"1.5rem","margin":"2rem"},"fontFamily":{"body-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},"fontSize":{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 flex items-center px-space-lg gap-space-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-2xl">medical_services</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DrVet</span><span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">B2B</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Portal de Anunciantes</span></div></div><div class="px-space-md py-space-sm"><div class="p-space-sm rounded-xl bg-surface-container-low flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-xl">verified</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Parceiro Credenciado</span><span class="font-label-md text-label-md text-on-surface font-semibold truncate max-w-[170px]">PetLove Farma &amp; Clin</span></div></div></div><nav class="flex-1 px-space-md py-space-sm space-y-1 overflow-y-auto" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="visao-geral" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span class="font-label-lg text-label-lg">Visão Geral</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="anuncios-e-campanhas" href="#"><span class="material-symbols-outlined text-xl">campaign</span><span class="font-label-lg text-label-lg">Anúncios &amp; Campanhas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="receitas-e-pedidos" href="#"><span class="material-symbols-outlined text-xl">receipt_long</span><span class="font-label-lg text-label-lg">Receitas &amp; Pedidos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="exames-e-laudos" href="#"><span class="material-symbols-outlined text-xl">vital_signs</span><span class="font-label-lg text-label-lg">Exames &amp; Laudos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="catalogo-e-precos" href="#"><span class="material-symbols-outlined text-xl">inventory_2</span><span class="font-label-lg text-label-lg">Catálogo &amp; Preços</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="faturamento-e-repasses" href="#"><span class="material-symbols-outlined text-xl">payments</span><span class="font-label-lg text-label-lg">Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="configuracoes-de-integracao-erp" href="#"><span class="material-symbols-outlined text-xl">sync_alt</span><span class="font-label-lg text-label-lg">Configurações de Integração ERP</span></a></nav><div class="p-space-md mt-auto"><div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-lg">support_agent</span><span class="font-label-md text-label-md font-semibold">Canal B2B DrVet</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Suporte técnico e homologação de APIs clínicas.</p><a class="mt-space-xs inline-flex items-center gap-1 font-label-md text-label-md text-primary font-semibold hover:underline" data-path="suporte-b2b" href="#">Abrir Chamado <span class="material-symbols-outlined text-sm">arrow_forward</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-bright/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-sm rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-primary text-xl">store</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Unidade Operacional</span><div class="flex items-center gap-space-xs cursor-pointer"><span class="font-label-lg text-label-lg text-on-surface font-semibold">PetLove Farma - CD Moema</span><span class="material-symbols-outlined text-on-surface-variant text-base">expand_more</span></div></div></div><div class="hidden xl:flex items-center gap-space-xs px-space-md py-space-sm rounded-full bg-surface-container-low text-primary"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-md text-label-md font-semibold">Destaque Patrocinado Ativo</span><span class="font-label-sm text-label-sm px-space-xs rounded bg-surface-container-highest text-on-secondary-fixed">Válido até 31/12</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><button aria-label="Notificações em tempo real" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-bright"></span></div><div class="h-8 w-px bg-outline-variant/40"></div><div class="flex items-center gap-space-sm"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-lg text-label-lg text-on-surface font-bold leading-tight">Dr. Marcelo Antunes</span><span class="font-label-sm text-label-sm text-on-surface-variant">Gestor Comercial &amp; Credenciamento</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Content Canvas Container -->
+<div class="p-space-lg max-w-[1440px] mx-auto w-full flex flex-col gap-space-lg">
+<!-- Top Executive Header & Global Filter Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider font-bold">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+            Live Analytics
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Sincronizado via Webhook ERP em tempo real</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-bold">
+          Painel de Desempenho B2B <span class="text-on-surface-variant font-normal">|</span> Anúncios &amp; Vendas de Receitas
+        </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex flex-wrap items-center gap-x-2 gap-y-1">
+<strong class="font-semibold text-on-surface">PetLove Farma &amp; Saúde Animal</strong>
+<span class="inline-block w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>CNPJ: 18.234.567/0001-89</span>
+<span class="inline-block w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">stars</span> Plano Destaque Patrocinado Ativo (Renovação em 22 dias)
+          </span>
+</p>
+</div>
+<!-- Action Selectors and Exporters -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center bg-surface-container-lowest shadow-sm rounded-xl px-space-md py-space-sm gap-space-xs text-on-surface">
+<span class="material-symbols-outlined text-primary text-xl">date_range</span>
+<select class="bg-transparent font-label-md text-label-md font-semibold text-on-surface outline-none cursor-pointer">
+<option>Últimos 30 dias (01 Out - 31 Out 2024)</option>
+<option>Hoje (Tempo Real)</option>
+<option>Últimos 7 dias</option>
+<option>Este Mês (Novembro 2024)</option>
+<option>Personalizado...</option>
+</select>
+</div>
+<div class="flex items-center bg-surface-container-lowest shadow-sm rounded-xl px-space-md py-space-sm gap-space-xs text-on-surface">
+<span class="material-symbols-outlined text-primary text-xl">location_on</span>
+<select class="bg-transparent font-label-md text-label-md font-semibold text-on-surface outline-none cursor-pointer">
+<option>CD Moema (Raio 35km - SP)</option>
+<option>CD Vila Mariana (Express)</option>
+<option>CD Alphaville (Barueri)</option>
+<option>Todas as Filiais Integradas</option>
+</select>
+</div>
+<button class="inline-flex items-center gap-space-xs bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface font-label-md text-label-md font-bold px-space-md py-2.5 rounded-xl shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg">download</span>
+          Relatório Fiscal / CSV
+        </button>
+</div>
+</div>
+<!-- Active Sponsored Alert & Campaign Optimization Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-container/20 via-surface-container-low to-surface-container-high p-space-md shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md relative z-10">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-2xl">verified</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">
+                Selo [RECOMENDADA] Ativo
+              </span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">Checkout Direto de Prescrições Veterinárias</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Suas ofertas de farmácia estão sendo exibidas como preferenciais para <strong class="text-on-surface font-semibold">8.420 tutores</strong> com teleconsultas finalizadas esta semana em SP Capital.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm flex-shrink-0">
+<div class="hidden sm:flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Orçamento Utilizado</span>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">R$ 500,00 <span class="font-normal text-on-surface-variant text-body-sm">/ R$ 800,00</span></span>
+</div>
+<button class="inline-flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md font-semibold px-space-md py-2.5 rounded-full hover:bg-tertiary transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg">tune</span>
+            Gerenciar Orçamento de Ads
+          </button>
+</div>
+</div>
+</div>
+<!-- 5 Key Performance Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+<!-- Card 1: Impressões -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Impressões de Anúncios</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">142.850</span>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> +18.4%
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">vs. mês anterior</p>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low/60 rounded-lg p-2 text-[11px] leading-tight text-on-surface-variant flex flex-col gap-1">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span>Pós-Teleconsulta:</span>
+<strong class="text-on-surface font-semibold">62%</strong>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm">
+<span>E-mail &amp; Whats ICP:</span>
+<strong class="text-on-surface font-semibold">28%</strong>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm">
+<span>Banners App Home:</span>
+<strong class="text-on-surface font-semibold">10%</strong>
+</div>
+</div>
+</div>
+<!-- Card 2: Receitas Abertas -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Receitas Visualizadas</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">mark_email_read</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">3.240</span>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> +24.1%
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Receitas com suas ofertas</p>
+</div>
+<div class="mt-space-sm pt-space-sm">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant mb-1">
+<span>Taxa de visualização</span>
+<strong class="text-primary font-bold">91.5%</strong>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 91.5%"></div>
+</div>
+</div>
+</div>
+<!-- Card 3: Pedidos Faturados -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Pedidos Faturados</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">shopping_cart_checkout</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">1.085</span>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> +15.2%
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Conversão de Receitas</p>
+</div>
+<div class="mt-space-sm pt-space-sm">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant mb-1">
+<span>Conversão: <strong>33.5%</strong></span>
+<span class="text-tertiary font-bold text-[10px]">Benchmark: 19%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+<!-- Card 4: GMV Volume Bruto -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">GMV Transacionado</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">monetization_on</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">R$ 238,9k</span>
+<span class="font-label-sm text-label-sm font-bold text-primary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> +21.8%
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">R$ 238.920,00 total</p>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low/60 rounded-lg p-2 text-label-sm font-label-sm text-on-surface flex justify-between items-center">
+<span class="text-on-surface-variant">Ticket Médio:</span>
+<strong class="font-bold text-on-surface">R$ 220,20 / ped</strong>
+</div>
+</div>
+<!-- Card 5: Repasse Líquido D+1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col justify-between bg-gradient-to-b from-surface-container-lowest to-surface-container-low/40">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-bold">Repasse Líquido D+1</span>
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+</div>
+</div>
+<div class="mt-space-md">
+<span class="font-headline-md text-headline-md font-bold text-on-surface leading-tight">R$ 231.991,32</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Taxa DrVet split: 2.9% (-R$ 6.928)</p>
+</div>
+<div class="mt-space-sm">
+<button class="w-full inline-flex items-center justify-center gap-1 bg-primary text-on-primary py-1.5 px-space-sm rounded-xl font-label-sm text-label-sm font-semibold hover:bg-tertiary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-base">savings</span>
+            Solicitar Saque / Extrato
+          </button>
+</div>
+</div>
+</div>
+<!-- Analytics Section: Trend Chart (60%) & ICP Conversion Funnel (40%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left 60%: Sales & Ad Impressions Trend Chart -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Curva de Vendas vs. Exibição de Anúncios</span>
+<span class="material-symbols-outlined text-on-surface-variant text-base cursor-help" title="Mostra a correlação direta entre picos de teleconsultas e compras imediatas">info</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Correlação diária com maior volume nos fins de semana e pós-triage</p>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Impressões Ads (x100)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pedidos Fechados</span>
+</div>
+</div>
+</div>
+<!-- Inline SVG Visualization Chart -->
+<div class="w-full h-64 flex flex-col justify-end relative pt-4">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 600 200">
+<defs>
+<lineargradient id="primaryAreaGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#13a88a" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#13a88a" stop-opacity="0.0"></stop>
+</lineargradient>
+<lineargradient id="secondaryAreaGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#406279" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#406279" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Grid lines -->
+<line opacity="0.4" stroke="#bccac3" stroke-dasharray="3,3" stroke-width="0.8" x1="0" x2="600" y1="40" y2="40"></line>
+<line opacity="0.4" stroke="#bccac3" stroke-dasharray="3,3" stroke-width="0.8" x1="0" x2="600" y1="90" y2="90"></line>
+<line opacity="0.4" stroke="#bccac3" stroke-dasharray="3,3" stroke-width="0.8" x1="0" x2="600" y1="140" y2="140"></line>
+<line opacity="0.6" stroke="#bccac3" stroke-width="1" x1="0" x2="600" y1="190" y2="190"></line>
+<!-- Secondary Path: Orders closed -->
+<path d="M 0,165 Q 50,150 100,160 T 200,110 T 300,130 T 400,75 T 500,90 T 600,45 L 600,190 L 0,190 Z" fill="url(#secondaryAreaGrad)"></path>
+<path d="M 0,165 Q 50,150 100,160 T 200,110 T 300,130 T 400,75 T 500,90 T 600,45" fill="none" stroke="#406279" stroke-width="2.5"></path>
+<!-- Primary Path: Impressions / Click trends -->
+<path d="M 0,130 Q 50,110 100,125 T 200,70 T 300,95 T 400,40 T 500,60 T 600,20 L 600,190 L 0,190 Z" fill="url(#primaryAreaGrad)"></path>
+<path d="M 0,130 Q 50,110 100,125 T 200,70 T 300,95 T 400,40 T 500,60 T 600,20" fill="none" stroke="#13a88a" stroke-width="3"></path>
+<!-- Interactive Highlight Points -->
+<circle cx="200" cy="70" fill="#13a88a" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="400" cy="40" fill="#13a88a" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="600" cy="20" fill="#006b57" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="400" cy="75" fill="#406279" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="600" cy="45" fill="#406279" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<!-- Day Labels -->
+<div class="flex justify-between text-on-surface-variant font-label-sm text-label-sm pt-2">
+<span>Semana 01 (Out)</span>
+<span>Semana 02 (Pico Triage)</span>
+<span>Semana 03 (Campanha Antipulgas)</span>
+<span>Semana 04 (Atual)</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between bg-surface-container-low rounded-xl px-space-md py-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-lg">insights</span>
+<span>Insight Algorítmico:</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+            Teleconsultas de dermatologia convertem <strong>42% a mais</strong> em compras de receitas até 2h após a emissão da receita ICP.
+          </p>
+</div>
+</div>
+<!-- Right 40%: ICP-Brasil Prescription Conversion Funnel -->
+<div class="lg:col-span-5 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<div>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Funil de Conversão ICP-Brasil</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Do diagnóstico médico à entrega do medicamento</p>
+</div>
+<span class="px-2 py-1 bg-surface-container text-on-surface font-label-sm text-label-sm rounded-lg font-bold">26.5% Final</span>
+</div>
+<div class="flex flex-col gap-2.5 my-space-xs">
+<!-- Step 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">1</span>
+                Teleconsultas com Prescrição Emitida
+              </span>
+<span class="font-bold text-on-surface">4.100 (100%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">2</span>
+                Oferta PetLove Farma Exibida (-15% OFF)
+              </span>
+<span class="font-bold text-on-surface">3.240 (79%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full rounded-full" style="width: 79%"></div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">3</span>
+                Tutor Selecionou sua Farmácia no App
+              </span>
+<span class="font-bold text-on-surface">2.150 (52%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary-fixed-dim h-full rounded-full" style="width: 52%"></div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">4</span>
+                Checkout Iniciado no Gateway DrVet
+              </span>
+<span class="font-bold text-on-surface">1.380 (34%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 34%"></div>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5 text-primary">
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs">5</span>
+                Pedido Pago &amp; Receita ICP Baixada
+              </span>
+<span class="font-bold text-primary">1.085 (26.5%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-3 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 26.5%"></div>
+</div>
+</div>
+</div>
+<div class="mt-space-sm p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Perda média de carrinho:</span>
+<span class="text-on-surface font-bold text-error">7.5% (Abaixo do mercado 22%)</span>
+</div>
+</div>
+</div>
+<!-- Middle Bento Grid: Top Selling Medications & Ad Campaign ROI Summary -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Top 5 Prescribed Products (8 Cols) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Medicamentos &amp; Produtos Mais Dispensados</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Itens com maior faturamento gerados exclusivamente pelas prescrições digitais</p>
+</div>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
+            Top 5 de 142 SKUs
+          </span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-space-sm px-space-md rounded-l-xl">Medicamento / SKU</th>
+<th class="py-space-sm px-space-sm">Laboratório</th>
+<th class="py-space-sm px-space-sm">Categoria</th>
+<th class="py-space-sm px-space-sm text-center">Dispensados</th>
+<th class="py-space-sm px-space-sm">Receita Total</th>
+<th class="py-space-sm px-space-md text-right rounded-r-xl">Estoque CD</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-surface-container-low">
+<!-- Item 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md font-semibold text-on-surface flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg">medication</span>
+</div>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">NexGard Spectra® 7,6 a 15,0 kg</span>
+<span class="block text-on-surface-variant text-[11px]">Comp. Mastigável Carrapato/Pulga</span>
+</div>
+</td>
+<td class="py-space-md px-space-sm text-on-surface-variant">Boehringer Ingelheim</td>
+<td class="py-space-md px-space-sm">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">
+                    Antiparasitário
+                  </span>
+</td>
+<td class="py-space-md px-space-sm text-center font-bold">412 un</td>
+<td class="py-space-md px-space-sm font-bold text-primary">R$ 59.534,00</td>
+<td class="py-space-md px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 98 un
+                  </span>
+</td>
+</tr>
+<!-- Item 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md font-semibold text-on-surface flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg">vital_signs</span>
+</div>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Ômega-3 Gold Pelos &amp; Articulações 1000mg</span>
+<span class="block text-on-surface-variant text-[11px]">Suplemento EPA/DHA Puro 60 caps</span>
+</div>
+</td>
+<td class="py-space-md px-space-sm text-on-surface-variant">NutriVet Labs</td>
+<td class="py-space-md px-space-sm">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                    Suplemento
+                  </span>
+</td>
+<td class="py-space-md px-space-sm text-center font-bold">385 un</td>
+<td class="py-space-md px-space-sm font-bold text-primary">R$ 29.125,25</td>
+<td class="py-space-md px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 140 un
+                  </span>
+</td>
+</tr>
+<!-- Item 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md font-semibold text-on-surface flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg">vaccines</span>
+</div>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Simparic 10 a 20 kg (Mastigável)</span>
+<span class="block text-on-surface-variant text-[11px]">Sarolaner 40mg c/ 3 comp</span>
+</div>
+</td>
+<td class="py-space-md px-space-sm text-on-surface-variant">Zoetis</td>
+<td class="py-space-md px-space-sm">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">
+                    Antiparasitário
+                  </span>
+</td>
+<td class="py-space-md px-space-sm text-center font-bold">290 un</td>
+<td class="py-space-md px-space-sm font-bold text-primary">R$ 37.410,00</td>
+<td class="py-space-md px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-error font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> 12 un (Repor)
+                  </span>
+</td>
+</tr>
+<!-- Item 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md font-semibold text-on-surface flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg">dermatology</span>
+</div>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Apoquel 5,4mg (Frasco c/ 20 comp)</span>
+<span class="block text-on-surface-variant text-[11px]">Maleato de Oclacitinib Anti-pruriginoso</span>
+</div>
+</td>
+<td class="py-space-md px-space-sm text-on-surface-variant">Zoetis</td>
+<td class="py-space-md px-space-sm">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                    Dermatológico
+                  </span>
+</td>
+<td class="py-space-md px-space-sm text-center font-bold">198 un</td>
+<td class="py-space-md px-space-sm font-bold text-primary">R$ 38.610,00</td>
+<td class="py-space-md px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 65 un
+                  </span>
+</td>
+</tr>
+<!-- Item 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-md px-space-md font-semibold text-on-surface flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</div>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Colírio Tobramicina 0,3% Vet</span>
+<span class="block text-on-surface-variant text-[11px]">Frasco Gotas 5ml Manipulado</span>
+</div>
+</td>
+<td class="py-space-md px-space-sm text-on-surface-variant">PharmaPet Lab</td>
+<td class="py-space-md px-space-sm">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+                    Oftalmológico
+                  </span>
+</td>
+<td class="py-space-md px-space-sm text-center font-bold">120 un</td>
+<td class="py-space-md px-space-sm font-bold text-primary">R$ 5.880,00</td>
+<td class="py-space-md px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 45 un
+                  </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right 4 Cols: Ad ROAS & Optimization Controls -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- ROAS Metric Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">ROI do Patrocínio DrVet</span>
+<span class="material-symbols-outlined text-primary">campaign</span>
+</div>
+<div class="my-space-md p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Custo Mensal da Assinatura:</span>
+<strong class="text-on-surface">R$ 590,00</strong>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Impulsionamento Extra Ads:</span>
+<strong class="text-on-surface">R$ 500,00</strong>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Faturamento Direto:</span>
+<strong class="text-primary font-bold">R$ 238.920,00</strong>
+</div>
+<div class="pt-space-xs mt-space-xs flex justify-between items-center">
+<span class="font-label-md text-label-md font-bold text-on-surface">ROAS Multiplicador:</span>
+<span class="text-headline-md font-headline-md font-extrabold text-primary">202.4x</span>
+</div>
+</div>
+<!-- Coupon Performance -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-label-md font-label-md">
+<span class="text-on-surface-variant">Cupom Automático <strong>'DRVETFARMA'</strong></span>
+<span class="text-primary font-bold">94% adesão</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              94% dos tutores fecharam o pedido com os 15% de desconto bonificado no split.
+            </p>
+</div>
+</div>
+<!-- Quick Optimization Triggers -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-xl">auto_fix_high</span>
+            Otimizações Recomendadas
+          </span>
+<button class="w-full text-left p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-between group" type="button">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">radar</span>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Expandir Raio para 50km</span>
+<span class="block text-on-surface-variant text-[11px]">+1.240 tutores potenciais em Barueri/ABC</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<button class="w-full text-left p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-between group" type="button">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+<div>
+<span class="block font-label-md text-label-md font-bold text-on-surface">Ativar Push Plantão Noturno</span>
+<span class="block text-on-surface-variant text-[11px]">Capturar farmácia 24h pós-urgências</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Live Real-Time Order Stream & Prescriptions Fulfillments -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-3 h-3 rounded-full bg-primary-container animate-pulse"></div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Dispensação de Pedidos em Tempo Real</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sincronização imediata de receitas digitais assinadas por tele-veterinários</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-xl gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">search</span>
+<input class="bg-transparent font-label-sm text-label-sm outline-none text-on-surface placeholder:text-on-surface-variant/70 w-56" placeholder="Buscar por paciente, tutor ou CRMV..." type="text"/>
+</div>
+<button class="p-2 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors" title="Atualizar dados" type="button">
+<span class="material-symbols-outlined text-lg">sync</span>
+</button>
+</div>
+</div>
+<!-- Real-Time Orders Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-space-sm px-space-md rounded-l-xl">Pedido / Receita</th>
+<th class="py-space-sm px-space-sm">Paciente &amp; Espécie</th>
+<th class="py-space-sm px-space-sm">Tutor</th>
+<th class="py-space-sm px-space-sm">Veterinário Prescritor</th>
+<th class="py-space-sm px-space-sm">Itens Prescritos</th>
+<th class="py-space-sm px-space-sm">Valor / Split</th>
+<th class="py-space-sm px-space-sm">Status Separação</th>
+<th class="py-space-sm px-space-md text-right rounded-r-xl">Ações Imediatas</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-surface-container-low">
+<!-- Row 1: Pipoca -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-space-md px-space-md">
+<span class="font-label-md text-label-md font-bold text-primary block">#DRV-89412</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">verified</span> ICP Cert. Válido
+                </span>
+</td>
+<td class="py-space-md px-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">
+                    🐕
+                  </div>
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Pipoca</span>
+<span class="text-[11px] text-on-surface-variant">Golden Ret. • 14.8kg</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Mariana Albuquerque</span>
+<span class="text-[11px] text-on-surface-variant">Moema, SP (Entrega Express)</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Dra. Camila Vasconcellos</span>
+<span class="text-[11px] text-primary font-semibold">CRMV-SP 42.189</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold block">NexGard Spectra + Ômega-3</span>
+<span class="text-[11px] text-on-surface-variant">2 produtos vinculados</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface block">R$ 220,15</span>
+<span class="text-[11px] text-primary font-semibold">PIX (Split D+1 Liq: R$ 213,76)</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+                  Em Separação CD Moema
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-low text-primary hover:bg-surface-container transition-colors" title="Visualizar Receita ICP" type="button">
+<span class="material-symbols-outlined text-lg">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-primary text-on-primary hover:bg-tertiary transition-colors" title="Imprimir Etiqueta Térmica" type="button">
+<span class="material-symbols-outlined text-lg">print</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Thor -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-space-md px-space-md">
+<span class="font-label-md text-label-md font-bold text-primary block">#DRV-89408</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">verified</span> ICP Cert. Válido
+                </span>
+</td>
+<td class="py-space-md px-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-xs">
+                    🐶
+                  </div>
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Thor</span>
+<span class="text-[11px] text-on-surface-variant">Bulldog Francês • 12kg</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Carlos Eduardo M.</span>
+<span class="text-[11px] text-on-surface-variant">Itaim Bibi, SP</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Dr. Rafael Souza</span>
+<span class="text-[11px] text-primary font-semibold">CRMV-SP 38.512</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold block">Apoquel 5,4mg (20 comp)</span>
+<span class="text-[11px] text-on-surface-variant">Tratamento Dermatite</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface block">R$ 195,00</span>
+<span class="text-[11px] text-on-surface-variant">Cartão Crédito 2x</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-sm">two_wheeler</span>
+                  Saiu para Entrega Motoboy
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-low text-primary hover:bg-surface-container transition-colors" title="Visualizar Receita ICP" type="button">
+<span class="material-symbols-outlined text-lg">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-low text-secondary hover:bg-surface-container transition-colors" title="Rastrear Motoboy" type="button">
+<span class="material-symbols-outlined text-lg">route</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Luna -->
+<tr class="hover:bg-surface-container-low/40 transition-colors">
+<td class="py-space-md px-space-md">
+<span class="font-label-md text-label-md font-bold text-primary block">#DRV-89395</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">verified</span> ICP Cert. Válido
+                </span>
+</td>
+<td class="py-space-md px-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-xs">
+                    🐱
+                  </div>
+<div>
+<span class="font-label-md text-label-md font-bold text-on-surface block">Luna</span>
+<span class="text-[11px] text-on-surface-variant">Siamês • 4.2kg</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Beatriz Fonseca</span>
+<span class="text-[11px] text-on-surface-variant">Vila Mariana, SP</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Dra. Juliana Castro</span>
+<span class="text-[11px] text-primary font-semibold">CRMV-SP 45.109</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold block">Probiótico Pet Pasta + Vermífugo</span>
+<span class="text-[11px] text-on-surface-variant">Uso Contínuo</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface block">R$ 114,80</span>
+<span class="text-[11px] text-primary font-semibold">PIX (Split D+1 Liq: R$ 111,47)</span>
+</td>
+<td class="py-space-md px-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+                  Entregue ao Tutor
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-low text-primary hover:bg-surface-container transition-colors" title="Visualizar Receita ICP" type="button">
+<span class="material-symbols-outlined text-lg">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors" title="Baixar DANFE / Nota Fiscal" type="button">
+<span class="material-symbols-outlined text-lg">receipt</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Direct Integration Status -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-center justify-between text-body-sm font-body-sm text-on-surface-variant gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span>Gateway de Split DrVet Pay homologado com o Banco Central do Brasil • Repasses D+1 automáticos às 06:00</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-3 py-1 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm font-semibold hover:bg-surface-container transition-colors" type="button">Anterior</button>
+<span class="px-2 font-label-sm text-label-sm text-on-surface font-bold">Página 1 de 42</span>
+<button class="px-3 py-1 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm font-semibold hover:bg-surface-container transition-colors" type="button">Próxima</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interactions: Notification toggle & basic click handlers
+  document.addEventListener('DOMContentLoaded', () => {
+    const actionButtons = document.querySelectorAll('button');
+    actionButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Visual click feedback
+        btn.classList.add('scale-95');
+        setTimeout(() => btn.classList.remove('scale-95'), 120);
+      });
+    });
+  });
+</script></main></div></body></html>

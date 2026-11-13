@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#44677d","surface-variant":"#cbe6fc","inverse-on-surface":"#e5f2ff","on-secondary":"#ffffff","on-surface":"#001e2e","on-tertiary":"#ffffff","on-surface-variant":"#3d4945","secondary":"#406279","secondary-fixed-dim":"#a7cbe5","surface-dim":"#c2def4","primary":"#006b57","surface-container-highest":"#cbe6fc","tertiary-fixed":"#72f8e0","surface-container-lowest":"#ffffff","outline-variant":"#bccac3","secondary-container":"#c0e4ff","inverse-primary":"#5ddbbb","error":"#ba1a1a","outline":"#6d7a75","tertiary":"#006b5d","surface-container-high":"#d4ebff","surface-container":"#dff0ff","on-error-container":"#93000a","on-background":"#001e2e","primary-fixed-dim":"#5ddbbb","secondary-fixed":"#c7e7ff","primary-fixed":"#7cf8d6","on-primary":"#ffffff","surface-bright":"#f6faff","on-error":"#ffffff","tertiary-fixed-dim":"#52dbc5","inverse-surface":"#183344","surface-container-low":"#ebf5ff","on-tertiary-fixed":"#00201b","surface":"#f6faff","on-primary-fixed-variant":"#005141","on-tertiary-container":"#00352d","on-primary-fixed":"#002019","surface-tint":"#006b57","on-secondary-fixed-variant":"#274a60","background":"#f6faff","error-container":"#ffdad6","on-tertiary-fixed-variant":"#005046","on-primary-container":"#003529","on-secondary-fixed":"#001e2e","tertiary-container":"#00a894","primary-container":"#13a88a"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter-mobile":"1rem","margin":"2rem","space-sm":"0.5rem","space-xs":"0.25rem","space-md":"1rem","space-xl":"2.5rem","margin-mobile":"1rem","gutter":"1.5rem","space-lg":"1.5rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"]},fontSize:{"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-lg"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">pets</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">DrVet</span><span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Telemedicina</span></div></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-primary-container text-on-primary font-bold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="inicio-dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span>Início / Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="agenda-consultas" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span>Agenda &amp; Consultas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="prontuarios-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">clinical_notes</span><span>Prontuários &amp; Pacientes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="sala-de-teleconsulta" href="#"><span class="material-symbols-outlined text-[20px]">video_camera_front</span><span>Sala de Teleconsulta</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="gravacoes-teleconsultas" href="#"><span class="material-symbols-outlined text-[20px]">video_library</span><span>Gravações &amp; Teleconsultas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="receita-digital-icp-brasil-emitida-com-sucesso-luna-drvet" href="#"><span class="material-symbols-outlined text-[20px]">prescriptions</span><span>Receitas &amp; ICP-Brasil</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="faturamento-repasses" href="#"><span class="material-symbols-outlined text-[20px]">payments</span><span>Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="conexao-supabase" href="#"><span class="material-symbols-outlined text-[20px]">database</span><span>Conexão Supabase</span></a></nav></div><div class="px-space-md"><div class="bg-surface-container rounded-xl p-space-md flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[16px]">verified</span><span class="font-label-sm text-label-sm uppercase font-bold">CRMV Ativo</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Sessão clínica criptografada com assinatura digital qualificada ICP-Brasil.</p></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-md"><div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-full"><span class="material-symbols-outlined text-outline text-[18px]">search</span><input class="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-outline" placeholder="Buscar paciente, tutor ou prontuário..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs bg-surface-container px-space-md py-1 rounded-full"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface">Postgres Realtime CDC 200 OK</span></div><button aria-label="Notificações" class="relative p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/><div class="flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Dra. Camila Vasconcellos</span><span class="font-label-sm text-label-sm text-primary leading-tight">CRMV-SP 42.189</span></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<div class="px-space-md lg:px-space-lg py-space-md flex flex-col gap-space-md">
+<!-- TOP HEADER & REALTIME STATUS BAR -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span>Início</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Sala de Teleconsulta</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Consulta ao Vivo #CON-2026-9921</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]">pets</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Luna</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">• Felino Siamês (6 anos)</span>
+</div>
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-space-sm py-1 rounded-full uppercase tracking-wider font-bold">DRC Estágio 2 IRIS</span>
+<span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-space-sm py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">person</span> Tutora: Juliana Mendes Ferraz
+          </span>
+<span class="bg-surface-container text-primary font-label-sm text-label-sm px-space-sm py-1 rounded-full flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[14px]">gavel</span> CFMV nº 1.465/2022
+          </span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-xl">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-ping"></span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold leading-none">LiveKit SFU</span>
+<span class="font-label-sm text-[10px] text-primary leading-tight">60fps • 24ms latência</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-xl">
+<span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold leading-none">TLS 1.3 / E2EE</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant leading-tight">AES-256 GCM</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-xl">
+<span class="material-symbols-outlined text-secondary text-[16px]">database</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-bold leading-none">Supabase CDC</span>
+<span class="font-label-sm text-[10px] text-primary leading-tight">Realtime Conectado</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-high px-space-md py-1.5 rounded-xl ml-auto xl:ml-0">
+<span class="material-symbols-outlined text-error text-[18px]">timer</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight" id="call-timer">24:18</span>
+</div>
+</div>
+</div>
+<!-- MAIN TELECONSULTATION INTERFACE: 8:4 ASYMMETRIC GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+<!-- LEFT COLUMN (COL-8): LIVEKIT WEBRTC VIDEO ROOM & HUD -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- VIDEO STAGE CONTAINER -->
+<div class="relative w-full aspect-[16/10] bg-inverse-surface rounded-2xl overflow-hidden shadow-xl flex items-center justify-center">
+<!-- PRIMARY FEED: PATIENT & TUTOR (JULIANA & LUNA) -->
+<div class="absolute inset-0 w-full h-full">
+<img class="w-full h-full object-cover" data-alt="Veterinary clinical teleconsultation view showing a warm sunlit domestic room where a smiling Brazilian female pet guardian named Juliana gently holds a calm seal point Siamese cat named Luna near a laptop camera. Sharp cinematic lighting, authentic soft tones, DrVet clinical UI overlay aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzq3pqETyVEaT5We-5xzsmgvmmpsuSexUWnO7FFR0dDv-2UVBp91SOZm5ElZzhQCVO5GLKqRh5RcLfKWWQ4reKguam4n6cmegbYKlhVCTqCm-UBEljt5S_q-AV0OATND-qYV4qiltv2AMIiB_bKU56ShZr1Z7RXGAFMH3QRLlCI8aYwv7uMfVzt4XLdL63xlyJUGvfdWJkf3ww7DMl-NfZ2GfOWNarABcGXkIdEFPa"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-transparent to-inverse-surface/50 pointer-events-none"></div>
+</div>
+<!-- TOP FLOATING BAR: REC PULSE & LGPD AUDIT STRING -->
+<div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-space-sm z-30 pointer-events-none">
+<div class="flex items-center gap-space-xs bg-inverse-surface/85 backdrop-blur-md px-space-sm py-1.5 rounded-full shadow-lg pointer-events-auto">
+<span class="w-3 h-3 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-tertiary tracking-wider font-extrabold uppercase">REC 00:18:42</span>
+<span class="text-surface-variant/40 text-label-sm">•</span>
+<span class="font-label-sm text-[11px] text-surface-container-highest flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary-fixed">verified_user</span>
+                LiveKit Egress Engine (Supabase Storage)
+              </span>
+</div>
+<div class="flex items-center gap-space-xs pointer-events-auto">
+<span class="bg-inverse-surface/80 backdrop-blur-md text-surface-container-highest font-label-sm text-[11px] px-space-sm py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-fixed">wifi</span>
+                1080p WebRTC (2500 kbps)
+              </span>
+<span class="bg-surface-container-low/95 text-on-surface font-label-sm text-[11px] px-space-sm py-1 rounded-full font-bold shadow-sm">
+                CFMV 1.465
+              </span>
+</div>
+</div>
+<!-- PATIENT & TUTOR OVERLAY METADATA -->
+<div class="absolute bottom-20 left-4 z-20 pointer-events-none">
+<div class="bg-inverse-surface/85 backdrop-blur-md px-space-sm py-1.5 rounded-xl shadow-lg flex items-center gap-space-xs text-on-tertiary pointer-events-auto">
+<span class="material-symbols-outlined text-primary-fixed text-[18px]">mic</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md leading-none">Juliana Mendes &amp; Luna</span>
+<span class="font-label-sm text-[10px] text-surface-variant/80">Microfone Rode Wireless • Sinal Excelente</span>
+</div>
+</div>
+</div>
+<!-- PICTURE-IN-PICTURE (PIP): VETERINARIAN DRA. CAMILA VASCONCELLOS -->
+<div class="absolute bottom-20 right-4 z-30 w-48 sm:w-56 aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-container-low border-0">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of Dr. Camila Vasconcellos, an authoritative yet friendly female veterinary nephrologist wearing a clinical teal scrub and stethoscope, seated in a high-end telemedicine clinic with veterinary monitors and subtle medical lighting in background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHiLZc-FuQ2LTMP7W8fCEXp_TdK2GXJuylA7uesaqz1egQEgAsCZ74CpCSskXawoc4k-Cbd9g3ijW3Bw3L11F4x4Gg2kXrILwTlzF9UuEVGUMNN8f6ER7wCDefgqBC7YAKEd_8msbp4x0WlujkxgMjIp2R9K7_SY16IaRax3wIXkipAxocQ3jhr3bt7jM3Pfd6vFcgxyUXTO35j3w6HmhEIqbeJV0AR7XYZof7j9An"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent pointer-events-none"></div>
+<div class="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-on-tertiary">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm leading-none font-bold">Dra. Camila Vasconcellos</span>
+<span class="font-label-sm text-[9px] text-primary-fixed">CRMV-SP 42.189</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">mic</span>
+</div>
+</div>
+<!-- FLOATING TELECONSULTATION UTILITY DOCK -->
+<div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-40 bg-surface/90 backdrop-blur-xl px-space-md py-2 rounded-full shadow-2xl flex items-center gap-space-sm">
+<button aria-label="Mutar Microfone" class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button aria-label="Desligar Câmera" class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</button>
+<button aria-label="Compartilhar Tela" class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">screen_share</span>
+</button>
+<!-- RECORDING TOGGLE BUTTON -->
+<button class="flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-2 rounded-full font-label-md text-label-md font-bold hover:brightness-95 transition-all shadow-sm" id="toggle-record-btn">
+<span class="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
+<span>Pausar Gravação</span>
+</button>
+<button aria-label="Encerrar Chamada" class="w-10 h-10 rounded-full bg-error text-on-error hover:brightness-110 transition-all flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">call_end</span>
+</button>
+</div>
+</div>
+<!-- LGPD & REGULATORY CONSENT BANNER -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between flex-wrap gap-space-xs">
+<div class="flex items-center gap-space-xs text-primary font-bold">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+<span class="font-headline-sm text-headline-sm">Gravação em Conformidade Legal &amp; Criptografada</span>
+</div>
+<span class="bg-primary-container/20 text-on-primary-container font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">
+              Art. 7º &amp; 11 LGPD (Dados de Saúde Sensíveis)
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Esta teleconsulta veterinária está sendo gravada com áudio e vídeo sob autorização prévia bilateral para compor o prontuário eletrônico unificado e auditoria do Conselho Regional de Medicina Veterinária.
+          </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm pt-space-xs">
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">how_to_reg</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Tutora: Juliana Mendes Ferraz</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Consentimento Concedido via App às 16:35:10 BRT</span>
+<span class="font-label-sm text-[11px] text-outline font-mono pt-1">Hash SHA-256: 8f9b2d4c01e...e93a</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">verified_user</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Veterinária: Dra. Camila Vasconcellos</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Consentimento Médico &amp; CRMV-SP 42.189 Ativo</span>
+<span class="font-label-sm text-[11px] text-outline font-mono pt-1">ICP-Brasil Token Válido • HSM Seguro</span>
+</div>
+</div>
+</div>
+<!-- EGRESS STORAGE TARGET BAR -->
+<div class="bg-surface-container px-space-md py-space-xs rounded-lg flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-space-xs truncate">
+<span class="material-symbols-outlined text-primary text-[18px]">cloud_sync</span>
+<span class="truncate">Storage Target: <code class="text-on-surface font-mono font-bold">supabase://recordings/con-2026-9921/live_stream.mp4</code></span>
+</div>
+<span class="text-primary font-bold whitespace-nowrap">RLS Ativo • Private Bucket</span>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (COL-4): CLINICAL METADATA, SOAP NOTES & DATABASE SCHEMAS -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- TAB NAVIGATION -->
+<div class="bg-surface-container-lowest rounded-xl p-space-xs shadow-sm flex items-center gap-1" id="tab-controls">
+<button class="flex-1 py-space-xs px-space-sm rounded-lg font-label-md text-label-md font-bold text-center transition-colors bg-primary-container text-on-primary" id="btn-tab-lgpd" onclick="switchTab('tab-lgpd')">
+            Gravação &amp; DB
+          </button>
+<button class="flex-1 py-space-xs px-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-center" id="btn-tab-soap" onclick="switchTab('tab-soap')">
+            SOAP &amp; Notas
+          </button>
+<button class="flex-1 py-space-xs px-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-center" id="btn-tab-rx" onclick="switchTab('tab-rx')">
+            Receita ICP
+          </button>
+</div>
+<!-- TAB CONTENT 1: SUPABASE SCHEMAS & EGRESS METADATA -->
+<div class="flex flex-col gap-space-md" id="tab-lgpd">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">dns</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Estrutura Supabase Live</span>
+</div>
+<span class="bg-surface-container text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">Postgres 16</span>
+</div>
+<!-- TABLE 1: consultations -->
+<div class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-xl">
+<div class="flex items-center justify-between text-primary font-label-sm text-label-sm font-bold">
+<span class="font-mono">table: public.consultations</span>
+<span class="text-on-surface-variant text-[10px]">Row-Level Security</span>
+</div>
+<div class="font-mono text-[11px] text-on-surface space-y-0.5 pt-1">
+<div class="flex justify-between"><span class="text-outline">id:</span> <span class="text-primary font-bold">9921-uuid-v4</span></div>
+<div class="flex justify-between"><span class="text-outline">status:</span> <span class="bg-primary-container/20 text-on-primary-container px-1 rounded font-bold">'in_progress'</span></div>
+<div class="flex justify-between"><span class="text-outline">vet_crmv:</span> <span>'SP-42189'</span></div>
+<div class="flex justify-between"><span class="text-outline">paciente_id:</span> <span>'luna-cat-02'</span></div>
+</div>
+</div>
+<!-- TABLE 2: recording_consents -->
+<div class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-xl">
+<div class="flex items-center justify-between text-primary font-label-sm text-label-sm font-bold">
+<span class="font-mono">table: recording_consents</span>
+<span class="bg-primary-container/20 text-on-primary-container text-[10px] px-1.5 py-0.5 rounded-full font-bold">ACCEPTED</span>
+</div>
+<div class="font-mono text-[11px] text-on-surface space-y-0.5 pt-1">
+<div class="flex justify-between"><span class="text-outline">tutor_signed:</span> <span class="text-primary font-bold">true (16:35:10)</span></div>
+<div class="flex justify-between"><span class="text-outline">vet_signed:</span> <span class="text-primary font-bold">true (16:34:02)</span></div>
+<div class="flex justify-between"><span class="text-outline">finalidade:</span> <span class="text-on-surface-variant truncate max-w-[180px]">'Pericial &amp; Médica'</span></div>
+</div>
+</div>
+<!-- TABLE 3: consultation_recordings (LIVEKIT EGRESS) -->
+<div class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-xl">
+<div class="flex items-center justify-between text-primary font-label-sm text-label-sm font-bold">
+<span class="font-mono">table: consultation_recordings</span>
+<span class="text-error font-bold flex items-center gap-1 text-[10px]"><span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>STREAMING</span>
+</div>
+<div class="font-mono text-[11px] text-on-surface space-y-0.5 pt-1">
+<div class="flex justify-between"><span class="text-outline">egress_id:</span> <span>'EG_mK84vNq7'</span></div>
+<div class="flex justify-between"><span class="text-outline">format:</span> <span>MP4 (H.264 / AAC)</span></div>
+<div class="flex justify-between"><span class="text-outline">bitrate:</span> <span>2500 kbps</span></div>
+<div class="flex justify-between"><span class="text-outline">storage_bucket:</span> <span class="text-primary font-bold">'telemed-recordings'</span></div>
+<div class="flex justify-between"><span class="text-outline">signed_url_ttl:</span> <span>900s (15 min)</span></div>
+</div>
+</div>
+<!-- SECURITY POLICIES ACCORDION CARD -->
+<div class="bg-surface-container p-space-sm rounded-xl flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider">Políticas de Segurança Habilitadas</span>
+<div class="flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>Bucket estritamente privado (sem acesso anônimo)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>RLS: SELECT apenas tutores e veterinário da sessão</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>Assinatura de áudio com hash forense em repouso</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB CONTENT 2: SOAP NOTES WITH REALTIME TIMESTAMPS -->
+<div class="hidden flex-col gap-space-md" id="tab-soap">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">edit_note</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">SOAP &amp; Timestamps</span>
+</div>
+<button class="bg-surface-container hover:bg-surface-container-high text-primary font-label-sm text-label-sm px-space-sm py-1 rounded-full font-bold flex items-center gap-1 transition-colors" onclick="addCurrentTimestamp()">
+<span class="material-symbols-outlined text-[14px]">add_alarm</span>
+                Marcar Minuto
+              </button>
+</div>
+<div class="flex flex-col gap-space-xs max-h-56 overflow-y-auto pr-1" id="timeline-notes">
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-start gap-space-xs text-on-surface">
+<span class="bg-surface-container font-mono font-bold text-[11px] px-1.5 py-0.5 rounded text-primary">[02:15]</span>
+<span class="font-body-sm text-body-sm">Início da consulta. Tutora relata apetite reduzido nos últimos 3 dias.</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-start gap-space-xs text-on-surface">
+<span class="bg-surface-container font-mono font-bold text-[11px] px-1.5 py-0.5 rounded text-primary">[08:40]</span>
+<span class="font-body-sm text-body-sm">Luna apresenta grau leve de desidratação cutânea via câmera (turgor discreto).</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-start gap-space-xs text-on-surface">
+<span class="bg-surface-container font-mono font-bold text-[11px] px-1.5 py-0.5 rounded text-primary">[16:20]</span>
+<span class="font-body-sm text-body-sm">Revisão de exames prévios: Creatinina 2.3 mg/dL, SDMA 18 µg/dL.</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-bold" for="instant-note-input">Nota Instantânea Sincronizada:</label>
+<div class="flex items-center gap-space-xs">
+<input class="flex-1 bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-sm py-2 rounded-lg outline-none" id="instant-note-input" placeholder="Ex: [18:42] Recomendada hidratação subaquosa..." type="text"/>
+<button class="bg-primary text-on-primary w-9 h-9 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors" onclick="insertNote()">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB CONTENT 3: ICP-BRASIL RAPID PRESCRIPTION SHORTCUT -->
+<div class="hidden flex-col gap-space-md" id="tab-rx">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">prescriptions</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Emissão Digital</span>
+</div>
+<span class="bg-surface-container text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">ICP-Brasil</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Emita a prescrição veterinária vinculada diretamente à gravação e ao ID da consulta para auditoria do CRMV.
+            </p>
+<div class="flex flex-col gap-space-xs">
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Quelante de Fósforo (Quitosan + Carbonato)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">1g misturado à refeição úmida 2x ao dia</span>
+</div>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Solução Ringer c/ Lactato (Subcutâneo)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">100 mL a cada 48h conforme hidratação</span>
+</div>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary py-space-sm px-space-md rounded-full font-label-lg text-label-lg font-bold flex items-center justify-center gap-space-xs transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">signature</span>
+<span>Assinar Digitalmente (CRMV Token)</span>
+</button>
+</div>
+</div>
+<!-- QUICK ANIMAL VITALS SUMMARY WIDGET -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Luna • Dados Clínicos</span>
+<span class="material-symbols-outlined text-primary text-[20px]">monitor_heart</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs text-center">
+<div class="bg-surface-container-low p-space-xs rounded-xl flex flex-col">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">Peso</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">3.4 kg</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-xl flex flex-col">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">Creatinina</span>
+<span class="font-headline-sm text-headline-sm text-error font-bold">2.3</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-xl flex flex-col">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">PA Sistólica</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">135</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    function switchTab(tabId) {
+      const tabs = ['tab-lgpd', 'tab-soap', 'tab-rx'];
+      const buttons = ['btn-tab-lgpd', 'btn-tab-soap', 'btn-tab-rx'];
+
+      tabs.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (id === tabId) {
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+          } else {
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+          }
+        }
+      });
+
+      buttons.forEach((btnId) => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          if (btnId === 'btn-' + tabId) {
+            btn.className = 'flex-1 py-space-xs px-space-sm rounded-lg font-label-md text-label-md font-bold text-center transition-colors bg-primary-container text-on-primary';
+          } else {
+            btn.className = 'flex-1 py-space-xs px-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors text-center';
+          }
+        }
+      });
+    }
+
+    function addCurrentTimestamp() {
+      const timerText = document.getElementById('call-timer').innerText || '18:42';
+      const input = document.getElementById('instant-note-input');
+      if (input) {
+        input.value = '[' + timerText + '] ';
+        input.focus();
+      }
+    }
+
+    function insertNote() {
+      const input = document.getElementById('instant-note-input');
+      const container = document.getElementById('timeline-notes');
+      if (input && container && input.value.trim() !== '') {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'bg-surface-container-low p-space-xs rounded-lg flex items-start gap-space-xs text-on-surface animate-fade-in';
+        noteDiv.innerHTML = '<span class="bg-surface-container font-mono font-bold text-[11px] px-1.5 py-0.5 rounded text-primary">[REC]</span><span class="font-body-sm text-body-sm">' + input.value + '</span>';
+        container.appendChild(noteDiv);
+        input.value = '';
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    // Toggle Recording button interaction
+    const toggleRecordBtn = document.getElementById('toggle-record-btn');
+    let isRecording = true;
+    if (toggleRecordBtn) {
+      toggleRecordBtn.addEventListener('click', function() {
+        isRecording = !isRecording;
+        if (!isRecording) {
+          toggleRecordBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">play_arrow</span><span>Retomar Gravação</span>';
+          toggleRecordBtn.className = 'flex items-center gap-space-xs bg-primary-container text-on-primary px-space-md py-2 rounded-full font-label-md text-label-md font-bold hover:brightness-95 transition-all shadow-sm';
+        } else {
+          toggleRecordBtn.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span><span>Pausar Gravação</span>';
+          toggleRecordBtn.className = 'flex items-center gap-space-xs bg-error-container text-on-error-container px-space-md py-2 rounded-full font-label-md text-label-md font-bold hover:brightness-95 transition-all shadow-sm';
+        }
+      });
+    }
+  </script>
+</div></main></div></body></html>

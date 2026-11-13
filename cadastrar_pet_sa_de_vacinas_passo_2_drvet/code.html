@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed-dim": "#52dbc5", "on-tertiary-fixed": "#00201b", "surface-container-high": "#d4ebff", "secondary": "#406279", "secondary-fixed": "#c7e7ff", "primary": "#006b57", "on-primary-container": "#003529", "on-tertiary-fixed-variant": "#005046", "primary-container": "#13a88a", "surface-tint": "#006b57", "tertiary": "#006b5d", "tertiary-fixed": "#72f8e0", "surface-variant": "#cbe6fc", "on-surface": "#001e2e", "on-secondary-fixed": "#001e2e", "primary-fixed": "#7cf8d6", "inverse-on-surface": "#e5f2ff", "surface-container-lowest": "#ffffff", "surface-dim": "#c2def4", "on-tertiary-container": "#00352d", "error-container": "#ffdad6", "inverse-surface": "#183344", "secondary-container": "#c0e4ff", "inverse-primary": "#5ddbbb", "on-primary-fixed-variant": "#005141", "on-secondary-fixed-variant": "#274a60", "surface-container-low": "#ebf5ff", "error": "#ba1a1a", "surface-container": "#dff0ff", "background": "#f6faff", "secondary-fixed-dim": "#a7cbe5", "outline": "#6d7a75", "on-background": "#001e2e", "on-error": "#ffffff", "primary-fixed-dim": "#5ddbbb", "on-primary": "#ffffff", "outline-variant": "#bccac3", "on-primary-fixed": "#002019", "surface-bright": "#f6faff", "on-tertiary": "#ffffff", "surface": "#f6faff", "surface-container-highest": "#cbe6fc", "on-secondary-container": "#44677d", "tertiary-container": "#00a894", "on-secondary": "#ffffff", "on-surface-variant": "#3d4945", "on-error-container": "#93000a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-sm": "0.5rem", "margin": "2rem", "space-xs": "0.25rem", "space-xl": "2.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "gutter-mobile": "1rem", "space-lg": "1.5rem" }, "fontFamily": { "body-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"] }, "fontSize": { "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 px-space-md flex flex-col justify-center"><div class="flex items-center justify-between"><button aria-label="Cancelar cadastro" class="min-h-[44px] px-space-sm rounded-full flex items-center gap-space-xs text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[20px]">close</span><span class="font-label-md text-label-md">Cancelar</span></button><div class="flex flex-col items-center text-center"><h1 class="font-headline-sm text-headline-sm text-on-surface font-headline-sm leading-tight">Cadastrar Novo Pet</h1><span class="font-label-sm text-label-sm text-primary font-label-sm">Passo 1 de 3: Identificação &amp; Biometria</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div><div class="w-full flex items-center gap-1.5 mt-2 px-space-xs"><div class="h-1 flex-1 rounded-full bg-primary-container"></div><div class="h-1 flex-1 rounded-full bg-surface-container-highest"></div><div class="h-1 flex-1 rounded-full bg-surface-container-highest"></div></div></div></header><main class="flex-1 flex flex-col w-full px-space-md pt-20 pb-safe bg-surface"><div class="flex flex-col w-full pb-10">
+<!-- MINI PATIENT CONTEXT CARD -->
+<section class="mt-4 mb-6">
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container animate-ping"></div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Vinculando dados clínicos</span>
+</div>
+<span class="font-label-sm text-label-sm bg-primary-container/15 text-primary px-2.5 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+          CRMV Digital
+        </span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative w-14 h-14 rounded-full overflow-hidden bg-surface-container shadow-inner flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a cheerful, healthy Golden Retriever named Pipoca with glossy golden fur, warm gentle amber eyes, and a relaxed friendly expression inside a soft modern veterinary clinic room with teal accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnUAnZno7v3g8UzEDlPYsxSLAigOSlnsqIVbVGn-P3uSyw6RPPLnk5fo8wd910QmFjxq-bVT3kIEzWCW3Lutu2nsl6TrbCb-sQSIDg2MrI5axrMsguhH09S07RoK39pC8TgHbJfScMCVUKO9pZhdXjZe5cLw5_LI6CdyW0gdUPGYCPFekn6ym64GcFGzrMWtoSG8sgZ2Jfd993_QNqDk-NhVfNxjhhiBEkbFYi0aLL"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-baseline gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Pipoca</h2>
+<span class="font-label-md text-label-md text-secondary">3a 2m</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Canina / Fêmea • Golden Retriever</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface px-2 py-0.5 rounded-full">14.8 kg (Ideal)</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">monitor_weight</span>
+              Última pesagem hoje
+            </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SMART OCR SCANNER BANNER -->
+<section class="mb-6">
+<div class="bg-gradient-to-br from-primary-container/15 via-surface-container to-surface-container-high rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[22px]">document_scanner</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1.5 mb-1">
+<h3 class="font-label-lg text-label-lg text-on-surface">Digitalizar Carteira de Papel com IA</h3>
+<span class="font-label-sm text-label-sm bg-primary text-on-primary px-1.5 py-0.5 rounded-full">Automático</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+            Fotografe os selos e etiquetas. Nossa inteligência clínica DrVet preenche lotes, fabricantes e datas de reforço instantaneamente.
+          </p>
+<div class="flex items-center gap-2">
+<label class="cursor-pointer bg-primary text-on-primary px-4 py-2 rounded-full font-label-md text-label-md shadow-sm hover:bg-primary/95 transition-all flex items-center gap-1.5 active:scale-95">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span>Escanear Carteira</span>
+<input accept="image/*" capture="environment" class="hidden" id="ocr-upload" type="file"/>
+</label>
+<button class="bg-surface-container-lowest text-secondary hover:text-on-surface px-3 py-2 rounded-full font-label-md text-label-md shadow-sm transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span>Anexar PDF</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FORM CONTAINER -->
+<form class="flex flex-col gap-6" id="health-form" onsubmit="event.preventDefault();">
+<!-- SEÇÃO 1: ESQUEMA VACINAL -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">vaccines</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">1. Esquema Vacinal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Proteção imunológica essencial e reforços</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">shield</span>
+</div>
+<!-- STATUS VACINAL GERAL -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Status Vacinal Atual</label>
+<div class="grid grid-cols-3 gap-2">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="vac_status" type="radio" value="em_dia"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant text-center transition-all flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="font-label-sm text-label-sm">Em Dia</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="vac_status" type="radio" value="atrasado"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-error peer-checked:text-on-error text-on-surface-variant text-center transition-all flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span class="font-label-sm text-label-sm">Atrasado</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="vac_status" type="radio" value="filhote"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-secondary-container peer-checked:text-on-secondary-container text-on-surface-variant text-center transition-all flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">cruelty_free</span>
+<span class="font-label-sm text-label-sm">Filhote / Zero</span>
+</div>
+</label>
+</div>
+</div>
+<!-- CARD VACINA POLIVALENTE (V8/V10) -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Polivalente (V8 / V10)</span>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-2 py-0.5 rounded-full">Essencial</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Reforço Anual</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Data da Última Dose</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:bg-surface-container-lowest" type="date" value="2023-11-15"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Fabricante / Marca</label>
+<select class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none">
+<option value="vanguard">Vanguard Plus (Zoetis)</option>
+<option selected="" value="nobivac">Nobivac Puppy DP/L4 (MSD)</option>
+<option value="recombitek">Recombitek (Boehringer)</option>
+<option value="vencomax">Vencomax (Vencofarma)</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Número do Lote</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg pl-3 pr-10 py-2 shadow-sm focus:outline-none" placeholder="Ex: LOT-8842-BR" type="text" value="MSD-88219"/>
+<button aria-label="Escanear selo do lote" class="absolute right-2 text-primary hover:text-primary-container" type="button">
+<span class="material-symbols-outlined text-[18px]">barcode_scanner</span>
+</button>
+</div>
+</div>
+<button class="mt-4 px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1 shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">attachment</span>
+<span>Selo</span>
+</button>
+</div>
+</div>
+<!-- CARD VACINA ANTIRRÁBICA -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Antirrábica (Raiva)</span>
+<span class="font-label-sm text-label-sm bg-error-container text-on-error-container px-2 py-0.5 rounded-full">Obrigatória Lei</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">event_available</span>
+            Válida
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Data de Aplicação</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="date" value="2023-11-15"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Lote / Etiqueta</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="text" value="RV-4029B"/>
+</div>
+</div>
+</div>
+<!-- VACINAS COMPLEMENTARES OPCIONAIS -->
+<div class="flex flex-col gap-2 pt-1">
+<label class="font-label-md text-label-md text-on-surface">Vacinas Complementares &amp; Estilo de Vida</label>
+<div class="grid grid-cols-2 gap-2">
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Giardíase (Giardiavax)</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Gripe / Tosse dos Canis</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Leishmaniose</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Dermatofitose</span>
+</label>
+</div>
+</div>
+</section>
+<!-- SEÇÃO 2: ECTO & ENDOPARASITAS -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">pest_control</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">2. Controle de Parasitas</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Antipulgas, carrapatos e vermifugação</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-label-sm">Protocolo DrVet</span>
+</div>
+<!-- ANTIPULGAS E CARRAPATOS -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface">Antipulgas &amp; Carrapatos Ativo</span>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-1 font-label-sm">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+            Expira em 28 dias
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Produto em Uso</label>
+<select class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none">
+<option selected="" value="simparic">Simparic 40mg</option>
+<option value="bravecto">Bravecto Comprimido (3 meses)</option>
+<option value="nexgard">NexGard Spectra</option>
+<option value="credelio">Credelio</option>
+<option value="seresto">Coleira Seresto</option>
+<option value="nenhum">Nenhum no momento</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Última Administração</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="date" value="2024-03-02"/>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-surface-container flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">notifications_active</span>
+<span class="font-body-sm text-body-sm text-on-surface">Lembrete DrVet agendado para <strong>02 de Abril de 2024</strong> via WhatsApp e Push.</span>
+</div>
+</div>
+<!-- VERMÍFUGO -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface">Vermifugação (Endoparasitas)</span>
+<span class="font-label-sm text-label-sm text-secondary">Trimestral</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Marca Habitual</label>
+<select class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none">
+<option selected="" value="drontal">Drontal Plus Cães</option>
+<option value="chemital">Chemital Plus</option>
+<option value="endogard">Endogard (Virbac)</option>
+<option value="top_dog">Top Dog</option>
+<option value="outro">Outro / Sob Demanda</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Frequência</label>
+<select class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none">
+<option selected="" value="3m">A cada 3 meses</option>
+<option value="6m">A cada 6 meses</option>
+<option value="anual">Apenas com coproparasitológico</option>
+<option value="nao">Não administra</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- SEÇÃO 3: HISTÓRICO CLÍNICO & CIRURGIAS -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">medical_services</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">3. Histórico Clínico &amp; Cirurgias</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Procedimentos prévios e condições diagnosticadas</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">history_edu</span>
+</div>
+<!-- CIRURGIAS E PROCEDIMENTOS TAGS -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Cirurgias e Procedimentos Anteriores</label>
+<div class="flex flex-wrap gap-1.5">
+<button class="surgery-tag px-3 py-1.5 rounded-full font-label-md text-label-md bg-primary text-on-primary flex items-center gap-1 transition-all" data-selected="true" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+            Castração (Osh)
+          </button>
+<button class="surgery-tag px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface flex items-center gap-1 transition-all" data-selected="false" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+            Profilaxia Dentária (Tártaro)
+          </button>
+<button class="surgery-tag px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface flex items-center gap-1 transition-all" data-selected="false" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+            Nódulos / Biópsia
+          </button>
+<button class="surgery-tag px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface flex items-center gap-1 transition-all" data-selected="false" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+            Fratura Óssea
+          </button>
+<button class="surgery-tag px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface flex items-center gap-1 transition-all" data-selected="false" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+            Outra Cirurgia
+          </button>
+</div>
+</div>
+<!-- DOENÇAS PREGRESSAS SELEÇÃO -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Diagnósticos e Condições Pregressas</label>
+<div class="grid grid-cols-1 gap-2">
+<label class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">hearing</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Otite Recorrente / Crônica</span>
+<span class="font-body-sm text-body-sm text-secondary">Episódios sazonais em tratamento</span>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">nutrition</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Alergia Alimentar / Dermatite</span>
+<span class="font-body-sm text-body-sm text-secondary">Sensibilidade cutânea a frango</span>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">accessible</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Displasia Coxofemoral</span>
+<span class="font-body-sm text-body-sm text-secondary">Predisposição genética da raça</span>
+</div>
+</div>
+<input class="w-5 h-5 rounded text-primary focus:ring-0 accent-primary" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- MEDICAÇÃO CONTÍNUA TOGGLE -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-lg text-label-lg text-on-surface">Uso de Medicação Contínua?</span>
+<p class="font-body-sm text-body-sm text-secondary">Remédios diários ou suporte articular</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="med-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</label>
+</div>
+<div class="flex flex-col gap-2 pt-2 border-none" id="med-fields">
+<div class="grid grid-cols-3 gap-2">
+<div class="col-span-2 flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medicamento &amp; Dosagem</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="text" value="Condroitina + Glicosamina 500mg"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Horário</label>
+<input class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="text" value="1x ao dia (08h)"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SEÇÃO 4: DIETA & ESTILO DE VIDA -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-full bg-primary-container/15 text-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">restaurant</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">4. Nutrição &amp; Rotina Diária</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tipo de dieta, ingestão e nível de atividade</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">directions_run</span>
+</div>
+<!-- TIPO DE ALIMENTAÇÃO -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Tipo de Alimentação Principal</label>
+<div class="grid grid-cols-2 gap-2">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="diet_type" type="radio" value="super_premium"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span class="font-label-sm text-label-sm">Ração Seca Super Premium</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="diet_type" type="radio" value="an_cozida"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">skillet</span>
+<span class="font-label-sm text-label-sm">Alimentação Natural (AN)</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="diet_type" type="radio" value="mista"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">soup_kitchen</span>
+<span class="font-label-sm text-label-sm">Mista (Ração + Sachê)</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="diet_type" type="radio" value="prescrita"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">prescriptions</span>
+<span class="font-label-sm text-label-sm">Dieta Terapêutica / Hipo</span>
+</div>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Marca Atual / Especificação</label>
+<input class="bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="text" value="Royal Canin Golden Retriever Adult"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Quantidade Diária (g)</label>
+<input class="bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none" type="text" value="380g (Dividido em 2x)"/>
+</div>
+</div>
+<!-- NÍVEL DE ATIVIDADE -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Nível de Atividade &amp; Passeios</label>
+<div class="grid grid-cols-3 gap-2">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="activity_level" type="radio" value="baixo"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-secondary peer-checked:text-on-secondary text-on-surface-variant text-center transition-all">
+<span class="material-symbols-outlined block mx-auto text-[20px] mb-1">bed</span>
+<span class="font-label-sm text-label-sm">Baixo (Até 20min)</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="activity_level" type="radio" value="moderado"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant text-center transition-all">
+<span class="material-symbols-outlined block mx-auto text-[20px] mb-1">directions_walk</span>
+<span class="font-label-sm text-label-sm">Moderado (40-60min)</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="activity_level" type="radio" value="alto"/>
+<div class="p-2.5 rounded-lg bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface-variant text-center transition-all">
+<span class="material-symbols-outlined block mx-auto text-[20px] mb-1">sprint</span>
+<span class="font-label-sm text-label-sm">Intenso (&gt;90min)</span>
+</div>
+</label>
+</div>
+</div>
+</section>
+<!-- SUMMARY REASSURANCE CARD -->
+<div class="bg-surface-container rounded-xl p-space-md flex items-center gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">health_and_safety</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Histórico Seguro &amp; Criptografado</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Os registros ficam acessíveis imediatamente aos veterinários nas teleconsultas DrVet com validade jurídica.</p>
+</div>
+</div>
+<!-- ACTION FOOTER SECTION -->
+<div class="flex flex-col gap-3 mt-2">
+<!-- BOTÃO PRIMÁRIO (PROSSEGUIR) -->
+<button class="w-full bg-primary-container hover:bg-primary text-on-primary py-3.5 px-space-md rounded-full font-label-lg text-label-lg shadow-md flex items-center justify-center gap-2 active:scale-[0.99] transition-all" id="btn-submit" type="button">
+<span>Avançar para Tutor &amp; Doc (Passo 3)</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<!-- BOTÕES SECUNDÁRIOS -->
+<div class="flex items-center gap-2">
+<button class="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface py-2.5 px-3 rounded-full font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" onclick="history.back()" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Voltar ao Passo 1</span>
+</button>
+<button class="flex-1 bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface py-2.5 px-3 rounded-full font-label-md text-label-md transition-colors flex items-center justify-center gap-1 shadow-sm" id="btn-draft" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Salvar Rascunho</span>
+</button>
+</div>
+<!-- NOTA LEGAL DE RODAPÉ -->
+<div class="flex items-center justify-center gap-1.5 text-center px-4 pt-1">
+<span class="material-symbols-outlined text-primary text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm text-secondary">Dados clínicos sincronizados com o Prontuário CRMV e histórico seguro em nuvem.</span>
+</div>
+</div>
+</form>
+</div>
+<script>
+  // Interactive tags for previous surgeries
+  document.querySelectorAll('.surgery-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      const isSelected = tag.getAttribute('data-selected') === 'true';
+      if (isSelected) {
+        tag.setAttribute('data-selected', 'false');
+        tag.classList.remove('bg-primary', 'text-on-primary');
+        tag.classList.add('bg-surface-container-low', 'text-on-surface');
+        tag.querySelector('.material-symbols-outlined').textContent = 'add';
+      } else {
+        tag.setAttribute('data-selected', 'true');
+        tag.classList.remove('bg-surface-container-low', 'text-on-surface');
+        tag.classList.add('bg-primary', 'text-on-primary');
+        tag.querySelector('.material-symbols-outlined').textContent = 'check';
+      }
+    });
+  });
+
+  // Continuous Medication toggle behavior
+  const medToggle = document.getElementById('med-toggle');
+  const medFields = document.getElementById('med-fields');
+  if (medToggle && medFields) {
+    medToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        medFields.classList.remove('hidden');
+      } else {
+        medFields.classList.add('hidden');
+      }
+    });
+  }
+
+  // Simulated OCR camera upload micro-interaction
+  const ocrUpload = document.getElementById('ocr-upload');
+  if (ocrUpload) {
+    ocrUpload.addEventListener('change', () => {
+      const banner = ocrUpload.closest('section');
+      if (banner) {
+        const title = banner.querySelector('h3');
+        if (title) {
+          title.textContent = "Processando Selos da Carteira...";
+          setTimeout(() => {
+            title.textContent = "✓ Dados de Vacinas Extraídos com Sucesso!";
+          }, 1500);
+        }
+      }
+    });
+  }
+
+  // Save Draft notification
+  const btnDraft = document.getElementById('btn-draft');
+  if (btnDraft) {
+    btnDraft.addEventListener('click', () => {
+      const originalText = btnDraft.innerHTML;
+      btnDraft.innerHTML = `<span class="material-symbols-outlined text-[18px] text-primary">check_circle</span> <span class="text-primary font-bold">Salvo!</span>`;
+      setTimeout(() => {
+        btnDraft.innerHTML = originalText;
+      }, 2000);
+    });
+  }
+
+  // Primary action feedback
+  const btnSubmit = document.getElementById('btn-submit');
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', () => {
+      btnSubmit.innerHTML = `<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Validando Histórico...</span>`;
+      setTimeout(() => {
+        btnSubmit.innerHTML = `<span>Avançando para Tutor &amp; Doc...</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span>`;
+      }, 800);
+    });
+  }
+</script></main></body></html>

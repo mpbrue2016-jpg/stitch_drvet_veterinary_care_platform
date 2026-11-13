@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed-dim": "#52dbc5", "inverse-on-surface": "#e5f2ff", "outline-variant": "#bccac3", "on-primary-container": "#003529", "secondary": "#406279", "surface-container-highest": "#cbe6fc", "secondary-fixed": "#c7e7ff", "error-container": "#ffdad6", "secondary-fixed-dim": "#a7cbe5", "on-surface": "#001e2e", "on-tertiary": "#ffffff", "on-secondary": "#ffffff", "tertiary-fixed": "#72f8e0", "inverse-surface": "#183344", "tertiary": "#006b5d", "surface": "#f6faff", "outline": "#6d7a75", "on-secondary-fixed-variant": "#274a60", "on-error-container": "#93000a", "primary-container": "#13a88a", "surface-variant": "#cbe6fc", "primary-fixed-dim": "#5ddbbb", "on-tertiary-container": "#00352d", "error": "#ba1a1a", "surface-container-high": "#d4ebff", "on-tertiary-fixed": "#00201b", "primary": "#006b57", "surface-dim": "#c2def4", "tertiary-container": "#00a894", "on-surface-variant": "#3d4945", "surface-container-low": "#ebf5ff", "surface-tint": "#006b57", "on-tertiary-fixed-variant": "#005046", "on-primary-fixed-variant": "#005141", "on-secondary-container": "#44677d", "inverse-primary": "#5ddbbb", "on-primary-fixed": "#002019", "primary-fixed": "#7cf8d6", "surface-container": "#dff0ff", "on-primary": "#ffffff", "on-error": "#ffffff", "surface-bright": "#f6faff", "surface-container-lowest": "#ffffff", "on-background": "#001e2e", "background": "#f6faff", "on-secondary-fixed": "#001e2e", "secondary-container": "#c0e4ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2.5rem", "margin-mobile": "1rem", "space-md": "1rem", "gutter-mobile": "1rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "margin": "2rem" }, "fontFamily": { "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, "fontSize": { "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low flex flex-col z-50 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">pets</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">DrVet</span><span class="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-space-xs py-0.5 rounded-full">PRO</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">Telemedicina Clínica</span></div></div><div class="flex-1 overflow-y-auto px-space-md py-space-lg flex flex-col gap-space-lg"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm uppercase tracking-wider text-outline">Prática Médica</span><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span>Início / Dashboard</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="agenda-e-consultas" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span>Agenda & Consultas</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="prontuarios-e-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">clinical_notes</span><span>Prontuários & Pacientes</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="sala-de-teleconsulta" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">video_camera_front</span><span>Sala de Teleconsulta</span></div><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="receitas-e-icp-brasil" href="#"><span class="material-symbols-outlined text-[20px]">prescriptions</span><span>Receitas & ICP-Brasil</span></a></nav></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm uppercase tracking-wider text-outline">Gestão & Sistema</span><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="faturamento-e-repasses" href="#"><span class="material-symbols-outlined text-[20px]">payments</span><span>Faturamento & Repasses</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="conexao-supabase" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">database</span><span>Conexão Supabase</span></div><span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">Ativo</span></a></nav></div></div><div class="p-space-md bg-surface-container-lowest"><div class="flex items-center gap-space-sm p-space-sm rounded-xl bg-surface-container-low"><div class="w-9 h-9 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold font-label-md text-label-md">CV</div><div class="flex flex-col min-w-0 flex-1"><span class="font-label-md text-label-md text-on-surface truncate">Dra. Camila V.</span><span class="font-label-sm text-label-sm text-primary font-bold truncate">CRMV-SP 42.189</span></div><span class="material-symbols-outlined text-[18px] text-primary">verified</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="relative flex-1 max-w-md"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span><input class="w-full pl-10 pr-12 py-2 bg-surface-container-lowest rounded-xl font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" placeholder="Buscar paciente, tutor ou prontuário..." type="text"/><kbd class="absolute right-3 top-1/2 -translate-y-1/2 font-label-sm text-label-sm text-outline bg-surface-container px-1.5 py-0.5 rounded">⌘K</kbd></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-sm py-1.5 rounded-full bg-surface-container-lowest text-on-surface shadow-sm"><span class="w-2 h-2 rounded-full bg-primary animate-ping"></span><span class="w-2 h-2 rounded-full bg-primary -ml-2.5"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Supabase PostgreSQL:</span><span class="font-label-sm text-label-sm text-primary font-bold">200 OK (Realtime)</span></div><button aria-label="Notificações" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-md text-label-md text-on-surface">Dra. Camila Vasconcellos</span><span class="font-label-sm text-label-sm text-on-surface-variant">CRMV-SP 42.189 • Clínica Médica</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full pb-28">
+<!-- Top Navigation & Breadcrumbs -->
+<header class="px-space-lg py-space-md bg-surface-container-lowest shadow-sm">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2">
+<a class="font-label-md text-label-md text-outline hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">folder_shared</span>
+          Prontuários & Pacientes
+        </a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<span class="font-label-md text-label-md text-outline">Inserção Clínica SOAP</span>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<span class="font-label-md text-label-md text-primary font-bold flex items-center gap-1.5 bg-surface-container-high px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Luna (Siamês • #PAC-2026-0481)
+        </span>
+</nav>
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center gap-2 px-space-sm py-1 rounded-full bg-primary-container/15 text-primary">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-label-sm text-label-sm font-bold tracking-tight">Supabase CDC Conectado (drvet.ehr_records)</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Title & Action Bar -->
+<section class="px-space-lg py-space-lg bg-surface">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">PostgreSQL 15.2 Ingestion Engine</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-outline">Sessão Segura TLS 1.3</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          Formulário de Inserção Clínica SOAP • Sincronização Supabase
+        </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+          Registro médico orientado a problemas integrado com auditoria de eventos e emissão criptográfica de prontuário eletrônico.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">file_copy</span>
+<span>Carregar Modelo</span>
+</button>
+<button class="px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg transition-all flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">visibility</span>
+<span>Pré-visualizar</span>
+</button>
+<button class="px-space-lg py-2.5 rounded-full bg-primary hover:bg-on-tertiary-container text-on-primary font-label-lg text-label-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">cloud_upload</span>
+<span>Salvar no Banco & Emitir SOAP</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Main Grid Content -->
+<div class="max-w-7xl mx-auto px-space-lg w-full mt-space-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- PRIMARY COLUMN (68% - 8 of 12 cols) -->
+<main class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- CARD 1: SELETOR DE ATENDIMENTO & DADOS BASE -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md relative overflow-hidden">
+<div class="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-primary via-tertiary to-primary-container"></div>
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Metadados do Atendimento</h2>
+<span class="font-label-sm text-label-sm text-outline font-mono">Tabela: drvet.clinical_encounters</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container-high text-secondary px-space-sm py-1 rounded-full font-mono font-bold">
+              UUID: e4b2-0481-99af
+            </span>
+</div>
+<!-- Base Form Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1" for="patient-id">
+                ID do Paciente
+              </label>
+<div class="relative">
+<input class="w-full bg-surface-container-low px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface cursor-not-allowed" id="patient-id" readonly="" type="text" value="#PAC-2026-0481"/>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">lock</span>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1" for="encounter-datetime">
+                Data / Hora da Consulta
+              </label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary" id="encounter-datetime" type="datetime-local" value="2026-03-30T10:30"/>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1" for="encounter-type">
+                Tipo de Atendimento
+              </label>
+<select class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary" id="encounter-type">
+<option selected="">Teleconsulta Síncrona (Vídeo)</option>
+<option>Retorno Clínico Agendado</option>
+<option>Atendimento Domiciliar / Presencial</option>
+<option>Interconsulta com Especialista</option>
+</select>
+</div>
+</div>
+<!-- Veterinary Identity & Species Badges -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm p-space-sm bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center font-bold text-label-sm">
+                CV
+              </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Dra. Camila Vasconcellos</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">CRMV-SP 42.189 • Clínica Médica</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm font-semibold shadow-xs">Siamês</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm font-semibold shadow-xs">Fêmea Castrada</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm font-semibold shadow-xs">6 anos e 2 m</span>
+<span class="px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold flex items-center gap-1 shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                DRC Estágio 2
+              </span>
+</div>
+</div>
+</article>
+<!-- CARD 2: BLOCO S — SUBJETIVO -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-tertiary-container/20 text-tertiary flex items-center justify-center font-bold font-headline-sm">
+                S
+              </div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Subjetivo (Anamnese & Relato do Tutor)</h2>
+<span class="font-label-sm text-label-sm text-outline font-mono">drvet.ehr_records -> soap_data ->> 'subjetivo'</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold bg-primary-fixed/40 px-2 py-0.5 rounded-full">Obrigatório CFMV</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-inverse-surface" for="queixa-principal">
+                Queixa Principal do Tutor
+              </label>
+<span class="font-label-sm text-label-sm text-outline" id="char-counter">118 / 600 caracteres</span>
+</div>
+<textarea class="w-full bg-surface-container-lowest p-space-sm rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none placeholder:text-outline" id="queixa-principal" placeholder="Descreva os motivos que levaram à consulta..." rows="2">Tutor relata aumento sutil na ingestão hídrica nas últimas 3 semanas. Nega vômitos ou alteração abrupta no apetite.</textarea>
+</div>
+<!-- Quick Checkbox Grid -->
+<div class="bg-surface-container-low p-space-sm rounded-xl flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wide text-secondary font-bold">Rastreio Rápido de Telessintomas Felinos</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors shadow-xs">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Apetite preservado</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors shadow-xs">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Consumo hídrico ↑</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors shadow-xs">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Sem êmese recente</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors shadow-xs">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Comportamento calmo</span>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-inverse-surface" for="hist-domiciliar">
+              Histórico Evolutivo Domiciliar & Manejo Ambiental
+            </label>
+<textarea class="w-full bg-surface-container-lowest p-space-sm rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none placeholder:text-outline" id="hist-domiciliar" placeholder="Padrão alimentar, fontes de água (fontes de fluxo contínuo), caixas de areia, fezes (escala Bristol Felina)..." rows="3">Dieta renal seca mantida (Royal Canin Renal Feline). Tutor implementou 2 fontes automáticas circulatórias. Micção diária 3x ao dia com torrões firmes. Fezes consistência Bristol 3. Escore de estresse ambiental baixo (ausência de outros animais e ambiente enriquecido).</textarea>
+</div>
+</article>
+<!-- CARD 3: BLOCO O — OBJETIVO -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center font-bold font-headline-sm">
+                O
+              </div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Objetivo (Parâmetros Vitais & Exame Físico)</h2>
+<span class="font-label-sm text-label-sm text-outline font-mono">Tabela: drvet.patient_vital_signs</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Tele-validação ativa</span>
+</div>
+</div>
+<!-- Vital Signs Matrix -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm">
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Peso Atual</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">+0.03 kg</span>
+</div>
+<div class="flex items-baseline gap-1">
+<input class="w-20 font-headline-md text-headline-md text-on-surface bg-transparent focus:outline-none font-bold" step="0.01" type="number" value="3.85"/>
+<span class="font-body-sm text-body-sm text-outline">kg</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Último: 3.82 kg</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Freq. Cardíaca</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="flex items-baseline gap-1">
+<input class="w-20 font-headline-md text-headline-md text-on-surface bg-transparent focus:outline-none font-bold" type="number" value="165"/>
+<span class="font-body-sm text-body-sm text-outline">bpm</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Ref: 140 - 220</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Freq. Respiratória</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="flex items-baseline gap-1">
+<input class="w-20 font-headline-md text-headline-md text-on-surface bg-transparent focus:outline-none font-bold" type="number" value="24"/>
+<span class="font-body-sm text-body-sm text-outline">mpm</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Ref: 20 - 30</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Temp. Auricular</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="flex items-baseline gap-1">
+<input class="w-20 font-headline-md text-headline-md text-on-surface bg-transparent focus:outline-none font-bold" step="0.1" type="number" value="38.4"/>
+<span class="font-body-sm text-body-sm text-outline">°C</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Ref: 38.0 - 39.2</span>
+</div>
+</div>
+<!-- Physical Exam Evaluators -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">TPC & Mucosas</label>
+<select class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+<option selected="">< 2 seg (Normocoradas)</option>
+<option>2 a 3 seg (Pálidas)</option>
+<option>> 3 seg (Congestas / Cianóticas)</option>
+<option>Ictéricas</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">Escore Corporal (ECC)</label>
+<select class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+<option>1/9 - Caquético</option>
+<option>2/9 - Muito Magro</option>
+<option>3/9 - Magro</option>
+<option selected="">4/9 - Ideal / Levemente Magro</option>
+<option>5/9 - Ideal Peso Adequado</option>
+<option>6/9 - Sobrepeso Leve</option>
+<option>7/9 - Obeso</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">Grau de Desidratação</label>
+<select class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+<option selected="">< 5% Normal (Turgor preservado)</option>
+<option>6% a 8% Desidratação Leve</option>
+<option>9% a 10% Desidratação Moderada</option>
+<option>> 11% Choque Hipovolêmico / Severo</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-inverse-surface" for="tele-inspecao">
+              Tele-inspeção Visual Guiada & Achados Específicos
+            </label>
+<textarea class="w-full bg-surface-container-lowest p-space-sm rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none placeholder:text-outline" id="tele-inspecao" rows="2">Câmera HD durante teleconsulta: pelagem brilhante e íntegra sem alopecia focal. Olhos límpidos, sem epífora. Ausência de sialorreia. Postura em repouso harmônica, sem arqueamento abdominal que sugira dor renal aguda.</textarea>
+</div>
+</article>
+<!-- CARD 4: BLOCO A — AVALIAÇÃO -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-secondary-container/50 text-secondary flex items-center justify-center font-bold font-headline-sm">
+                A
+              </div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Avaliação (Diagnósticos & CID-Vet)</h2>
+<span class="font-label-sm text-label-sm text-outline font-mono">Tabela: drvet.clinical_diagnoses</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">2 Classificações Ativas</span>
+</div>
+<!-- Diagnostic Tags Array -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-md text-label-md text-inverse-surface">
+              Hipóteses e Afecções Confirmadas
+            </label>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface">Doença Renal Crônica Felina (IRIS Estágio 2 - CID N18.2)</span>
+<button aria-label="Remover diagnóstico" class="hover:text-error text-outline transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-secondary">health_and_safety</span>
+<span class="font-label-sm text-label-sm text-on-surface">Cistite Idiopática Felina em Remissão (CID N30.0)</span>
+<button aria-label="Remover diagnóstico" class="hover:text-error text-outline transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full border border-dashed border-outline-variant text-primary hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Adicionar Diagnóstico CID-Vet</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">
+                Status da Patologia Principal
+              </label>
+<select class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+<option>Em Investigação Diagnóstica</option>
+<option selected="">Sob Controle / Estável</option>
+<option>Em Tratamento Ativo de Agudização</option>
+<option>Curado / Alta Clínica</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">
+                Estratificação de Gravidade (IRIS)
+              </label>
+<div class="flex items-center gap-2 px-space-sm py-2 bg-surface-container-low rounded-lg font-label-sm text-label-sm text-on-surface">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span>IRIS 2: Creatinina 1.6 - 2.8 mg/dL | SDMA 18 - 25 µg/dL</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-inverse-surface" for="parecer-vet">
+                Parecer Técnico Veterinário (Suporte a Markdown)
+              </label>
+<span class="font-label-sm text-label-sm text-outline">CFMV Art. 8º compatível</span>
+</div>
+<textarea class="w-full bg-surface-container-lowest p-space-sm rounded-lg font-mono text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none placeholder:text-outline" id="parecer-vet" rows="3">Paciente felina de 6 anos com diagnóstico prévio de DRC (IRIS 2) compensada hemodinamicamente. O aumento discreto de polidipsia reflete o esforço compensatório renal. Sem sinais urêmicos (estomatite, vômitos ou perda ponderal). Manter monitoramento trimestral de biomarcadores e pressão arterial sistêmica (PAS).</textarea>
+</div>
+</article>
+<!-- CARD 5: BLOCO P — PLANO TERAPÊUTICO & PRESCRIÇÃO -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center font-bold font-headline-sm">
+                P
+              </div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Plano Terapêutico & Prescrição</h2>
+<span class="font-label-sm text-label-sm text-outline font-mono">Tabelas: drvet.prescriptions & drvet.clinical_orders</span>
+</div>
+</div>
+<button class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold flex items-center gap-1 hover:brightness-105 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Adicionar Medicamento</span>
+</button>
+</div>
+<!-- Medication Item 1 -->
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Ômega 3 Vet (EPA/DHA 1000mg)</span>
+<span class="font-label-sm text-label-sm px-2 py-0.2 rounded-full bg-surface-container-highest text-secondary">Suplemento Renal</span>
+</div>
+<button aria-label="Excluir item de prescrição" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+<div>
+<span class="text-label-sm font-label-sm text-outline">Dose / Unidade:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">1 cápsula mastigável</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Frequência:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">A cada 24 horas (SID)</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Via de Administração:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Oral (misturado à ração)</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Período:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Uso contínuo (90 dias)</p>
+</div>
+</div>
+</div>
+<!-- Medication Item 2 -->
+<div class="p-space-sm bg-surface-container-low rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Quelante de Fósforo (Quitosana + Carbonato de Cálcio)</span>
+<span class="font-label-sm text-label-sm px-2 py-0.2 rounded-full bg-surface-container-highest text-secondary">Manipulado Feline</span>
+</div>
+<button aria-label="Excluir item de prescrição" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+<div>
+<span class="text-label-sm font-label-sm text-outline">Dose Calculada:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">1g misturado por sachê</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Frequência:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">A cada refeição úmida</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Via:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Oral Alimentar</p>
+</div>
+<div>
+<span class="text-label-sm font-label-sm text-outline">Período:</span>
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">60 dias</p>
+</div>
+</div>
+</div>
+<!-- Nutritional & Hydric Goals -->
+<div class="p-space-sm bg-surface-container-high/40 rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">water_drop</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Manejo Nutricional e Balanço Hídrico</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-xs">
+<span class="font-label-sm text-label-sm text-outline">Meta Dietética Úmida:</span>
+<p class="font-body-sm text-body-sm text-on-surface font-semibold">1 sachê úmido renal (85g) fracionado em 2 tomadas</p>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-xs">
+<span class="font-label-sm text-label-sm text-outline">Alvo Ingesta Hídrica Diária:</span>
+<p class="font-body-sm text-body-sm text-on-surface font-semibold">160 ml / dia (consumo direto + água dos sachês)</p>
+</div>
+</div>
+</div>
+<!-- Lab Orders Checkboxes -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-inverse-surface">Solicitação de Exames Complementares (Checklist)</span>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Creatinina Sérica</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">SDMA Biomarcador</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Ultrassom Abdominal</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">Urinálise Tipo I + UPC</span>
+</label>
+</div>
+</div>
+<!-- Return Date Picker -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">
+                Data de Retorno Recomendada (+90 dias)
+              </label>
+<input class="w-full bg-surface-container-lowest px-space-sm py-2 rounded-lg font-body-sm text-body-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary" type="date" value="2026-06-28"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-inverse-surface mb-1">
+                Canal de Suporte Emergencial
+              </label>
+<div class="flex items-center justify-between px-space-sm py-2 bg-surface-container-low rounded-lg text-body-sm">
+<span class="text-on-surface font-label-sm text-label-sm">Tele-triage Assíncrona via Chat DrVet</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">Ativo</span>
+</div>
+</div>
+</div>
+</article>
+</main>
+<!-- SECONDARY COLUMN (32% - 4 of 12 cols) - Schema Inspector & Live Sync -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg lg:sticky lg:top-20">
+<!-- CARD: SUPABASE SCHEMA MAPPER -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">database</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Supabase Schema Mapper</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">14ms CDC</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-outline">Tabela Destino:</span>
+<span class="font-mono text-primary font-bold">public.drvet_soap_records</span>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-outline">Engine:</span>
+<span class="font-mono text-on-surface">PostgreSQL 15.2 (CDC Realtime)</span>
+</div>
+</div>
+<!-- Code payload inspector -->
+<div class="bg-inverse-surface text-inverse-on-surface rounded-xl p-space-sm font-mono text-[11px] leading-relaxed overflow-x-auto shadow-inner">
+<div class="flex justify-between items-center text-outline-variant mb-1 pb-1 border-b border-outline-variant/30 text-[10px]">
+<span>JSONB PAYLOAD (OUTGOING)</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span> LIVE STREAM
+              </span>
+</div>
+<pre class="text-tertiary-fixed-dim"><code>{
+  <span class="text-outline-variant">"encounter_id"</span>: <span class="text-tertiary-fixed">"e4b2-0481-99af"</span>,
+  <span class="text-outline-variant">"patient_id"</span>: <span class="text-tertiary-fixed">"PAC-2026-0481"</span>,
+  <span class="text-outline-variant">"vet_crmv"</span>: <span class="text-tertiary-fixed">"CRMV-SP 42.189"</span>,
+  <span class="text-outline-variant">"soap"</span>: {
+    <span class="text-outline-variant">"s"</span>: {
+      <span class="text-outline-variant">"chief_complaint"</span>: <span class="text-tertiary-fixed">"Aumento sutil ingestão..."</span>,
+      <span class="text-outline-variant">"appetite_ok"</span>: <span class="text-primary-fixed">true</span>
+    },
+    <span class="text-outline-variant">"o"</span>: {
+      <span class="text-outline-variant">"weight_kg"</span>: <span class="text-secondary-fixed">3.85</span>,
+      <span class="text-outline-variant">"hr_bpm"</span>: <span class="text-secondary-fixed">165</span>,
+      <span class="text-outline-variant">"rr_mpm"</span>: <span class="text-secondary-fixed">24</span>,
+      <span class="text-outline-variant">"temp_c"</span>: <span class="text-secondary-fixed">38.4</span>,
+      <span class="text-outline-variant">"bcs"</span>: <span class="text-tertiary-fixed">"4/9"</span>
+    },
+    <span class="text-outline-variant">"a"</span>: {
+      <span class="text-outline-variant">"iris_stage"</span>: <span class="text-secondary-fixed">2</span>,
+      <span class="text-outline-variant">"cid"</span>: [<span class="text-tertiary-fixed">"N18.2"</span>, <span class="text-tertiary-fixed">"N30.0"</span>]
+    },
+    <span class="text-outline-variant">"p"</span>: {
+      <span class="text-outline-variant">"rx_count"</span>: <span class="text-secondary-fixed">2</span>,
+      <span class="text-outline-variant">"return_days"</span>: <span class="text-secondary-fixed">90</span>
+    }
+  }
+}</code></pre>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm text-outline pt-1">
+<span>Último commit local: há 4s</span>
+<span class="text-primary font-bold">Hash: 8a9f0c2</span>
+</div>
+</article>
+<!-- CARD: CHECKLIST DE CONFORMIDADE REGULATÓRIA CFMV -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Validações CFMV nº 1.465</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+</div>
+<ul class="flex flex-col gap-2 font-label-md text-label-md">
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<span>Identificação CRMV e UF válidos</span>
+</li>
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<span>Peso e parâmetros vitais preenchidos</span>
+</li>
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<span>Classificação diagnóstica mapeada</span>
+</li>
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<span>Conduta e prazos definidos</span>
+</li>
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+<span>Certificado ICP-Brasil A1 Pareado</span>
+</li>
+</ul>
+<div class="mt-space-xs p-2.5 rounded-lg bg-surface-container-high/50 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Assinatura Digital ICP-Brasil</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full shadow-xs">Pronto para Emissão</span>
+</div>
+</article>
+<!-- CARD: HISTÓRICO RÁPIDO DO PACIENTE -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Último SOAP de Luna</h3>
+<span class="font-label-sm text-label-sm text-outline">12 Jan 2026</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm">
+<span class="text-outline">Creatinina Anterior</span>
+<span class="font-bold text-on-surface">1.9 mg/dL</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm">
+<span class="text-outline">Peso Anterior</span>
+<span class="font-bold text-on-surface">3.82 kg</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm">
+<span class="text-outline">Conduta Anterior</span>
+<span class="font-bold text-on-surface truncate max-w-[150px]">Ômega 3 + Ração Renal</span>
+</div>
+</div>
+<button class="mt-1 w-full py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+<span>Importar Conduta Anterior</span>
+</button>
+</article>
+</aside>
+</div>
+</div>
+<!-- FIXED BOTTOM DOCK (AUTO-SAVE STATUS & CTA) -->
+<footer class="fixed bottom-0 left-72 right-0 bg-surface-container-lowest/95 backdrop-blur-md shadow-xl z-30 px-space-lg py-space-sm">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Auto-save em tempo real ativo</span>
+<span class="font-label-sm text-label-sm text-outline truncate max-w-sm sm:max-w-md">
+            Sincronizando campos no PostgreSQL: drvet.draft_soap_records
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-2 rounded-full text-on-surface-variant hover:text-error hover:bg-error-container/30 font-label-md text-label-md transition-colors" type="button">
+          Descartar Alterações
+        </button>
+<button class="px-space-md py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+          Salvar como Modelo
+        </button>
+<button class="px-space-lg py-2.5 rounded-full bg-primary hover:bg-on-tertiary-container text-on-primary font-label-lg text-label-lg font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">done_all</span>
+<span>Confirmar Inserção e Gravar no Supabase</span>
+</button>
+</div>
+</div>
+</footer>
+</div>
+<script>
+  // Character counter micro-interaction for Chief Complaint textarea
+  const textarea = document.getElementById('queixa-principal');
+  const counter = document.getElementById('char-counter');
+  if (textarea && counter) {
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      counter.textContent = `${len} / 600 caracteres`;
+    });
+  }
+</script></main></div></body></html>

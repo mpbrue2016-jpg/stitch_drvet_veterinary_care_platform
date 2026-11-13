@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container": "#dff0ff", "primary-fixed": "#7cf8d6", "surface-container-highest": "#cbe6fc", "surface": "#f6faff", "surface-container-lowest": "#ffffff", "on-primary-container": "#003529", "on-error-container": "#93000a", "on-tertiary-container": "#00352d", "on-secondary-container": "#44677d", "secondary-fixed": "#c7e7ff", "surface-bright": "#f6faff", "surface-container-high": "#d4ebff", "primary-fixed-dim": "#5ddbbb", "on-surface": "#001e2e", "on-secondary-fixed-variant": "#274a60", "on-error": "#ffffff", "primary-container": "#13a88a", "error": "#ba1a1a", "tertiary-fixed-dim": "#52dbc5", "inverse-on-surface": "#e5f2ff", "outline": "#6d7a75", "surface-tint": "#006b57", "background": "#f6faff", "on-tertiary-fixed": "#00201b", "on-background": "#001e2e", "on-secondary-fixed": "#001e2e", "tertiary-container": "#00a894", "on-tertiary": "#ffffff", "surface-variant": "#cbe6fc", "on-primary": "#ffffff", "on-tertiary-fixed-variant": "#005046", "tertiary-fixed": "#72f8e0", "outline-variant": "#bccac3", "secondary-fixed-dim": "#a7cbe5", "inverse-primary": "#5ddbbb", "surface-container-low": "#ebf5ff", "on-primary-fixed-variant": "#005141", "inverse-surface": "#183344", "secondary-container": "#c0e4ff", "tertiary": "#006b5d", "on-surface-variant": "#3d4945", "on-secondary": "#ffffff", "secondary": "#406279", "on-primary-fixed": "#002019", "error-container": "#ffdad6", "primary": "#006b57", "surface-dim": "#c2def4" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2.5rem", "space-xs": "0.25rem", "margin-mobile": "1rem", "space-sm": "0.5rem", "gutter": "1.5rem", "space-md": "1rem", "gutter-mobile": "1rem", "space-lg": "1.5rem", "margin": "2rem" }, "fontFamily": { "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-xl-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "700" }], "display-hero": ["48px", { "lineHeight": "56px", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-6 pb-6 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="px-6 mb-8 flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary font-headline-sm font-bold">DV</div><div><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight block">DrVet</span><span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider block">Gestão &amp; Jurídico</span></div></div></div><div class="px-4 mb-3"><span class="px-3 font-label-sm text-label-sm uppercase tracking-wider text-outline">Credenciamento &amp; Atos</span></div><nav class="flex-1 px-4 space-y-1 overflow-y-auto" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-xl"><a class="flex items-center gap-space-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="painel-de-credenciamento" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Visão Geral</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="validacao-cadastral-crmv" href="#"><span class="material-symbols-outlined text-[20px]">verified</span><span class="font-label-lg text-label-lg">Validação CRMV</span></a><a aria-current="page" class="flex items-center gap-space-sm px-4 py-3 transition-all bg-primary-container text-on-primary-container font-bold rounded-xl" data-path="contratos-digitais" href="#"><span class="material-symbols-outlined text-[20px]">draw</span><span class="font-label-lg text-label-lg">Contratos Digitais</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="documentos-e-anexos" href="#"><span class="material-symbols-outlined text-[20px]">folder_managed</span><span class="font-label-lg text-label-lg">Dossiês &amp; Anexos</span></a><div class="pt-4 pb-2 px-3"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Conformidade Legal</span></div><a class="flex items-center gap-space-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="repositorio-termos-legais" href="#"><span class="material-symbols-outlined text-[20px]">gavel</span><span class="font-label-lg text-label-lg">Repositório de Termos</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="trilhas-de-auditoria" href="#"><span class="material-symbols-outlined text-[20px]">history_toggle_off</span><span class="font-label-lg text-label-lg">Trilhas &amp; Auditoria</span></a></nav><div class="px-4 pt-4 mt-auto"><div class="p-space-md rounded-xl bg-surface-container flex items-center justify-between"><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface-variant">Certificado ICP-Brasil</span><span class="font-label-md text-label-md text-primary font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary inline-block"></span>Ativo &amp; Conectado</span></div><span class="material-symbols-outlined text-primary text-[20px]">lock</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-outline">policy</span><span class="font-label-md text-label-md text-on-surface-variant">Ambiente Seguro DrVet • ICP-Brasil &amp; Criptografia Ponta a Ponta</span></div><div class="flex items-center gap-space-md"><button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined">notifications</span></button><button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined">help_outline</span></button><div class="h-6 w-px bg-outline-variant/30"></div><div class="flex items-center gap-space-sm"><div class="text-right hidden sm:block"><span class="block font-label-md text-label-md text-on-surface font-bold leading-none">Dra. Renata Vasconcellos</span><span class="font-label-sm text-label-sm text-on-surface-variant">CRMV-SP 48.291</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 bg-surface w-full px-8 py-8"><div class="flex flex-col w-full space-y-8">
+<!-- Header Institucional & Selos Regulatórios -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-8 shadow-sm">
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="space-y-3 max-w-3xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-primary text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span>COMPLIANCE JURÍDICO AUDITADO</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>VERSÃO V.4.8.2</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+          Repositório Jurídico &amp; Governança Contratual • DrVet
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          Matriz oficial de minutas, termos de consentimento irrevogável e protocolos normativos da rede DrVet. Instrumentos redigidos em conformidade direta com a Lei Federal nº 13.709/2018 (LGPD), Resolução CFMV nº 1.465/2022 e padrões ICP-Brasil com carimbo de tempo padrão PKI.
+        </p>
+</div>
+<!-- Compliance Seals -->
+<div class="flex flex-wrap lg:flex-col xl:flex-row gap-3">
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low shadow-sm min-w-[210px]">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">enhanced_encryption</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm uppercase text-outline">Padrão Digital</div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">ICP-Brasil Nativo</div>
+<div class="font-body-sm text-body-sm text-primary">Assinatura DOC-ICP</div>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low shadow-sm min-w-[210px]">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm uppercase text-outline">Privacidade Cripto</div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">LGPD Nº 13.709/18</div>
+<div class="font-body-sm text-body-sm text-secondary">DPO &amp; Registro Seguro</div>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low shadow-sm min-w-[210px]">
+<div class="w-10 h-10 rounded-full bg-primary-fixed-dim/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">medical_services</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm uppercase text-outline">Conselho Federal</div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">Res. CFMV 1.465/22</div>
+<div class="font-body-sm text-body-sm text-primary">Telemedicina Legal</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Painel de Contratos e Ferramental de Auditoria -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+<!-- Esquerda / Centro: Tabs Interativas de Contratos Digitais (8 Colunas) -->
+<div class="xl:col-span-8 flex flex-col space-y-6">
+<!-- Navegação de Abas -->
+<div class="flex flex-wrap p-1.5 rounded-xl bg-surface-container-low gap-1.5 shadow-sm">
+<button class="tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all bg-surface-container-lowest text-primary font-bold shadow-sm" id="tab-btn-0" onclick="switchTab(0)">
+<span class="material-symbols-outlined text-[20px]">pets</span>
+<span class="truncate">Tutor &amp; Plataforma</span>
+</button>
+<button class="tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container" id="tab-btn-1" onclick="switchTab(1)">
+<span class="material-symbols-outlined text-[20px]">stethoscope</span>
+<span class="truncate">Médico-Veterinário</span>
+</button>
+<button class="tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container" id="tab-btn-2" onclick="switchTab(2)">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="truncate">Pet Shop Parceiro</span>
+</button>
+<button class="tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container" id="tab-btn-3" onclick="switchTab(3)">
+<span class="material-symbols-outlined text-[20px]">prescriptions</span>
+<span class="truncate">Farmácia Parceira</span>
+</button>
+</div>
+<!-- Conteúdo Contrato 1: Tutor & Plataforma -->
+<article class="tab-pane flex flex-col rounded-xl bg-surface-container-lowest p-8 shadow-sm space-y-6" id="tab-content-0">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 bg-surface-container-low/40 p-5 rounded-xl gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold uppercase">Contrato Ativo • Minuta 01/2025</span>
+<span class="font-label-sm text-label-sm text-outline">Doc ID: DVT-CTR-TUT-9021</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface mt-1">Instrumento Particular de Teleorientação, Prontuário &amp; Cuidados Pet</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-on-primary-container transition-all shadow-sm" onclick="triggerDownloadPDF('Minuta_Tutor_DrVet_2025.pdf')">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Baixar Minuta Padrão PDF</span>
+</button>
+</div>
+</div>
+<!-- Cláusulas Chave em Destaque Visual -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                Cláusula 2ª • Limites da Telemedicina
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                O tutor reconhece que a teleorientação e teletriagem não substituem consultas presenciais em casos de emergência crítica ou necessidade cirúrgica imediata, em conformidade com a Res. CFMV 1.465/2022.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Status Regulatório</span>
+<span class="text-primary font-bold">CFMV Art. 4º Validado</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">folder_shared</span>
+                Cláusula 5ª • Prontuário &amp; Consentimento
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Consentimento livre, expresso e informado para registro em Prontuário Eletrônico Unificado do animal, com guarda em nuvem criptografada e acesso franqueado ao tutor em qualquer momento.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Acesso ao Prontuário</span>
+<span class="text-primary font-bold">Imutável via SHA-256</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">loyalty</span>
+                Cláusula 8ª • Pagamento &amp; Descontos
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Transações processadas via gateway certificado. Concessão de bonificação de 15% na primeira teleconsulta quando ativada por cupom emitido por Pet Shop credenciado DrVet.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Política de Reembolso</span>
+<span class="text-on-surface font-bold">Até 2h pré-consulta</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">lock_clock</span>
+                Cláusula 11ª • Privacidade de Dados (LGPD)
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Tratamento estrito sob os ditames da Lei nº 13.709/2018. Não compartilhamento de dados sensíveis do tutor para fins publicitários terceiros desautorizados, resguardado direito de revogação.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Encarregado DPO</span>
+<span class="text-primary font-bold">dpo@drvet.med.br</span>
+</div>
+</div>
+</div>
+<!-- Texto Integral Transcrito -->
+<div class="p-5 rounded-xl bg-surface font-body-sm text-body-sm text-on-surface space-y-3 max-h-56 overflow-y-auto shadow-inner">
+<p class="font-bold text-label-md font-label-md text-on-surface">SUMÁRIO INTEGRAL DO TERMO DE ADESÃO DO TUTOR:</p>
+<p>
+<strong>1. DO OBJETO:</strong> O presente contrato rege a contratação de serviços de intermediação tecnológica e viabilização de teleconsultas, teletriagem, receitas eletrônicas e orientações veterinárias fornecidas pelos Médicos-Veterinários devidamente credenciados perante a plataforma DrVet.
+          </p>
+<p>
+<strong>2. DECLARAÇÃO DE CIÊNCIA:</strong> O contratante declara ter conhecimento pleno das limitações espaciais e técnicas do atendimento telemediado, compreendendo que diagnósticos definitivos podem requerer palpação, auscultação física presencial ou exames complementares de imagem e laboratoriais.
+          </p>
+<p>
+<strong>3. DO PRONTUÁRIO ELETRÔNICO:</strong> Cada sessão clínica gerará uma anotação estruturada no formato SOAP assinada digitalmente pelo profissional com certificado ICP-Brasil, tornando-se documento permanente na ficha médica do animal tutelado.
+          </p>
+<p>
+<strong>4. VALIDAÇÃO DE IDENTIDADE:</strong> O tutor assegura a veracidade de seu CPF e dos históricos vacinais e de enfermidades informados sobre o paciente na anamnese virtual.
+          </p>
+</div>
+</article>
+<!-- Conteúdo Contrato 2: Médico-Veterinário & Plataforma -->
+<article class="tab-pane hidden flex-col rounded-xl bg-surface-container-lowest p-8 shadow-sm space-y-6" id="tab-content-1">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 bg-surface-container-low/40 p-5 rounded-xl gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold uppercase">Contrato Ativo • Minuta 02/2025</span>
+<span class="font-label-sm text-label-sm text-outline">Doc ID: DVT-CTR-VET-4198</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface mt-1">Termo de Credenciamento, Autonomia Clínica &amp; Split Financeiro</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-on-primary-container transition-all shadow-sm" onclick="triggerDownloadPDF('Minuta_Veterinario_DrVet_2025.pdf')">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Baixar Minuta Padrão PDF</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">balance</span>
+                Cláusula 1ª • Inexistência de Vínculo (Art. 593 CC)
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Expressa autonomia técnico-científica sem subordinação hierárquica ou exclusividade. O profissional atua como prestador autônomo sem caracterização de relação trabalhista celetista.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Natureza Civil</span>
+<span class="text-primary font-bold">Prestação de Serviços Autônoma</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                Cláusula 4ª • Split Automático D+1/D+0
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Repasse líquido com split bancário automático via gateway integrado (Asaas/Mercado Pago). Dedução exclusiva da taxa tecnológica fixa da plataforma de 10% sobre o valor da consulta.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Taxa DrVet</span>
+<span class="text-on-surface font-bold">10% fixo retido no gateway</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                Cláusula 7ª • Prontuários SOAP &amp; Certificação
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Obrigatoriedade de assinatura digital com chave ICP-Brasil A1 ou A3 em todas as receitas, prescrições e registros clínicos no formato SOAP, com guarda mínima legal de 5 anos.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Validade Jurídica</span>
+<span class="text-primary font-bold">MP 2.200-2/2001 &amp; CFMV</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">security</span>
+                Cláusula 10ª • Sigilo Médico-Veterinário
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Dever incondicional de sigilo profissional com esteio no Código de Ética do Médico-Veterinário, respondendo civil e administrativamente pelo extravio culposo de dados do tutor ou animal.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Código de Ética</span>
+<span class="text-primary font-bold">Res. CFMV nº 1.138/2016</span>
+</div>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface font-body-sm text-body-sm text-on-surface space-y-3 max-h-56 overflow-y-auto shadow-inner">
+<p class="font-bold text-label-md font-label-md text-on-surface">EXTRATO INTEGRAL DO CONTRATO DO CORPO CLÍNICO:</p>
+<p>
+<strong>1. CAPACIDADE REGULAMENTAR:</strong> O contratado atesta possuir inscrição ativa e regularizada perante o Conselho Regional de Medicina Veterinária (CRMV) de sua jurisdição federativa primária, com anotação de responsabilidade técnica caso aplicável.
+          </p>
+<p>
+<strong>2. PRESCRIÇÃO DIGITAL:</strong> A emissão de receituários simples ou controlados deve utilizar o carimbo de tempo da autoridade certificadora e o repositório auditável da DrVet, sendo vedada a transmissão de arquivos sem autenticação digital ICP-Brasil.
+          </p>
+<p>
+<strong>3. CONDUTA INDEPENDENTE:</strong> A DrVet em nenhuma hipótese interferirá no juízo diagnóstico, prescritivo ou de indicação de procedimentos, cabendo integralmente ao Médico-Veterinário a decisão clínica soberana.
+          </p>
+</div>
+</article>
+<!-- Conteúdo Contrato 3: Pet Shop Parceiro & Plataforma -->
+<article class="tab-pane hidden flex-col rounded-xl bg-surface-container-lowest p-8 shadow-sm space-y-6" id="tab-content-2">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 bg-surface-container-low/40 p-5 rounded-xl gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold uppercase">Contrato Ativo • Minuta 03/2025</span>
+<span class="font-label-sm text-label-sm text-outline">Doc ID: DVT-CTR-PTS-7731</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface mt-1">Convênio de Vitrine Patrocinada, Geolocalização &amp; Cashback Afiliado</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-on-primary-container transition-all shadow-sm" onclick="triggerDownloadPDF('Minuta_PetShop_DrVet_2025.pdf')">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Baixar Minuta Padrão PDF</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">pin_drop</span>
+                Cláusula 2ª • Vitrine &amp; Raio de Geolocalização
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Exibição destacada do estabelecimento físico no radar do app DrVet para tutores em raio configurável de até 15 km, com direcionamento direto para agendamento de banho, tosa e produtos.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Posicionamento</span>
+<span class="text-primary font-bold">Top 3 Geo-Ranked</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+                Cláusula 4ª • Comissão 15% por QR Code
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Remuneração de 15% em comissão líquida creditada na carteira do Pet Shop sobre a primeira teleconsulta realizada por cada tutor cadastrado através do totem de balcão oficial.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Repasse Afiliado</span>
+<span class="text-on-surface font-bold">Mensal com fechamento dia 05</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                Cláusula 6ª • Kit de Materiais Físicos
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Fornecimento sem ônus de expositor em acrílico, adesivos de vitrine vitrificada e folheteria com tecnologia QR Code dinâmico atrelado à chave CNPJ do estabelecimento parceiro.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Entrega do Kit</span>
+<span class="text-primary font-bold">Em até 7 dias úteis</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">event_repeat</span>
+                Cláusula 9ª • Sem Fidelidade nem Multa
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Contratação em modelo SaaS mensal sem cláusula de permanência obrigatória, admitindo rescisão unilateral e encerramento de veiculação mediante aviso de apenas 15 dias no painel.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Carência Contratual</span>
+<span class="text-primary font-bold">Zero meses / Livre rescisão</span>
+</div>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface font-body-sm text-body-sm text-on-surface space-y-3 max-h-56 overflow-y-auto shadow-inner">
+<p class="font-bold text-label-md font-label-md text-on-surface">TERMOS GERAIS DE AFILIAÇÃO COMERCIAL:</p>
+<p>
+<strong>1. POLÍTICA DE CONDUTA NO BALCÃO:</strong> O Pet Shop parceiro compromete-se a instruir seus atendentes a não realizarem prescrições informais de antibióticos ou fármacos restritos, canalizando dúvidas dos clientes para a plataforma de teleorientação oficial.
+          </p>
+<p>
+<strong>2. CONVERGÊNCIA LGPD:</strong> Os dados de tutores escaneados por QR Code trafegam em canal criptografado direto para o banco da DrVet, não havendo armazenamento residual desprotegido no ponto de venda físico.
+          </p>
+</div>
+</article>
+<!-- Conteúdo Contrato 4: Farmácia Parceira & Plataforma -->
+<article class="tab-pane hidden flex-col rounded-xl bg-surface-container-lowest p-8 shadow-sm space-y-6" id="tab-content-3">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 bg-surface-container-low/40 p-5 rounded-xl gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold uppercase">Contrato Ativo • Minuta 04/2025</span>
+<span class="font-label-sm text-label-sm text-outline">Doc ID: DVT-CTR-FAR-3109</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface mt-1">Acordo de Integração Farmacêutica, Validação de Receitas &amp; Venda Direta</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-on-primary-container transition-all shadow-sm" onclick="triggerDownloadPDF('Minuta_Farmacia_DrVet_2025.pdf')">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Baixar Minuta Padrão PDF</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">store</span>
+                Cláusula 1ª • Ausência de Intermediação Mercantil
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                A DrVet atua como catálogo informativo e tecnológico. A transação comercial do medicamento e sua nota fiscal são emitidas exclusivamente pela farmácia conveniada diretamente ao tutor consumidor.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Natureza Jurídica</span>
+<span class="text-primary font-bold">Venda Direta Farmácia-Tutor</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">high_res</span>
+                Cláusula 3ª • Concessão Obrigatória de 15% (DRVET15)
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Compromisso vinculante da farmácia em abater 15% sobre o Preço Máximo ao Consumidor (PMC) ou balcão mediante apresentação de receita eletrônica válida emitida por veterinário credenciado DrVet.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Cupom Validado</span>
+<span class="text-on-surface font-bold">DRVET15 com validação de hash</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">health_and_safety</span>
+                Cláusula 5ª • Responsabilidade Técnica (CRF/MAPA/Anvisa)
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                A dispensa física e conferência do termo de controle especial cabe ao Farmacêutico Responsável Técnico da loja, respondendo o estabelecimento pelas normas sanitárias da Anvisa e MAPA.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Responsabilidade Técnica</span>
+<span class="text-primary font-bold">Integral da Farmácia Dispensadora</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md uppercase font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                Cláusula 8ª • Descredenciamento Simplificado
+              </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                O descredenciamento pode ser solicitado com 30 dias de aviso prévio por qualquer das partes, sem incidência de penalidades pecuniárias, preservando-se as ordens de dispensa em andamento.
+              </p>
+</div>
+<div class="mt-3 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>Aviso Prévio</span>
+<span class="text-primary font-bold">30 dias corridos via API</span>
+</div>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface font-body-sm text-body-sm text-on-surface space-y-3 max-h-56 overflow-y-auto shadow-inner">
+<p class="font-bold text-label-md font-label-md text-on-surface">DISPOSIÇÕES ESPECÍFICAS DE DISPENSAÇÃO FARMACÊUTICA:</p>
+<p>
+<strong>1. INTEGRAÇÃO SISTÊMICA:</strong> A farmácia operará o terminal web DrVet Rx Checker para conferir o hash criptográfico e a assinatura ICP-Brasil do Médico-Veterinário prescritor antes da liberação do medicamento de uso controlado (Portaria SVS/MS nº 344/98 e Instrução Normativa MAPA).
+          </p>
+<p>
+<strong>2. NÃO EXCLUSIVIDADE:</strong> A farmácia mantém liberdade para conveniar-se com outras entidades e praticar tabelas de preços distintas para balcão geral, assegurado o preço estipulado com desconto para a comunidade DrVet.
+          </p>
+</div>
+</article>
+<!-- Painel Inferior: Ferramenta de Verificação de Assinatura -->
+<section class="rounded-xl bg-surface-container-low p-6 shadow-sm space-y-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Verificador Oficial de Hash &amp; Assinatura ICP-Brasil</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Valide a autenticidade jurídica de qualquer contrato ou receita emitida no ecossistema.</p>
+</div>
+</div>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary text-on-secondary font-label-lg text-label-lg hover:bg-on-secondary-fixed-variant transition-all self-start sm:self-auto shadow-sm" onclick="simulateVerification()">
+<span class="material-symbols-outlined text-[18px]">fingerprint</span>
+<span>Verificar Validade de Assinatura Digital</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<input class="md:col-span-2 px-4 py-3 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="hash-input" placeholder="Cole o Hash SHA-256 do documento (ex: a8f9c2...)" type="text"/>
+<div class="flex items-center gap-2">
+<button class="w-full px-4 py-3 rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-container-highest transition-colors text-center font-bold" onclick="pasteExampleHash()">
+              Usar Hash Exemplo
+            </button>
+</div>
+</div>
+<div class="hidden p-4 rounded-xl bg-surface-container-lowest flex items-center justify-between animate-fade-in shadow-sm" id="verification-result">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[28px]">verified</span>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-primary">Assinatura Certificada &amp; Documento Íntegro</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Assinado por: Dra. Renata Vasconcellos (CRMV-SP 48.291) • Autoridade Certificadora: AC Serasa RFB v5 • Carimbo UTC Válido</div>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold">STATUS 100% VÁLIDO</span>
+</div>
+</section>
+</div>
+<!-- Direita: Auditoria de Assinaturas e Hashes no Supabase em Tempo Real (4 Colunas) -->
+<aside class="xl:col-span-4 flex flex-col space-y-6">
+<!-- Card Supabase Realtime Stream -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-sm space-y-5">
+<div class="flex items-center justify-between pb-3 bg-surface-container-low/40 p-4 rounded-xl">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Supabase Audit Trail</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold">LIVE WEBSOCKET</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Stream criptográfico auditável em tempo real. Cada aceite é persistido na tabela <code class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-bold text-label-sm">legal_contract_signatures</code> com hash e carimbo UTC inalterável.
+        </p>
+<!-- Registros Recentes em Tempo Real -->
+<div class="space-y-3">
+<!-- Item 1: Tutor -->
+<div class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm font-bold uppercase">Tutor</span>
+<span class="font-label-sm text-label-sm text-outline">Há 2 min (UTC)</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Thiago Moreira Coutinho</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-2">CPF: ***.482.918-** • IP: 187.19.24.112</div>
+<div class="p-2 rounded bg-surface-container-lowest flex items-center justify-between font-mono text-label-sm text-outline">
+<span class="truncate max-w-[200px]">SHA: 8f4e2b09a1c...9021</span>
+<span class="text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Válido
+              </span>
+</div>
+</div>
+<!-- Item 2: Veterinário -->
+<div class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="px-2 py-0.5 rounded bg-secondary-container text-secondary font-label-sm text-label-sm font-bold uppercase">Veterinário</span>
+<span class="font-label-sm text-label-sm text-outline">Há 14 min (UTC)</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Dr. Rodrigo Mendes Canto</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-2">CRMV-RJ 14.882 • ICP: Token SafeNet</div>
+<div class="p-2 rounded bg-surface-container-lowest flex items-center justify-between font-mono text-label-sm text-outline">
+<span class="truncate max-w-[200px]">SHA: b22fa97d10e...4198</span>
+<span class="text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Válido
+              </span>
+</div>
+</div>
+<!-- Item 3: Pet Shop -->
+<div class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="px-2 py-0.5 rounded bg-tertiary-container text-on-tertiary font-label-sm text-label-sm font-bold uppercase">Pet Shop</span>
+<span class="font-label-sm text-label-sm text-outline">Há 45 min (UTC)</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Mundo Pet Jardins Eireli</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-2">CNPJ: 32.891.442/0001-90 • IP: 201.86.11.04</div>
+<div class="p-2 rounded bg-surface-container-lowest flex items-center justify-between font-mono text-label-sm text-outline">
+<span class="truncate max-w-[200px]">SHA: dd41c760ea8...7731</span>
+<span class="text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Válido
+              </span>
+</div>
+</div>
+<!-- Item 4: Farmácia -->
+<div class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="px-2 py-0.5 rounded bg-primary-fixed-dim/50 text-on-surface font-label-sm text-label-sm font-bold uppercase">Farmácia</span>
+<span class="font-label-sm text-label-sm text-outline">Há 2 horas (UTC)</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">ManipulaVet Farmacêutica Ltda</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-2">CNPJ: 19.340.012/0001-55 • CRF-SP: 12.004</div>
+<div class="p-2 rounded bg-surface-container-lowest flex items-center justify-between font-mono text-label-sm text-outline">
+<span class="truncate max-w-[200px]">SHA: 5c88e1472bb...3109</span>
+<span class="text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Válido
+              </span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 transition-colors" onclick="refreshLiveLog()">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Sincronizar Hash Ledger</span>
+</button>
+</div>
+<!-- Resumo Estatístico de Governança -->
+<div class="rounded-xl bg-surface-container-lowest p-6 shadow-sm space-y-4">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Métricas de Conformidade DrVet</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total de Aceites Gravados</span>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">14.928</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[94%]"></div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Taxa de Conformidade ICP-Brasil</span>
+<span class="font-label-lg text-label-lg font-bold text-primary">100.0%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-full"></div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auditorias Externas Realizadas</span>
+<span class="font-label-lg text-label-lg font-bold text-secondary">3/3 Aprovadas</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="p-3 rounded-lg bg-surface-container-low text-label-sm font-label-sm text-outline flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">security_update_good</span>
+<span>Próximo ciclo de revalidação de chaves raiz: 12/12/2025</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  function switchTab(index) {
+    // Reset all tabs
+    for (let i = 0; i < 4; i++) {
+      const btn = document.getElementById(`tab-btn-${i}`);
+      const content = document.getElementById(`tab-content-${i}`);
+      if (btn && content) {
+        if (i === index) {
+          btn.className = 'tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all bg-surface-container-lowest text-primary font-bold shadow-sm';
+          content.classList.remove('hidden');
+          content.classList.add('flex');
+        } else {
+          btn.className = 'tab-button flex-1 py-3 px-4 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container';
+          content.classList.add('hidden');
+          content.classList.remove('flex');
+        }
+      }
+    }
+  }
+
+  function triggerDownloadPDF(filename) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'fixed bottom-8 right-8 z-50 bg-on-surface text-surface px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce';
+    alertDiv.innerHTML = `
+      <span class="material-symbols-outlined text-primary-fixed">download_done</span>
+      <div>
+        <div class="font-label-lg font-bold text-surface">Minuta Padrão Gerada</div>
+        <div class="font-body-sm text-surface-container-high">${filename} assinado com carimbo ICP-Brasil</div>
+      </div>
+    `;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 3800);
+  }
+
+  function simulateVerification() {
+    const input = document.getElementById('hash-input');
+    const resultBox = document.getElementById('verification-result');
+    if (!input.value.trim()) {
+      input.focus();
+      input.classList.add('ring-2', 'ring-primary');
+      setTimeout(() => input.classList.remove('ring-2', 'ring-primary'), 1000);
+      return;
+    }
+    resultBox.classList.remove('hidden');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function pasteExampleHash() {
+    const input = document.getElementById('hash-input');
+    input.value = '8f4e2b09a1c6928e3b5df9a28c301d0a5e899b82cd739021e89901844bcae3f4';
+    simulateVerification();
+  }
+
+  function refreshLiveLog() {
+    const button = event.currentTarget;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Atualizando Ledger...</span>';
+    setTimeout(() => {
+      button.innerHTML = originalText;
+    }, 900);
+  }
+</script></main></div></body></html>

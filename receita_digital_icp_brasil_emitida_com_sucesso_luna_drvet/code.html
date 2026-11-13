@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#ebf5ff","on-secondary-fixed":"#001e2e","on-surface":"#001e2e","surface-container":"#dff0ff","on-primary-fixed-variant":"#005141","inverse-primary":"#5ddbbb","surface-container-lowest":"#ffffff","on-tertiary-fixed-variant":"#005046","surface-dim":"#c2def4","tertiary":"#006b5d","primary-fixed":"#7cf8d6","on-error":"#ffffff","on-tertiary-container":"#00352d","primary":"#006b57","on-tertiary":"#ffffff","background":"#f6faff","surface-container-highest":"#cbe6fc","secondary":"#406279","on-tertiary-fixed":"#00201b","primary-container":"#13a88a","surface-variant":"#cbe6fc","on-primary-fixed":"#002019","error-container":"#ffdad6","error":"#ba1a1a","tertiary-container":"#00a894","inverse-surface":"#183344","on-secondary":"#ffffff","on-error-container":"#93000a","tertiary-fixed":"#72f8e0","outline-variant":"#bccac3","outline":"#6d7a75","surface":"#f6faff","primary-fixed-dim":"#5ddbbb","surface-bright":"#f6faff","on-primary":"#ffffff","inverse-on-surface":"#e5f2ff","secondary-fixed-dim":"#a7cbe5","on-primary-container":"#003529","surface-tint":"#006b57","surface-container-high":"#d4ebff","on-surface-variant":"#3d4945","secondary-container":"#c0e4ff","on-background":"#001e2e","secondary-fixed":"#c7e7ff","on-secondary-container":"#44677d","on-secondary-fixed-variant":"#274a60","tertiary-fixed-dim":"#52dbc5"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2.5rem","margin-mobile":"1rem","gutter":"1.5rem","gutter-mobile":"1rem","space-lg":"1.5rem","space-sm":"0.5rem","space-md":"1rem","margin":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"]},fontSize:{"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"26px","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"30px","fontWeight":"600"}],"display-hero-mobile":["32px",{"lineHeight":"40px","fontWeight":"800"}],"display-hero":["48px",{"lineHeight":"56px","fontWeight":"800"}],"headline-xl":["36px",{"lineHeight":"44px","fontWeight":"700"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-lg"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">pets</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">DrVet</span><span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Telemedicina</span></div></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-primary-container text-on-primary font-bold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="inicio-dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span>Início / Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="agenda-consultas" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span>Agenda &amp; Consultas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="prontuarios-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">clinical_notes</span><span>Prontuários &amp; Pacientes</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="sala-de-teleconsulta" href="#"><span class="material-symbols-outlined text-[20px]">video_camera_front</span><span>Sala de Teleconsulta</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="receitas-icp-brasil" href="#"><span class="material-symbols-outlined text-[20px]">prescriptions</span><span>Receitas &amp; ICP-Brasil</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="faturamento-repasses" href="#"><span class="material-symbols-outlined text-[20px]">payments</span><span>Faturamento &amp; Repasses</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="conexao-supabase" href="#"><span class="material-symbols-outlined text-[20px]">database</span><span>Conexão Supabase</span></a></nav></div><div class="px-space-md"><div class="bg-surface-container rounded-xl p-space-md flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[16px]">verified</span><span class="font-label-sm text-label-sm uppercase font-bold">CRMV Ativo</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Sessão clínica criptografada com assinatura digital qualificada ICP-Brasil.</p></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex-1 max-w-md"><div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-full"><span class="material-symbols-outlined text-outline text-[18px]">search</span><input class="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-outline" placeholder="Buscar paciente, tutor ou prontuário..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs bg-surface-container px-space-md py-1 rounded-full"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface">Postgres Realtime CDC 200 OK</span></div><button aria-label="Notificações" class="relative p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/ALJJyrAPnyMif6FX1Zr7dOtN4LVWBhzHK0UPtNKiH0z35T8hmrH4Vt6mrh5mMEmrMOMJ8oD81OujiUO1XZxJsERGjfvsErBYcSG6CtTU3_fOw5EUe57yYNLiQps88oUX2VIldiWba624i8DgaQtCRc7tgLC5pTII66VERxmBO-ZLy08HOq6uGexbsmplR19yMUd2gRd_i4rhTbMcwIacoarG8ACj6aAihNRFGtPWUW0dGTTaVFh1U7ztOdKeDas"/><div class="flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Dra. Camila Vasconcellos</span><span class="font-label-sm text-label-sm text-primary leading-tight">CRMV-SP 42.189</span></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Toast Notification Floating Layer (Dismissible) -->
+<div class="w-full px-space-lg pt-space-md transition-all duration-300" id="success-toast">
+<div class="w-full bg-gradient-to-r from-primary to-primary-container rounded-2xl p-space-md text-on-primary shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md relative overflow-hidden">
+<!-- Glow ambient accent -->
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm tracking-tight font-bold">Assinatura Digital ICP-Brasil Concluída com Sucesso!</span>
+<span class="px-2 py-0.5 rounded-full bg-white/25 text-white font-label-sm text-label-sm uppercase tracking-wider font-extrabold">DocSales CFM/CRMV A3</span>
+</div>
+<p class="font-body-sm text-body-sm text-white/90 max-w-4xl leading-relaxed">
+            Certificado digital qualificado de <strong>Dra. Camila Vasconcellos • CRMV-SP 42.189</strong>. Hash SHA-256 e carimbo do tempo criptográfico gravados no bloco #77921. Registro persistido atomicamente na tabela <code class="px-1.5 py-0.5 rounded bg-black/20 font-mono text-[11px]">drvet.prescriptions</code> (1 row affected, 8ms CDC broadcast).
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-end md:self-center shrink-0 relative z-10">
+<a class="px-space-md py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-label-md text-label-md transition-colors flex items-center gap-1" href="#cdc-log-section">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+          Ver log CDC
+        </a>
+<button aria-label="Fechar notificação" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors" onclick="document.getElementById('success-toast').style.display='none'">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Header Section with Metainfo Badges -->
+<div class="w-full px-space-lg pt-space-lg pb-space-sm flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold">Receituário Veterinário Oficial</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Lei Federal 14.063/20 &amp; Resolução CFMV 1.465/2022</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+          Receita Oficial #REC-2026-9921 Autenticada
+        </h1>
+</div>
+<!-- Quick Action Badges -->
+<div class="flex flex-wrap items-center gap-2">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">gavel</span>
+<span>Válida em Todo Território Nacional (CFMV &amp; ITI)</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-primary font-label-md text-label-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>Supabase CDC Realtime 200 OK</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[18px]">send_to_mobile</span>
+<span>WhatsApp Entregue</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Grid Content: 60% Left (Prescription Preview) vs 40% Right (Actions & Logs) -->
+<div class="w-full px-space-lg py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- LEFT COLUMN: Official Prescription Document Preview (7 cols / ~60%) -->
+<section class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Document Shell Card -->
+<div class="w-full bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden flex flex-col relative">
+<!-- Watermark / Security Top Banner -->
+<div class="bg-surface-container-low px-space-lg py-2 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+<span class="tracking-wide">DOCUMENTO CLÍNICO CRIPTOGRAFADO • ASSINATURA PAdES-A3 QUALIFICADA</span>
+</div>
+<span class="font-mono text-xs text-primary font-bold">ID: 8F3A-9E2C-D481-9921</span>
+</div>
+<!-- Paper Body Content -->
+<div class="p-8 md:p-10 flex flex-col gap-8 bg-surface-container-lowest relative">
+<!-- Subtle document guilloche pattern bg -->
+<div class="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#006b57_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<!-- Prescription Header: Doctor & Clinic Identity -->
+<div class="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 bg-surface-container-low/40 p-4 rounded-xl">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[28px]">pets</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">DrVet</span>
+<span class="font-label-sm text-label-sm text-primary font-extrabold tracking-wider uppercase">Telemedicina</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Clínica Digital Especializada &amp; Nefrologia Veterinária</span>
+<span class="font-label-sm text-label-sm text-outline">CNPJ 48.910.293/0001-44 • RQE 1.940</span>
+</div>
+</div>
+<div class="flex flex-col text-left sm:text-right">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Dra. Camila Vasconcellos</span>
+<span class="font-label-md text-label-md text-primary font-bold">CRMV-SP 42.189</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Especialista em Clínica Médica de Felinos</span>
+<span class="font-label-sm text-label-sm text-outline">camila.vet@drvet.com.br</span>
+</div>
+</div>
+<!-- Patient & Tutor Detailed Metas -->
+<div class="bg-surface-container-low rounded-xl p-space-md grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Patient Column -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[18px]">cruelty_free</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Dados do Paciente</span>
+</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-sm text-headline-sm font-extrabold text-on-surface">Luna</span>
+<span class="font-label-md text-label-md px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-semibold">Felino • Siamês</span>
+</div>
+<div class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant mt-1">
+<span><strong>Idade:</strong> 6 anos</span>
+<span>•</span>
+<span><strong>Peso:</strong> 3.85 kg</span>
+<span>•</span>
+<span><strong>Sexo:</strong> Fêmea (Castrada)</span>
+</div>
+<div class="mt-1 flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-error-container text-error font-label-sm text-label-sm font-bold">
+                  DRC Estágio 2 IRIS
+                </span>
+<span class="text-xs text-outline font-mono">Microchip: 981.098.223.109</span>
+</div>
+</div>
+<!-- Tutor Column -->
+<div class="flex flex-col gap-1 sm:pl-space-md">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-bold">Tutora Responsável</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface mt-1">Juliana Mendes Ferraz</span>
+<div class="flex flex-col gap-0.5 font-body-sm text-body-sm text-on-surface-variant mt-1">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">badge</span>
+                  CPF: 382.***.***-12
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">chat</span>
+                  WhatsApp: (11) 98844-3219
+                </span>
+<span class="text-outline text-xs">Jardins, São Paulo - SP</span>
+</div>
+</div>
+</div>
+<!-- Prescribed Therapeutics -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">prescriptions</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">Prescrição Farmacológica e Orientações</h3>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold bg-surface-container px-2.5 py-1 rounded-full uppercase">Via Oral</span>
+</div>
+<!-- Items Stack -->
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center font-bold">1</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Quelante de Fósforo Manipulado (Biscoito Palatável Sabor Atum)</span>
+</div>
+<span class="font-label-md text-label-md text-primary font-extrabold px-2 py-0.5 rounded bg-surface-container-high">Qtd: 1 Frasco (90 doses)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pl-8">
+<strong>Fórmula / Composição:</strong> Carbonato de Cálcio 150mg + Quitosana 100mg / dose palatável para felinos.<br/>
+<strong>Posologia:</strong> Administrar 1 (uma) dose, por via oral, duas vezes ao dia (a cada 12 horas), rigorosamente misturada junto ao sachê de alimento úmido ou oferecido diretamente antes da refeição. Manter uso contínuo por 90 dias.
+                </p>
+</div>
+<!-- Item 2 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center font-bold">2</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Ômega 3 Especial Felino EPA/DHA Concentrado</span>
+</div>
+<span class="font-label-md text-label-md text-primary font-extrabold px-2 py-0.5 rounded bg-surface-container-high">Qtd: 1 Caixa (90 cápsulas twist-off)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pl-8">
+<strong>Posologia:</strong> Administrar o conteúdo de 1 cápsula twist-off ao dia, no período noturno, adicionado ao alimento úmido da paciente. Ação nefroprotetora e antioxidante.
+                </p>
+</div>
+<!-- Item 3 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col gap-2">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center font-bold">3</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Dieta Coadjuvante Renal Úmida (Feline Renal Wet)</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-extrabold px-2 py-0.5 rounded bg-surface-container-high">Orientações Gerais</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pl-8">
+                  Estimular hidratação com fontes recirculantes de água filtrada. Oferecer 2 sachês ao dia de alimento renal úmido para preservar taxa de filtração glomerular. Retorno agendado para reavaliação de ureia, creatinina e fósforo sérico em 45 dias.
+                </p>
+</div>
+</div>
+</div>
+<!-- Bottom ICP-Brasil Official Stamp & Seal -->
+<div class="mt-4 p-space-md rounded-2xl bg-surface-container-high/60 flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<!-- Rendered ITI QR Code Graphic -->
+<div class="w-24 h-24 bg-white p-1.5 rounded-xl shadow-md shrink-0 flex items-center justify-center">
+<svg class="w-full h-full text-on-surface fill-current" viewbox="0 0 100 100">
+<!-- QR Code Mock Graphic Matrix -->
+<rect fill="currentColor" height="28" width="28" x="5" y="5"></rect>
+<rect fill="white" height="20" width="20" x="9" y="9"></rect>
+<rect fill="currentColor" height="12" width="12" x="13" y="13"></rect>
+<rect fill="currentColor" height="28" width="28" x="67" y="5"></rect>
+<rect fill="white" height="20" width="20" x="71" y="9"></rect>
+<rect fill="currentColor" height="12" width="12" x="75" y="13"></rect>
+<rect fill="currentColor" height="28" width="28" x="5" y="67"></rect>
+<rect fill="white" height="20" width="20" x="9" y="71"></rect>
+<rect fill="currentColor" height="12" width="12" x="13" y="75"></rect>
+<!-- Random Bits -->
+<rect fill="currentColor" height="6" width="6" x="38" y="10"></rect>
+<rect fill="currentColor" height="6" width="10" x="48" y="10"></rect>
+<rect fill="currentColor" height="6" width="14" x="38" y="22"></rect>
+<rect fill="currentColor" height="12" width="6" x="56" y="22"></rect>
+<rect fill="currentColor" height="8" width="8" x="10" y="38"></rect>
+<rect fill="currentColor" height="18" width="6" x="24" y="38"></rect>
+<rect fill="currentColor" height="8" width="20" x="36" y="38"></rect>
+<rect fill="currentColor" height="6" width="12" x="62" y="38"></rect>
+<rect fill="currentColor" height="12" width="10" x="80" y="38"></rect>
+<rect fill="currentColor" height="14" width="8" x="38" y="52"></rect>
+<rect fill="currentColor" height="6" width="16" x="50" y="52"></rect>
+<rect fill="currentColor" height="14" width="8" x="72" y="54"></rect>
+<rect fill="currentColor" height="8" width="8" x="86" y="54"></rect>
+<rect fill="currentColor" height="6" width="12" x="38" y="72"></rect>
+<rect fill="currentColor" height="10" width="14" x="56" y="68"></rect>
+<rect fill="currentColor" height="8" width="22" x="42" y="82"></rect>
+<rect fill="currentColor" height="6" width="24" x="70" y="74"></rect>
+<rect fill="currentColor" height="10" width="14" x="78" y="84"></rect>
+</svg>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-md text-label-md font-bold uppercase tracking-wider">Assinado Digitalmente por PAdES A3</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+                  Valide a autenticidade jurídica deste documento no portal oficial <span class="text-primary font-semibold">validador.iti.gov.br</span> ou aponte a câmera do smartphone para o QR Code.
+                </p>
+<div class="font-mono text-[11px] text-outline mt-0.5">
+                  CÓDIGO: <strong class="text-on-surface">ITI-PADES-BR-2026-LUNA-0481-9921</strong>
+</div>
+</div>
+</div>
+<!-- Timestamp Badge -->
+<div class="shrink-0 flex flex-col items-center sm:items-end text-center sm:text-right bg-surface-container-lowest/90 px-4 py-2.5 rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">Carimbo do Tempo Certisign</span>
+<span class="font-label-md text-label-md font-extrabold text-on-surface mt-0.5">14/03/2026 às 16:32:04 BRT</span>
+<span class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                CFMV Res. 1.465 Art. 3º
+              </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Actions, Pharmacy Dispatch & Supabase Audit Trail (5 cols / ~40%) -->
+<section class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- Card 1: Multichannel Delivery & Downloads -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Ações do Documento &amp; Entrega</h2>
+</div>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">Multicanal Ativo</span>
+</div>
+<!-- Primary Action CTA -->
+<div class="flex flex-col sm:flex-row gap-2">
+<button class="flex-1 px-space-md py-3 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md transition-all" id="btn-download-pdf">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>Baixar PDF Assinado (PAdES)</span>
+</button>
+<button class="px-space-md py-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 transition-colors" onclick="window.print()">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span>Imprimir</span>
+</button>
+</div>
+<!-- WhatsApp Delivery Pill -->
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary-container text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface">WhatsApp Enviado com Sucesso</span>
+</div>
+<span class="font-mono text-xs text-primary font-bold">16:32:05</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-9">
+            PDF PAdES com link de dispensação e cupom exclusivo de <strong>15% OFF</strong> entregues para <strong>Juliana ((11) 98844-3219)</strong>.
+          </p>
+</div>
+<!-- DrVet Mobile App Push Notification -->
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface">App DrVet da Tutora Sincronizado</span>
+</div>
+<span class="font-mono text-xs text-secondary font-bold">Push 200</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-9">
+            Alarme inteligente de posologia (12h em 12h) configurado no smartphone da tutora para o biscoito de atum da Luna.
+          </p>
+</div>
+</div>
+<!-- Card 2: Partner Pharmacies & Quote Dispatch (Dispensação) -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">local_pharmacy</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Cotação &amp; Farmácias Parceiras</h2>
+</div>
+<span class="font-label-sm text-label-sm bg-primary text-on-primary px-2.5 py-0.5 rounded-full font-bold">15% OFF DrVet</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Pedido de cotação transmitido instantaneamente para redes especializadas autorizadas pelo SIPEAGRO/MAPA:
+        </p>
+<!-- Pharmacy 1: DrogaVET -->
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2 transition-transform hover:-translate-y-0.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">DrogaVET Manipulação Veterinária</span>
+<span class="px-2 py-0.2 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold">Melhor Valor</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-extrabold text-primary">R$ 114,80</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Manipulado Atum 90g + Ômega 3 (Economia R$ 20,25)</span>
+<span class="flex items-center gap-1 text-secondary font-bold">
+<span class="material-symbols-outlined text-[16px]">electric_bolt</span>
+              Entrega em 24h
+            </span>
+</div>
+</div>
+<!-- Pharmacy 2: Petlove Farma -->
+<div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">PetLove Farma &amp; Dieta</span>
+<span class="px-2 py-0.2 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">Estoque Pronto</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">R$ 126,50</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Sachês Feline Renal Wet Coadjuvantes com cupom ativo.
+          </p>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-bold flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">shopping_cart_checkout</span>
+<span>Acompanhar Status da Compra B2B</span>
+</button>
+</div>
+<!-- Card 3: Supabase CDC Mutation Log (Audit Trail Terminal) -->
+<div class="bg-inverse-surface rounded-2xl p-space-md shadow-xl flex flex-col gap-space-sm text-inverse-on-surface" id="cdc-log-section">
+<div class="flex items-center justify-between pb-2 border-b border-white/10">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-mono text-xs font-bold uppercase tracking-wider text-primary-fixed">Supabase CDC Realtime • Mutation Committed</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-white/60">
+<span>wal2json</span>
+<span>•</span>
+<span class="text-primary-fixed">8ms latency</span>
+</div>
+</div>
+<!-- Terminal Output -->
+<pre class="bg-black/40 rounded-xl p-3 font-mono text-[11.5px] leading-relaxed text-inverse-on-surface overflow-x-auto select-all"><span class="text-primary-fixed">{</span>
+  <span class="text-secondary-fixed">"event"</span>: <span class="text-white">"INSERT"</span>,
+  <span class="text-secondary-fixed">"table"</span>: <span class="text-white">"drvet.prescriptions"</span>,
+  <span class="text-secondary-fixed">"record_id"</span>: <span class="text-white">"rec_20260314_luna_9921"</span>,
+  <span class="text-secondary-fixed">"patient_id"</span>: <span class="text-white">"pac_2026_0481"</span>,
+  <span class="text-secondary-fixed">"status"</span>: <span class="text-primary-fixed">"signed_valid"</span>,
+  <span class="text-secondary-fixed">"icp_signature"</span>: {
+    <span class="text-secondary-fixed">"standard"</span>: <span class="text-white">"PAdES-A3"</span>,
+    <span class="text-secondary-fixed">"certificate_serial"</span>: <span class="text-white">"4B:82:1C:9F:E0"</span>,
+    <span class="text-secondary-fixed">"crmv"</span>: <span class="text-white">"SP-42189"</span>,
+    <span class="text-secondary-fixed">"timestamp_authority"</span>: <span class="text-white">"ITI_ACT_BR"</span>,
+    <span class="text-secondary-fixed">"sha256"</span>: <span class="text-white">"8f3a9e2cd481a5c6...77921b"</span>,
+    <span class="text-secondary-fixed">"qr_validation_url"</span>: <span class="text-primary-fixed">"https://validador.iti.gov.br/v/rec-9921"</span>
+  },
+  <span class="text-secondary-fixed">"sync_latency_ms"</span>: <span class="text-primary-fixed">8</span>,
+  <span class="text-secondary-fixed">"realtime_broadcast"</span>: <span class="text-white">"channel:patient:pac_2026_0481:prescriptions"</span>
+<span class="text-primary-fixed">}</span></pre>
+<div class="flex items-center justify-between text-xs pt-1">
+<span class="font-body-sm text-body-sm text-white/70">Transaction Slot: <code class="text-white">slot_drvet_cdc_telemed</code></span>
+<span class="px-2 py-0.5 rounded bg-primary-container/30 text-primary-fixed font-mono text-[10px] font-bold">POSTGRES 16.2 ACID OK</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Navigation & Workflow Routing Bar -->
+<footer class="w-full px-space-lg py-space-lg mt-space-md">
+<div class="w-full bg-surface-container-low rounded-2xl p-space-md flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Fluxo Clínico Finalizado</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Prontuário de Luna (Siamês) atualizado com a prescrição #REC-2026-9921.</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm w-full md:w-auto">
+<a class="flex-1 md:flex-initial px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-bold transition-colors flex items-center justify-center gap-2" data-path="prontuarios-pacientes" href="#">
+<span class="material-symbols-outlined text-[18px]">clinical_notes</span>
+<span>← Voltar ao Prontuário de Luna</span>
+</a>
+<a class="flex-1 md:flex-initial px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-bold transition-colors flex items-center justify-center gap-2" data-path="agenda-consultas" href="#">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span>Ir para a Agenda</span>
+</a>
+<button class="flex-1 md:flex-initial px-space-md py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold transition-colors flex items-center justify-center gap-2 shadow-sm" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Nova Prescrição</span>
+</button>
+</div>
+</div>
+</footer>
+<script>
+    document.getElementById('btn-download-pdf')?.addEventListener('click', function() {
+      const originalText = this.innerHTML;
+      this.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span><span>Gerando PAdES Assinado...</span>';
+      setTimeout(() => {
+        this.innerHTML = '<span class="material-symbols-outlined text-[20px]">check</span><span>PDF Baixado com Sucesso!</span>';
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 3000);
+      }, 900);
+    });
+  </script>
+</div></main></div></body></html>

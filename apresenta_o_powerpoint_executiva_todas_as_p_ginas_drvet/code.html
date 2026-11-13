@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apresentação Executiva do Projeto DrVet — Slides Interativos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#13a88a',
+              700: '#047857',
+              900: '#064e3b',
+            },
+            surface: {
+              main: '#0b132b',
+              card: '#1c2541',
+              cardLight: '#243056',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #13a88a;
+      border-radius: 9999px;
+    }
+    .slide-thumb.active {
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4);
+      background-color: rgba(19, 168, 138, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-[#0b1329] text-slate-100 font-sans antialiased h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- TOP HEADER / APRESENTAÇÃO POWERPOINT TOOLBAR -->
+  <header class="bg-[#111c38] border-b border-slate-700/60 px-6 py-3 flex items-center justify-between z-20 shrink-0">
+    <div class="flex items-center space-x-4">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-900/30">
+        <i class="fa-solid fa-file-powerpoint text-white text-lg"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-base font-bold text-white tracking-wide">DrVet — Apresentação Oficial do Projeto</h1>
+          <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-wider">Showcase Executivo</span>
+        </div>
+        <p class="text-xs text-slate-400">Ecossistema Completo • 4 Pilares: Tutor, Veterinário, Pet Shop & Master</p>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO DE SLIDES & CONTROLES -->
+    <div class="flex items-center space-x-3">
+      <div class="bg-slate-800/90 rounded-lg px-3 py-1.5 border border-slate-700 flex items-center space-x-2">
+        <span class="text-xs text-slate-400">Slide:</span>
+        <span id="currentSlideNumber" class="text-sm font-bold text-emerald-400">1</span>
+        <span class="text-xs text-slate-500">/</span>
+        <span id="totalSlidesCount" class="text-xs text-slate-400 font-medium">16</span>
+      </div>
+
+      <div class="flex items-center bg-slate-800/90 rounded-lg p-1 border border-slate-700">
+        <button id="prevBtn" onclick="prevSlide()" class="p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition disabled:opacity-30 disabled:cursor-not-allowed" title="Slide Anterior (Seta Esquerda)">
+          <i class="fa-solid fa-chevron-left text-sm"></i>
+        </button>
+        <button id="nextBtn" onclick="nextSlide()" class="p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition disabled:opacity-30 disabled:cursor-not-allowed" title="Próximo Slide (Seta Direita / Espaço)">
+          <i class="fa-solid fa-chevron-right text-sm"></i>
+        </button>
+      </div>
+
+      <button onclick="toggleFullscreen()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center space-x-2 transition">
+        <i class="fa-solid fa-expand text-xs"></i>
+        <span class="hidden md:inline">Tela Cheia</span>
+      </button>
+
+      <button onclick="toggleGridModal()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-md shadow-emerald-950 flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-table-cells text-xs"></i>
+        <span>Ver Todas as Telas</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE: THUMBNAILS LATERAL (PPT STYLE) + SLIDE VIEWER CENTRAL -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- LEFT SIDEBAR: CARROSSEL DE THUMBNAILS (SLIDES POWERPOINT) -->
+    <aside class="w-72 bg-[#0e172e] border-r border-slate-800/80 flex flex-col shrink-0">
+      <div class="p-3 border-b border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <i class="fa-solid fa-layer-group text-emerald-400"></i> Sequência de Slides
+        </span>
+        <span class="text-[11px] text-slate-500">Navegue pelas setas</span>
+      </div>
+
+      <!-- FILTRO DE PILARES -->
+      <div class="p-2 border-b border-slate-800 grid grid-cols-4 gap-1 text-[10px] font-semibold text-center">
+        <button onclick="filterCategory('all')" class="cat-pill active py-1 rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition" id="pill-all">Todos</button>
+        <button onclick="filterCategory('Tutor')" class="cat-pill py-1 rounded bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 transition" id="pill-tutor">Tutor</button>
+        <button onclick="filterCategory('Veterinário')" class="cat-pill py-1 rounded bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 transition" id="pill-vet">Médico</button>
+        <button onclick="filterCategory('B2B')" class="cat-pill py-1 rounded bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 transition" id="pill-b2b">B2B/Master</button>
+      </div>
+
+      <!-- LISTA DE SLIDES COM THUMBNAILS -->
+      <div id="slidesListContainer" class="flex-1 overflow-y-auto p-2.5 space-x-0 space-y-2.5 custom-scrollbar">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </aside>
+
+    <!-- ÁREA CENTRAL: O SLIDE ATUAL EM FORMATO POWERPOINT -->
+    <main class="flex-1 bg-[#080d1a] p-4 lg:p-6 flex flex-col items-center justify-center relative overflow-hidden">
+
+      <!-- CONTAINER DO SLIDE (RATIO 16:9 ESTILO POWERPOINT COM SOMBRA E BORDAS) -->
+      <div class="w-full max-w-6xl h-full max-h-[85vh] bg-[#131d36] rounded-2xl border border-slate-700/80 shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative">
+
+        <!-- SLIDE HEADER INTERNO -->
+        <div class="bg-gradient-to-r from-[#172342] to-[#121c35] px-6 py-3.5 border-b border-slate-700/70 flex items-center justify-between shrink-0">
+          <div class="flex items-center space-x-3">
+            <span id="slideCategoryBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              PILAR TUTOR
+            </span>
+            <span class="text-slate-500 text-sm">•</span>
+            <h2 id="slideTitle" class="text-base font-bold text-white tracking-tight">Home Desktop & Campanha Outdoor</h2>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="slideDeviceBadge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-desktop text-emerald-400"></i> Desktop Web
+            </span>
+          </div>
+        </div>
+
+        <!-- SLIDE BODY: IMAGEM/VISUALIZAÇÃO EM DESTAQUE COM DETALHES TÉCNICOS -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-[#0a0f1d]">
+
+          <!-- PREVIEW VISUAL DO SLIDE (ESQUERDA / CENTRO) -->
+          <div class="lg:col-span-8 p-4 lg:p-6 flex flex-col items-center justify-center relative bg-gradient-to-b from-[#0e162b] to-[#080d1a] overflow-hidden">
+            <div id="slideImageFrame" class="w-full h-full rounded-xl overflow-hidden border border-slate-700/60 shadow-lg relative flex items-center justify-center bg-[#070b14] group">
+              <img id="mainSlideImage" src="" alt="Slide Preview" class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-[1.01]">
+              <div id="zoomOverlay" class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white flex items-center space-x-1.5 cursor-pointer opacity-80 hover:opacity-100 transition" onclick="openHighResModal()">
+                <i class="fa-solid fa-magnifying-glass-plus text-emerald-400"></i>
+                <span>Ver em Alta Resolução</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PAINEL DE NOTAS DO APRESENTADOR & ESPECIFICAÇÕES DO SLIDE (DIREITA) -->
+          <div class="lg:col-span-4 bg-[#11192e] border-l border-slate-800 p-5 flex flex-col justify-between overflow-y-auto custom-scrollbar">
+            <div class="space-y-4">
+              <div>
+                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
+                  <i class="fa-solid fa-circle-info"></i> Notas do Apresentador
+                </span>
+                <h3 id="slideHeading" class="text-lg font-bold text-white">Objetivo & Racional de Design</h3>
+                <p id="slideDescription" class="text-xs text-slate-300 leading-relaxed mt-1.5">
+                  Descrição detalhada do fluxo do projeto, tecnologias envolvidas e regras de negócio implementadas.
+                </p>
+              </div>
+
+              <!-- DESTAQUES DO SLIDE -->
+              <div class="bg-[#0b1224] rounded-xl p-3.5 border border-slate-800 space-y-2">
+                <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                  <i class="fa-solid fa-check-circle text-emerald-400"></i> Pontos-Chave Implementados
+                </span>
+                <ul id="slideKeyPoints" class="text-xs text-slate-400 space-y-1.5 pl-1">
+                  <!-- Injetado dinamicamente -->
+                </ul>
+              </div>
+
+              <!-- REGULAMENTAÇÃO & STACK -->
+              <div class="bg-[#0b1224] rounded-xl p-3 border border-slate-800 grid grid-cols-2 gap-2 text-center text-xs">
+                <div class="p-2 bg-slate-800/50 rounded-lg">
+                  <span class="text-[10px] text-slate-400 block font-medium">Compliance</span>
+                  <span id="slideCompliance" class="font-bold text-emerald-400 text-xs">CFMV nº 1.465/2022</span>
+                </div>
+                <div class="p-2 bg-slate-800/50 rounded-lg">
+                  <span class="text-[10px] text-slate-400 block font-medium">Persistência</span>
+                  <span id="slidePersistence" class="font-bold text-teal-400 text-xs">Supabase CDC</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CONTROLE DE NAVEGAÇÃO RÁPIDA NO RODAPÉ DO SLIDE -->
+            <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+              <button onclick="prevSlide()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left text-[11px]"></i> Anterior
+              </button>
+              <span class="text-[11px] text-slate-500 font-medium">Teclas: ← e →</span>
+              <button onclick="nextSlide()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-950 transition flex items-center gap-1.5">
+                Próximo <i class="fa-solid fa-arrow-right text-[11px]"></i>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: VISUALIZADOR DE ALTA RESOLUÇÃO / ZOOM COMPLETO -->
+  <div id="highResModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-7xl h-[92vh] flex flex-col bg-[#11192e] rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
+      <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-magnifying-glass text-emerald-400"></i>
+          <h3 id="modalTitle" class="text-sm font-bold text-white">Inspeção Detalhada em Tela Cheia</h3>
+        </div>
+        <button onclick="closeHighResModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex-1 bg-black/60 p-4 flex items-center justify-center overflow-auto custom-scrollbar">
+        <img id="modalImage" src="" alt="Tela Detalhada" class="max-h-full max-w-full object-contain rounded-lg shadow-xl">
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GRID COM TODAS AS TELAS (SLIDE SORTER / POWERPOINT OVERVIEW) -->
+  <div id="gridModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex flex-col p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+      <div>
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-table-cells text-emerald-400"></i> Classificador de Slides • Projeto DrVet
+        </h2>
+        <p class="text-xs text-slate-400">Clique em qualquer miniatura para ir diretamente ao slide desejado</p>
+      </div>
+      <button onclick="toggleGridModal()" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- GRID CONTAINER -->
+    <div id="gridContainer" class="flex-1 overflow-y-auto py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 custom-scrollbar">
+      <!-- Injetado dinamicamente via JS -->
+    </div>
+  </div>
+
+  <!-- SCRIPT DE DADOS E LÓGICA DE APRESENTAÇÃO -->
+  <script>
+    const slidesData = [
+      {
+        id: 1,
+        title: "Identidade Visual & Outdoor Oficial DrVet",
+        category: "Tutor",
+        device: "Campanha & Branding",
+        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBUJ_e4MAWEfwIigopaT0n9-hM8kY0BwPPzzas948TDIUXIPMGsVz_pfuSyKoIYS2x7-0iIvuSJz0cTvj5-Yr9zUXvWFsgJasywFD3O22xaPW-mov_OuxhDUYgFOp_iiMBUqiTsWHC8YAp0KzeyDvqN_6FHzisJNB2SpR0vQ7ViQxlNv_DckxYEV4HSlNbYCPHJVLxsaRTcG5Y3sNeMmw8lgp3Rpb6uXKBHBBWKi9PdWl7d3VF7Q5xKXA",
+        heading: "Identidade de Marca & Outdoor de Lançamento",
+        description: "Outdoor institucional e material de rua com a proposta de valor 'Cuidado veterinário, onde seu pet estiver' e call to action principal com QR Code para agendamento com Clínico Geral.",
+        keyPoints: [
+          "Tipografia institucional e paleta verde esmeralda / azul médico",
+          "Destaque para profissionais com CRMV ativo verificado",
+          "Conexão imediata via vídeo para orientação e triagem"
+        ],
+        compliance: "CFMV nº 1.465/2022",
+        persistence: "Branding Oficial"
+      },
+      {
+        id: 2,
+        title: "Logotipo Oficial & Identidade DrVet",
+        category: "Tutor",
+        device: "Asset de Marca",
+        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDLCt_l5FiM05K2IDr6PDcYZgy--6Yy1J7rtcY70YmxGbHAn59DDKmBdt6eRMlCXjOjurT2427YLerVCHbtY-HQRFgaiaHPw1plXCmlg7iG-X13bxHUWePYB9meB3L-Hk54kxxobZAh4ujDJlPLuHL9LmolRWqenah9fR4SEDtdaP1MboPLZ3pT2_qJggMBcHwPm6pjOwdwhgqdhuj3OtJgbpILTmZY1Q42ERujEh556BtgGzej49ql_Q",
+        heading: "Logotipo Vetorial & Slogan 'Seu pet sempre por perto'",
+        description: "Elemento de marca principal integrando conectividade wi-fi médica com a cruz clínica e o nome DrVet em degradê azul e esmeralda.",
+        keyPoints: [
+          "Curvas orgânicas e sinal de transmissão de telemedicina",
+          "Uso harmonizado em cabeçalhos, contratos e carimbos",
+          "Identidade registrada para plataformas digitais"
+        ],
+        compliance: "INPI / Marca Registrada",
+        persistence: "Design System Tokens"
+      },
+      {
+        id: 3,
+        title: "Extrato de Comissões & Repasses D+1",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_2}}",
+        heading: "Auditoria Financeira e Split de Balcão do Pet Shop",
+        description: "Painel financeiro do Pet Shop Parceiro com cálculo automático de D+1, liquidação Bacen, emissão de NFS-e (XML/PDF) e antecipação expressa D+0.",
+        keyPoints: [
+          "R$ 1.240,50 disponível para resgate imediato via PIX",
+          "Histórico de transações detalhado por tutor e paciente",
+          "Sincronização atômica em tempo real via Supabase CDC"
+        ],
+        compliance: "Bacen PIX / NFS-e",
+        persistence: "public.partners_payouts"
+      },
+      {
+        id: 4,
+        title: "Pet Shop Credenciado com Sucesso no Supabase",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_4}}",
+        heading: "Auditoria Criptográfica de Aceite & Inserção SQL",
+        description: "Tela de confirmação com terminal PostgreSQL simulando o commit da transação, registro do hash SHA-256 e expedição do kit de acrílico com QR Code.",
+        keyPoints: [
+          "Commit atômico em 3 tabelas com isolamento Read Committed",
+          "Hash SHA-256 inalterável para conformidade jurídica",
+          "Rastreamento de envio do Kit de Balcão via Sedex"
+        ],
+        compliance: "Lei Federal nº 14.063/2020",
+        persistence: "Supabase CDC (14ms)"
+      },
+      {
+        id: 5,
+        title: "Repositório de Contratos & Termos Digitais",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_6}}",
+        heading: "Governança Contratual & Aceites Criptografados",
+        description: "Central jurídica com repositório de contratos para Tutores, Veterinários, Pet Shops e Farmácias, garantindo validade jurídica e conformidade CFMV.",
+        keyPoints: [
+          "Contrato de Parceria Comercial e Espaço Patrocinado",
+          "Termo de Consentimento Livre e Esclarecido (TCLE)",
+          "Auditoria de carimbos de tempo e hashes criptográficos"
+        ],
+        compliance: "Resolução CFMV nº 1.465",
+        persistence: "public.legal_contracts"
+      },
+      {
+        id: 6,
+        title: "Relatórios de Repasses D+1 Master",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_8}}",
+        heading: "Governança Financeira Global da Plataforma",
+        description: "Visão executiva do Administrador Master para monitoramento de conciliação bancária, comissões retidas pela plataforma e split automatizado.",
+        keyPoints: [
+          "Monitoramento de gateways Asaas e Mercado Pago",
+          "Taxas de split calculadas em tempo de transação",
+          "Exportação de arquivos bancários OFX e CSV"
+        ],
+        compliance: "PCI-DSS / Bacen",
+        persistence: "public.financial_ledger"
+      },
+      {
+        id: 7,
+        title: "Painel Master Administrativo Global",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_10}}",
+        heading: "Centro de Controle Executivo DrVet Platforms",
+        description: "Dashboard macro com indicadores de usuários ativos, clínicas credenciadas, faturamento mensal (MRR), volume de teleconsultas e status dos microsserviços.",
+        keyPoints: [
+          "Métricas em tempo real de novos tutores e pets cadastrados",
+          "Mapa de distribuição geográfica das farmácias e pet shops",
+          "Monitoramento de latência Supabase e LiveKit"
+        ],
+        compliance: "LGPD & SLA 99.9%",
+        persistence: "Realtime Analytics"
+      },
+      {
+        id: 8,
+        title: "Portal de Gestão da Farmácia Parceira",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_12}}",
+        heading: "Dispensação de Receitas Digitais e Campanhas Ads",
+        description: "Painel exclusivo para farmácias e pet shops com dispensário farmacêutico, validação de receitas ICP-Brasil e métricas de anúncios patrocinados.",
+        keyPoints: [
+          "Leitura de receitas digitais assinadas por veterinários",
+          "Gestão de cupons de 15% OFF (DRVET15)",
+          "Conversão de contatos de WhatsApp em vendas no balcão"
+        ],
+        compliance: "Anvisa / CRF",
+        persistence: "public.pharmacy_sales"
+      },
+      {
+        id: 9,
+        title: "Clube DrVet: Assinatura de Saúde Preventiva",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_16}}",
+        heading: "Planos Preventivos Recorrentes & Teleorientação 24h",
+        description: "Tela mobile com planos de assinatura mensal do Clube DrVet, incluindo vacinas anuais, teleconsultas ilimitadas e descontos na rede credenciada.",
+        keyPoints: [
+          "Planos Essencial, Cuidados Plus e VIP Preventivo",
+          "Repasse recorrente de 20% garantido ao Pet Shop de origem",
+          "Ativação instantânea no prontuário do pet"
+        ],
+        compliance: "Código de Defesa do Consumidor",
+        persistence: "public.subscriptions"
+      },
+      {
+        id: 10,
+        title: "Voucher de Balcão e Cupom DRVET15",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_18}}",
+        heading: "Retirada com Desconto na Farmácia Parceira",
+        description: "Voucher digital gerado após a teleconsulta para o tutor apresentar no balcão da drogaria física ou enviar via WhatsApp corporativo.",
+        keyPoints: [
+          "Cupom de 15% OFF homologado com a rede Pet Care",
+          "Código de barras e QR Code para validação pelo balconista",
+          "Indicação de economia total obtida pelo tutor"
+        ],
+        compliance: "Termo de Parceria B2B",
+        persistence: "public.vouchers"
+      },
+      {
+        id: 11,
+        title: "Conversa no WhatsApp com a Farmácia",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_20}}",
+        heading: "Integração Conversacional Direta",
+        description: "Simulação de transição direta do app DrVet para o WhatsApp oficial da farmácia credenciada com mensagem pré-formatada contendo os itens da receita.",
+        keyPoints: [
+          "Disparo do link seguro da receita digital ICP-Brasil",
+          "Aplicação do cupom de desconto automática no texto",
+          "Atendimento humanizado com farmacêutico responsável"
+        ],
+        compliance: "WhatsApp Business API",
+        persistence: "Logs de Conversão"
+      },
+      {
+        id: 12,
+        title: "Receita Digital ICP-Brasil & Pós-Consulta",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_30}}",
+        heading: "Prescrição Digital Válida em Todo Território Nacional",
+        description: "Tela de pós-consulta onde o tutor acessa o documento assinado digitalmente pela Dra. Camila, contendo posologia, orientações de desmame e QR Code de validação.",
+        keyPoints: [
+          "Assinatura digital padrão ICP-Brasil com carimbo do tempo",
+          "Conformidade total com a Resolução CFMV nº 1.465/2022",
+          "Atalho direto para compra com 15% OFF nas farmácias"
+        ],
+        compliance: "MP nº 2.200-2/2001",
+        persistence: "public.prescriptions"
+      },
+      {
+        id: 13,
+        title: "Sala de Teleconsulta ao Vivo Mobile",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_32}}",
+        heading: "Vídeo Interativo LiveKit com a Dra. Camila",
+        description: "Interface ergonômica de teleconsulta no smartphone com picture-in-picture do paciente Pipoca, chat de texto ao vivo e controles clínicos rápidos.",
+        keyPoints: [
+          "Áudio e vídeo de baixa latência via protocolo WebRTC LiveKit",
+          "Indicador de gravação segura criptografada em nuvem",
+          "Acesso simultâneo aos dados vitais do pet durante a chamada"
+        ],
+        compliance: "CFMV Telemedicina",
+        persistence: "LiveKit Room Sessions"
+      },
+      {
+        id: 14,
+        title: "Checkout Seguro da 1ª Teleconsulta (15% OFF)",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_36}}",
+        heading: "Split de Pagamento com Cupom do Pet Shop",
+        description: "Fluxo de pagamento com dedução de 15% pelo QR Code lido no balcão, split automático de honorários e opções de pagamento via PIX instantâneo ou Cartão.",
+        keyPoints: [
+          "Comissão de balcão de R$ 15,00 provisionada ao Pet Shop",
+          "Comissão retida pela plataforma transparente na fatura",
+          "Certificação SSL 256 bits e conformidade PCI-DSS"
+        ],
+        compliance: "Resolução Bacen PIX",
+        persistence: "public.payments"
+      },
+      {
+        id: 15,
+        title: "Cadastro do Tutor com QR Code do Balcão",
+        category: "Tutor",
+        device: "Mobile App",
+        image: "{{DATA:SCREEN:SCREEN_56}}",
+        heading: "Onboarding Inteligente com Vínculo do Parceiro",
+        description: "Tela de entrada de dados do tutor com campo dedicado para escanear ou validar o QR Code do Pet Shop parceiro, garantindo o benefício inaugural.",
+        keyPoints: [
+          "Vínculo da loja física como unidade de referência do tutor",
+          "Persistência atômica dos dados cadastrais no Supabase",
+          "Aceite obrigatório dos termos de uso e política de privacidade"
+        ],
+        compliance: "LGPD nº 13.709/2018",
+        persistence: "public.users & public.pets"
+      },
+      {
+        id: 16,
+        title: "Programa de Parcerias Pet Shop: Espaço Exclusivo",
+        category: "B2B",
+        device: "Desktop Web",
+        image: "{{DATA:SCREEN:SCREEN_60}}",
+        heading: "Proposta Comercial & Planos de Assinatura B2B",
+        description: "Página de conversão B2B demonstrando as vantagens de credenciar o Pet Shop, com comparativo de planos (Básico, Pro Shop e Master), kit de balcão gratuito e comissões.",
+        keyPoints: [
+          "Planos a partir de R$ 99/mês até R$ 599/mês",
+          "Calculadora interativa de ganhos por tutores convertidos",
+          "Termos sem fidelidade e cancelamento livre"
+        ],
+        compliance: "Contratos Mercantis",
+        persistence: "public.partner_plans"
+      }
+    ];
+
+    let currentSlide = 0;
+    let filteredSlides = [...slidesData];
+
+    function initPresentation() {
+      renderThumbnails();
+      renderSlide();
+      renderGrid();
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+          prevSlide();
+        } else if (e.key === 'Escape') {
+          closeHighResModal();
+          const grid = document.getElementById('gridModal');
+          if (!grid.classList.contains('hidden')) toggleGridModal();
+        }
+      });
+    }
+
+    function renderThumbnails() {
+      const container = document.getElementById('slidesListContainer');
+      container.innerHTML = '';
+
+      filteredSlides.forEach((slide, index) => {
+        const item = document.createElement('div');
+        item.className = `slide-thumb flex items-center p-2 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 cursor-pointer transition ${index === currentSlide ? 'active' : ''}`;
+        item.onclick = () => goToSlide(index);
+
+        item.innerHTML = `
+          <div class="text-[11px] font-bold text-slate-500 w-5 shrink-0 text-center">${index + 1}</div>
+          <div class="w-14 h-10 rounded-md overflow-hidden bg-slate-950 border border-slate-800 shrink-0 ml-1 mr-2.5 flex items-center justify-center">
+            <img src="${slide.image}" class="w-full h-full object-cover" alt="Thumb ${slide.id}">
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-semibold text-white truncate">${slide.title}</h4>
+            <div class="flex items-center space-x-1.5 mt-0.5">
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-medium">${slide.category}</span>
+              <span class="text-[9px] text-slate-500">•</span>
+              <span class="text-[9px] text-slate-400 truncate">${slide.device}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('totalSlidesCount').innerText = filteredSlides.length;
+    }
+
+    function renderSlide() {
+      if (filteredSlides.length === 0) return;
+
+      const slide = filteredSlides[currentSlide];
+
+      document.getElementById('currentSlideNumber').innerText = currentSlide + 1;
+      document.getElementById('slideCategoryBadge').innerText = `PILAR ${slide.category.toUpperCase()}`;
+      document.getElementById('slideTitle').innerText = slide.title;
+      document.getElementById('slideDeviceBadge').innerHTML = `<i class="fa-solid fa-${slide.device.includes('Mobile') ? 'mobile-screen' : 'desktop'} text-emerald-400"></i> ${slide.device}`;
+
+      document.getElementById('mainSlideImage').src = slide.image;
+      document.getElementById('slideHeading').innerText = slide.heading;
+      document.getElementById('slideDescription').innerText = slide.description;
+      document.getElementById('slideCompliance').innerText = slide.compliance;
+      document.getElementById('slidePersistence').innerText = slide.persistence;
+
+      const pointsContainer = document.getElementById('slideKeyPoints');
+      pointsContainer.innerHTML = '';
+      slide.keyPoints.forEach(pt => {
+        const li = document.createElement('li');
+        li.className = "flex items-start gap-1.5";
+        li.innerHTML = `<i class="fa-solid fa-angle-right text-emerald-400 text-[10px] mt-0.5"></i> <span>${pt}</span>`;
+        pointsContainer.appendChild(li);
+      });
+
+      // Update active state in sidebar
+      const thumbs = document.querySelectorAll('.slide-thumb');
+      thumbs.forEach((t, i) => {
+        if (i === currentSlide) {
+          t.classList.add('active');
+          t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          t.classList.remove('active');
+        }
+      });
+
+      // Update button states
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === filteredSlides.length - 1;
+    }
+
+    function nextSlide() {
+      if (currentSlide < filteredSlides.length - 1) {
+        currentSlide++;
+        renderSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide();
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      renderSlide();
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('bg-slate-800', 'text-emerald-400', 'active'));
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.add('bg-slate-900', 'text-slate-400'));
+
+      const activeBtn = document.getElementById(`pill-${cat === 'all' ? 'all' : cat.toLowerCase().replace('/', '')}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-900', 'text-slate-400');
+        activeBtn.classList.add('bg-slate-800', 'text-emerald-400', 'active');
+      }
+
+      if (cat === 'all') {
+        filteredSlides = [...slidesData];
+      } else {
+        filteredSlides = slidesData.filter(s => s.category.toLowerCase().includes(cat.toLowerCase()));
+      }
+
+      currentSlide = 0;
+      renderThumbnails();
+      renderSlide();
+      renderGrid();
+    }
+
+    function openHighResModal() {
+      const slide = filteredSlides[currentSlide];
+      document.getElementById('modalImage').src = slide.image;
+      document.getElementById('modalTitle').innerText = `${slide.title} — Alta Resolução`;
+      document.getElementById('highResModal').classList.remove('hidden');
+    }
+
+    function closeHighResModal() {
+      document.getElementById('highResModal').classList.add('hidden');
+    }
+
+    function toggleGridModal() {
+      const modal = document.getElementById('gridModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('gridContainer');
+      container.innerHTML = '';
+
+      filteredSlides.forEach((slide, index) => {
+        const card = document.createElement('div');
+        card.className = "bg-[#11192e] rounded-xl border border-slate-700 p-3 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-950/40 cursor-pointer transition flex flex-col group";
+        card.onclick = () => {
+          goToSlide(index);
+          toggleGridModal();
+        };
+
+        card.innerHTML = `
+          <div class="w-full h-36 bg-black/60 rounded-lg overflow-hidden border border-slate-800 mb-2.5 flex items-center justify-center relative">
+            <img src="${slide.image}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300">
+            <span class="absolute top-2 left-2 bg-black/70 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded border border-white/10">#${index + 1}</span>
+          </div>
+          <h4 class="text-xs font-bold text-white truncate">${slide.title}</h4>
+          <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${slide.heading}</p>
+          <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+            <span class="text-emerald-400 font-semibold">${slide.category}</span>
+            <span class="text-slate-500">${slide.device}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    window.onload = initPresentation;
+  </script>
+</body>
+</html>
