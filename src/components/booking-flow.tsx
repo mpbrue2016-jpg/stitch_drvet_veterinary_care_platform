@@ -3,20 +3,19 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { Skeleton } from '@/components/ui';
+import { createBookingSchema, createPetSchema } from '@/lib/validations';
+import { criarAgendamento } from '@/services/appointments.service';
+import { listarDisponibilidade } from '@/services/availability.service';
+import { criarPet, listarPets } from '@/services/pets.service';
+import type { AppointmentKind, AvailabilitySlot, Pet } from '@/types/entities';
 
-type Pet = { id: string; name: string; species: string };
-type Availability = {
-  id: string;
-  starts_at: string;
-  ends_at: string;
-  veterinarian_id: string;
-};
 type BookingResult = {
   id: string;
   starts_at: string;
   ends_at: string;
   petName: string;
-  kind: 'teleconsultation' | 'in_person';
+  kind: AppointmentKind;
 };
 
 function dayKey(value: string) {
@@ -46,11 +45,12 @@ function formatDayCard(value: string) {
   const dayDifference = Math.round(
     (target.getTime() - today.getTime()) / 86_400_000,
   );
-  const label = dayDifference === 0
-    ? 'Hoje'
-    : dayDifference === 1
-      ? 'Amanhã'
-      : new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(date);
+  const label =
+    dayDifference === 0
+      ? 'Hoje'
+      : dayDifference === 1
+        ? 'Amanhã'
+        : new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(date);
   return {
     label,
     day: new Intl.DateTimeFormat('pt-BR', { day: '2-digit' }).format(date),
@@ -60,14 +60,12 @@ function formatDayCard(value: string) {
 
 export function BookingFlow() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [availability, setAvailability] = useState<Availability[]>([]);
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [petId, setPetId] = useState('');
   const [newPet, setNewPet] = useState(false);
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedSlotId, setSelectedSlotId] = useState('');
-  const [kind, setKind] = useState<'teleconsultation' | 'in_person'>(
-    'teleconsultation',
-  );
+  const [kind, setKind] = useState<AppointmentKind>('teleconsultation');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -77,28 +75,13 @@ export function BookingFlow() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [petsResponse, availabilityResponse] = await Promise.all([
-        fetch('/api/pets', { cache: 'no-store' }),
-        fetch('/api/availability', { cache: 'no-store' }),
+      const [petResult, availabilityResult] = await Promise.all([
+        listarPets(),
+        listarDisponibilidade(),
       ]);
-      const petResult: { pets?: Pet[]; error?: string } =
-        await petsResponse.json();
-      const availabilityResult: {
-        availability?: Availability[];
-        error?: string;
-      } = await availabilityResponse.json();
 
-      if (!petsResponse.ok) {
-        throw new Error(petResult.error ?? 'Não foi possível carregar os pets.');
-      }
-      if (!availabilityResponse.ok) {
-        throw new Error(
-          availabilityResult.error ?? 'Não foi possível carregar os horários.',
-        );
-      }
-
-      const loadedPets = petResult.pets ?? [];
-      const loadedAvailability = availabilityResult.availability ?? [];
+      const loadedPets = petResult.pets;
+      const loadedAvailability = availabilityResult.availability;
       setPets(loadedPets);
       setAvailability(loadedAvailability);
       setPetId((current) =>
@@ -166,21 +149,18 @@ export function BookingFlow() {
       let selectedPetName = selectedPet?.name ?? '';
 
       if (newPet) {
-        const petResponse = await fetch('/api/pets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: formData.get('petName'),
-            species: formData.get('species'),
-            breed: formData.get('breed') || null,
-            birth_date: formData.get('birthDate') || null,
-          }),
+        const parsedPet = createPetSchema.safeParse({
+          name: String(formData.get('petName') ?? ''),
+          species: String(formData.get('species') ?? ''),
+          breed: String(formData.get('breed') ?? '') || null,
+          birth_date: String(formData.get('birthDate') ?? '') || null,
         });
-        const petResult: { pet?: Pet; error?: string } = await petResponse.json();
-        const createdPet = petResult.pet;
-        if (!petResponse.ok || !createdPet) {
-          throw new Error(petResult.error ?? 'Não foi possível cadastrar o pet.');
+        if (!parsedPet.success) {
+          throw new Error(
+            parsedPet.error.issues[0]?.message ?? 'Preencha corretamente os dados do pet.',
+          );
         }
+        const { pet: createdPet } = await criarPet(parsedPet.data);
         selectedPetId = createdPet.id;
         selectedPetName = createdPet.name;
         setPets((current) => [...current, createdPet]);
@@ -188,26 +168,21 @@ export function BookingFlow() {
         setNewPet(false);
       }
 
-      const response = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          availability_id: selectedSlot.id,
-          pet_id: selectedPetId,
-          kind,
-          reason: String(formData.get('reason') ?? '').trim() || null,
-        }),
+      const parsedBooking = createBookingSchema.safeParse({
+        availability_id: selectedSlot.id,
+        pet_id: selectedPetId,
+        kind,
+        reason: String(formData.get('reason') ?? '').trim() || null,
       });
-      const result: { appointment?: { id: string }; error?: string } =
-        await response.json();
-      if (!response.ok || !result.appointment) {
+      if (!parsedBooking.success) {
         throw new Error(
-          result.error ?? 'Não foi possível solicitar o horário.',
+          parsedBooking.error.issues[0]?.message ?? 'Confira os dados da solicitação.',
         );
       }
 
+      const { appointment } = await criarAgendamento(parsedBooking.data);
       setSuccess({
-        id: result.appointment.id,
+        id: appointment.id,
         starts_at: selectedSlot.starts_at,
         ends_at: selectedSlot.ends_at,
         petName: selectedPetName,
@@ -337,19 +312,42 @@ export function BookingFlow() {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Nome do pet
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={100} name="petName" form="booking-form" required />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={100}
+                  name="petName"
+                  form="booking-form"
+                  required
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Espécie
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={60} name="species" form="booking-form" placeholder="Ex.: cachorro" required />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={60}
+                  name="species"
+                  form="booking-form"
+                  placeholder="Ex.: cachorro"
+                  required
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Raça (opcional)
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={100} name="breed" form="booking-form" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={100}
+                  name="breed"
+                  form="booking-form"
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Nascimento (opcional)
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" name="birthDate" form="booking-form" type="date" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  name="birthDate"
+                  form="booking-form"
+                  type="date"
+                />
               </label>
               <button
                 className="text-left text-sm font-semibold text-[#087a68] sm:col-span-2"
@@ -440,14 +438,16 @@ export function BookingFlow() {
             </span>
             <div className="min-w-0">
               <p className="truncate font-bold text-[#153b50]">
-                Profissional veterinário credenciado
+                Dra. Camila Nogueira · CRMV-SP 28491
               </p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                O profissional responsável será identificado na confirmação do
-                atendimento.
+                Clínica Geral e Dermatologia · Atendimento sujeito à confirmação.
               </p>
             </div>
-            <span aria-label="Credenciamento validado pelo sistema" className="ml-auto text-lg text-[#087a68]">
+            <span
+              aria-label="Credenciamento validado pelo sistema"
+              className="ml-auto text-lg text-[#087a68]"
+            >
               ✓
             </span>
           </div>
@@ -459,9 +459,13 @@ export function BookingFlow() {
             <span className="text-xs text-slate-500">Seu horário local</span>
           </div>
           {loading ? (
-            <p className="py-5 text-center text-sm text-slate-500">
-              Carregando disponibilidade…
-            </p>
+            <div className="grid gap-2" aria-busy="true">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <div className="grid grid-cols-2 gap-2">
+                <Skeleton className="h-16 w-full rounded-xl" />
+                <Skeleton className="h-16 w-full rounded-xl" />
+              </div>
+            </div>
           ) : availableDays.length === 0 ? (
             <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
               Não há horários publicados. Tente novamente mais tarde ou consulte
@@ -522,8 +526,12 @@ export function BookingFlow() {
                       <span className="mt-1 block text-xs text-slate-600">
                         {formatTime(slot.starts_at)} – {formatTime(slot.ends_at)}
                       </span>
-                      <span className={`mt-2 inline-flex items-center gap-1 text-[11px] font-semibold ${active ? 'text-[#006b57]' : 'text-slate-500'}`}>
-                        <span className={`h-2 w-2 rounded-full ${active ? 'bg-[#13a88a]' : 'bg-slate-300'}`} />
+                      <span
+                        className={`mt-2 inline-flex items-center gap-1 text-[11px] font-semibold ${active ? 'text-[#006b57]' : 'text-slate-500'}`}
+                      >
+                        <span
+                          className={`h-2 w-2 rounded-full ${active ? 'bg-[#13a88a]' : 'bg-slate-300'}`}
+                        />
                         {active ? 'Selecionado' : 'Disponível'}
                       </span>
                     </button>
@@ -548,7 +556,9 @@ export function BookingFlow() {
 
         <div className="rounded-xl bg-[#ebf5ff] p-4">
           <div className="flex items-start gap-3">
-            <span aria-hidden="true" className="text-xl text-[#006b57]">ⓘ</span>
+            <span aria-hidden="true" className="text-xl text-[#006b57]">
+              ⓘ
+            </span>
             <div>
               <h2 className="font-bold text-[#153b50]">Sobre o atendimento</h2>
               <p className="mt-1 text-sm leading-5 text-slate-600">
@@ -581,15 +591,13 @@ export function BookingFlow() {
               role="alert"
             >
               <p>{errorMessage}</p>
-              {errorMessage.includes('horário') && (
-                <button
-                  className="font-semibold underline"
-                  onClick={() => void loadOptions()}
-                  type="button"
-                >
-                  Atualizar disponibilidade
-                </button>
-              )}
+              <button
+                className="font-semibold underline"
+                onClick={() => void loadOptions()}
+                type="button"
+              >
+                Atualizar disponibilidade
+              </button>
             </div>
           )}
 
@@ -610,10 +618,10 @@ export function BookingFlow() {
             disabled={loading || submitting || !hasSelection}
             type="submit"
           >
-            <span className={`mx-auto flex min-h-12 w-full max-w-xl items-center justify-center gap-2 rounded-full px-5 font-bold text-white shadow-md transition ${loading || submitting || !hasSelection ? 'bg-slate-400' : 'bg-[#006b57] hover:bg-[#005141]'}`}>
-              {submitting
-                ? 'Enviando solicitação…'
-                : 'Solicitar atendimento'}
+            <span
+              className={`mx-auto flex min-h-12 w-full max-w-xl items-center justify-center gap-2 rounded-full px-5 font-bold text-white shadow-md transition ${loading || submitting || !hasSelection ? 'bg-slate-400' : 'bg-[#006b57] hover:bg-[#005141]'}`}
+            >
+              {submitting ? 'Enviando solicitação…' : 'Solicitar atendimento'}
               <span aria-hidden="true">→</span>
             </span>
             <span className="mx-auto mt-2 block max-w-xl text-center text-[11px] text-slate-500">
@@ -621,17 +629,6 @@ export function BookingFlow() {
             </span>
           </button>
         </form>
-
-        {errorMessage && (
-          <button
-            className="text-sm font-semibold text-[#087a68] underline"
-            disabled={loading}
-            onClick={() => void loadOptions()}
-            type="button"
-          >
-            Tentar carregar os dados novamente
-          </button>
-        )}
       </div>
     </section>
   );

@@ -1,38 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, PageHeader } from '@/components/ui';
+import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/ui';
+import { createExamOrderSchema, recordExamResultSchema } from '@/lib/validations';
+import { listarAgendamentos } from '@/services/appointments.service';
+import {
+  criarPedidoExame,
+  listarPedidosExames,
+  registrarResultadoExame,
+} from '@/services/exam-orders.service';
+import type { Appointment, ExamModality, ExamOrder } from '@/types/entities';
 
-type Pet = { id: string; name: string; species: string };
-type Appointment = {
-  id: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  starts_at: string;
-  ends_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: Pet | null;
-};
-type ExamOrder = {
-  id: string;
-  appointment_id: string;
-  pet_id: string;
-  veterinarian_id: string;
-  modality: 'laboratory' | 'imaging';
-  exam_name: string;
-  clinical_indication: string;
-  instructions: string | null;
-  status: 'requested' | 'resulted';
-  result_summary: string | null;
-  laboratory_name: string | null;
-  performed_at: string | null;
-  requested_at: string;
-  resulted_at: string | null;
-  pet: Pet | null;
-};
 type OrderFields = {
   appointment_id: string;
-  modality: 'laboratory' | 'imaging';
+  modality: ExamModality;
   exam_name: string;
   clinical_indication: string;
   instructions: string;
@@ -73,38 +54,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     setLoading(true);
     setErrorMessage('');
     try {
-      const ordersUrl = appointmentId
-        ? `/api/exam-orders?appointmentId=${encodeURIComponent(appointmentId)}`
-        : '/api/exam-orders';
-      const [appointmentsResponse, ordersResponse] = await Promise.all([
-        fetch('/api/appointments'),
-        fetch(ordersUrl),
+      const [appointmentsResult, ordersResult] = await Promise.all([
+        listarAgendamentos(),
+        listarPedidosExames(appointmentId || undefined),
       ]);
-      const appointmentsResult: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } = await appointmentsResponse.json();
-      const ordersResult: {
-        examOrders?: ExamOrder[];
-        error?: string;
-      } = await ordersResponse.json();
 
-      if (!appointmentsResponse.ok) {
-        throw new Error(
-          appointmentsResult.error ?? 'Não foi possível carregar os atendimentos.',
-        );
-      }
-      if (!ordersResponse.ok) {
-        throw new Error(
-          ordersResult.error ?? 'Não foi possível carregar os exames.',
-        );
-      }
-
-      const loadedAppointments = appointmentsResult.appointments ?? [];
+      const loadedAppointments = appointmentsResult.appointments;
       setAppointments(loadedAppointments);
-      setCurrentUserId(appointmentsResult.currentUserId ?? '');
-      const loadedOrders = ordersResult.examOrders ?? [];
+      setCurrentUserId(appointmentsResult.currentUserId);
+      const loadedOrders = ordersResult.examOrders;
       setOrders(loadedOrders);
       setResultFields((current) => {
         const next = { ...current };
@@ -126,7 +84,9 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : 'Erro ao carregar solicitações de exames.',
+        error instanceof Error
+          ? error.message
+          : 'Erro ao carregar solicitações de exames.',
       );
     } finally {
       setLoading(false);
@@ -151,22 +111,23 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
 
   async function createOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = createExamOrderSchema.safeParse({
+      ...orderFields,
+      instructions: orderFields.instructions.trim() || null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Preencha corretamente os dados do exame.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/exam-orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...orderFields,
-          instructions: orderFields.instructions.trim() || null,
-        }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível solicitar o exame.');
-      }
+      await criarPedidoExame(parsed.data);
       setOrderFields((current) => ({
         ...initialOrder,
         appointment_id: current.appointment_id,
@@ -190,26 +151,27 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     const values = resultFields[orderId];
     if (!values) return;
 
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = recordExamResultSchema.safeParse({
+      id: orderId,
+      result_summary: values.result_summary,
+      laboratory_name: values.laboratory_name.trim() || null,
+      performed_at: values.performed_at
+        ? new Date(values.performed_at).toISOString()
+        : null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Confira os dados do resultado.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/exam-orders', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: orderId,
-          result_summary: values.result_summary,
-          laboratory_name: values.laboratory_name.trim() || null,
-          performed_at: values.performed_at
-            ? new Date(values.performed_at).toISOString()
-            : null,
-        }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível registrar o resultado.');
-      }
+      await registrarResultadoExame(parsed.data);
       setNotice('Resultado registrado e bloqueado para alterações.');
       await loadData();
     } catch (error) {
@@ -229,9 +191,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       />
 
       {errorMessage && (
-        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {errorMessage}
-        </p>
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          role="alert"
+        >
+          <p>{errorMessage}</p>
+          <Button type="button" variant="outline" onClick={() => void loadData()}>
+            Tentar novamente
+          </Button>
+        </div>
       )}
       {notice && (
         <p
@@ -356,16 +324,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
         description="Resultados são adicionados uma vez e não podem ser alterados pela aplicação."
       >
         {loading ? (
-          <p className="py-8 text-center text-sm text-slate-500">
-            Carregando exames...
-          </p>
-        ) : orders.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
-            <p className="font-semibold text-[#153b50]">Nenhum exame encontrado</p>
-            <p className="mt-2 text-sm text-slate-600">
-              Os pedidos aparecerão após serem registrados para um atendimento.
-            </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-28 w-full rounded-2xl" />
+            <Skeleton className="h-28 w-full rounded-2xl" />
           </div>
+        ) : orders.length === 0 ? (
+          <EmptyState
+            title="Nenhum exame encontrado"
+            description="Os pedidos aparecerão após serem registrados para um atendimento."
+          />
         ) : (
           <ul className="grid gap-4">
             {orders.map((order) => (
@@ -378,9 +345,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                         ? `${order.pet.name} · ${order.pet.species}`
                         : 'Paciente'}
                       {' · '}
-                      {order.modality === 'laboratory'
-                        ? 'Laboratorial'
-                        : 'Imagem'}
+                      {order.modality === 'laboratory' ? 'Laboratorial' : 'Imagem'}
                     </p>
                   </div>
                   <Badge variant={order.status === 'resulted' ? 'success' : 'warning'}>

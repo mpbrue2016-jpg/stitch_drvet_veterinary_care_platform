@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { newPasswordSchema } from '@/lib/validations';
 
 export default function NewPasswordPage() {
   const router = useRouter();
@@ -18,27 +19,31 @@ export default function NewPasswordPage() {
     setErrorMessage('');
     setMessage('');
 
-    if (!isSupabaseConfigured()) {
-      setErrorMessage('O Supabase ainda não está configurado neste ambiente.');
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
     const password = String(formData.get('password') ?? '');
     const confirmation = String(formData.get('confirmation') ?? '');
-    if (password.length < 8) {
-      setErrorMessage('A senha precisa ter pelo menos 8 caracteres.');
+
+    const parsed = newPasswordSchema.safeParse({ password, confirmation });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os campos da nova senha.',
+      );
       return;
     }
-    if (password !== confirmation) {
-      setErrorMessage('As senhas informadas não coincidem.');
+
+    if (!isSupabaseConfigured()) {
+      // TODO(AI Studio): atualizar senha via Supabase Auth quando configurado.
+      setMessage('Validação concluída (modo demonstração). Redirecionando...');
+      window.setTimeout(() => {
+        router.replace('/agendamento');
+      }, 800);
       return;
     }
 
     setIsSubmitting(true);
     try {
       const { error } = await createSupabaseBrowserClient().auth.updateUser({
-        password,
+        password: parsed.data.password,
       });
       if (error) throw error;
 
@@ -74,7 +79,7 @@ export default function NewPasswordPage() {
           Escolha uma senha com pelo menos 8 caracteres.
         </p>
 
-        <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
+        <form className="mt-6 grid gap-4" noValidate onSubmit={handleSubmit}>
           <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
             Nova senha
             <input

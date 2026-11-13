@@ -25,10 +25,7 @@ export async function middleware(request: NextRequest) {
   if (!isProtectedPath) return NextResponse.next({ request });
 
   if (!isSupabaseConfigured()) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('setup', 'required');
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.next({ request });
   }
 
   const { url, key } = getSupabasePublicConfig();

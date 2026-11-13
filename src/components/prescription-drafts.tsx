@@ -1,35 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, Input, PageHeader, Select } from '@/components/ui';
-import type { Json } from '@/types/database';
-
-type Pet = { id: string; name: string; species: string };
-type Appointment = {
-  id: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  starts_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: Pet | null;
-};
-type PrescriptionItem = {
-  name: string;
-  presentation: string;
-  dose: string;
-  route: string;
-  frequency: string;
-  duration: string;
-  quantity: string;
-  instructions: string;
-};
-type PrescriptionDraft = {
-  id: string;
-  appointment_id: string;
-  pet_id: string;
-  items: Json;
-  updated_at: string;
-};
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  PageHeader,
+  Select,
+  Skeleton,
+} from '@/components/ui';
+import { savePrescriptionDraftSchema } from '@/lib/validations';
+import { listarAgendamentos } from '@/services/appointments.service';
+import {
+  listarRascunhosReceita,
+  salvarRascunhoReceita,
+} from '@/services/prescriptions.service';
+import type {
+  Appointment,
+  PrescriptionDraft,
+  PrescriptionItem,
+} from '@/types/entities';
 
 const emptyItem: PrescriptionItem = {
   name: '',
@@ -41,23 +33,6 @@ const emptyItem: PrescriptionItem = {
   quantity: '',
   instructions: '',
 };
-
-function isPrescriptionItem(value: Json): value is PrescriptionItem {
-  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-    return false;
-  }
-  const item = value as Record<string, Json | undefined>;
-  return (
-    typeof item.name === 'string' &&
-    typeof item.presentation === 'string' &&
-    typeof item.dose === 'string' &&
-    typeof item.route === 'string' &&
-    typeof item.frequency === 'string' &&
-    typeof item.duration === 'string' &&
-    typeof item.quantity === 'string' &&
-    typeof item.instructions === 'string'
-  );
-}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -102,34 +77,14 @@ export function PrescriptionDrafts() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [appointmentsResponse, draftsResponse] = await Promise.all([
-        fetch('/api/appointments'),
-        fetch('/api/prescription-drafts'),
+      const [appointmentsResult, draftsResult] = await Promise.all([
+        listarAgendamentos(),
+        listarRascunhosReceita(),
       ]);
-      const appointmentsResult: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } = await appointmentsResponse.json();
-      const draftsResult: {
-        prescriptionDrafts?: PrescriptionDraft[];
-        error?: string;
-      } = await draftsResponse.json();
 
-      if (!appointmentsResponse.ok) {
-        throw new Error(
-          appointmentsResult.error ?? 'Não foi possível carregar os atendimentos.',
-        );
-      }
-      if (!draftsResponse.ok) {
-        throw new Error(
-          draftsResult.error ?? 'Não foi possível carregar os rascunhos.',
-        );
-      }
-
-      const loadedAppointments = appointmentsResult.appointments ?? [];
-      const loadedUserId = appointmentsResult.currentUserId ?? '';
-      const loadedDrafts = draftsResult.prescriptionDrafts ?? [];
+      const loadedAppointments = appointmentsResult.appointments;
+      const loadedUserId = appointmentsResult.currentUserId;
+      const loadedDrafts = draftsResult.prescriptionDrafts;
       setAppointments(loadedAppointments);
       setCurrentUserId(loadedUserId);
       setDrafts(loadedDrafts);
@@ -173,8 +128,8 @@ export function PrescriptionDrafts() {
 
   const eligibleAppointments = useMemo(
     () =>
-      appointments.filter(
-        (appointment) => isEligibleAppointment(appointment, currentUserId),
+      appointments.filter((appointment) =>
+        isEligibleAppointment(appointment, currentUserId),
       ),
     [appointments, currentUserId],
   );
@@ -185,9 +140,7 @@ export function PrescriptionDrafts() {
   const selectedAppointment = eligibleAppointments.find(
     (appointment) => appointment.id === appointmentId,
   );
-  const savedItems = Array.isArray(selectedDraft?.items)
-    ? selectedDraft.items.filter(isPrescriptionItem).map(normalizeItem)
-    : [];
+  const savedItems = selectedDraft ? selectedDraft.items.map(normalizeItem) : [];
   const normalizedItems = items.map(normalizeItem);
   const hasUnsavedChanges = selectedDraft
     ? JSON.stringify(normalizedItems) !== JSON.stringify(savedItems)
@@ -195,9 +148,7 @@ export function PrescriptionDrafts() {
 
   useEffect(() => {
     const draft = drafts.find((candidate) => candidate.appointment_id === appointmentId);
-    const loadedItems = Array.isArray(draft?.items)
-      ? draft.items.filter(isPrescriptionItem)
-      : [];
+    const loadedItems = draft?.items ?? [];
     setItems(loadedItems.length > 0 ? loadedItems : [{ ...emptyItem }]);
   }, [appointmentId, drafts]);
 
@@ -224,27 +175,23 @@ export function PrescriptionDrafts() {
 
   async function saveDraft(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!appointmentId) return;
-
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = savePrescriptionDraftSchema.safeParse({
+      appointment_id: appointmentId,
+      items: normalizedItems,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os itens da prescrição.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/prescription-drafts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          appointment_id: appointmentId,
-          items: normalizedItems,
-        }),
-      });
-      const result: {
-        prescriptionDraft?: PrescriptionDraft;
-        error?: string;
-      } = await response.json();
-      if (!response.ok || !result.prescriptionDraft) {
-        throw new Error(result.error ?? 'Não foi possível salvar o rascunho.');
-      }
+      await salvarRascunhoReceita(parsed.data);
       setNotice('Rascunho salvo. Ele não foi assinado nem emitido.');
       await loadData();
     } catch (error) {
@@ -269,7 +216,10 @@ export function PrescriptionDrafts() {
       </div>
 
       {errorMessage && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          role="alert"
+        >
           <p>{errorMessage}</p>
           <Button
             type="button"
@@ -288,14 +238,17 @@ export function PrescriptionDrafts() {
       )}
 
       {loading ? (
-        <Card><p className="text-sm text-slate-600">Carregando atendimentos...</p></Card>
-      ) : errorMessage ? null : eligibleAppointments.length === 0 ? (
         <Card>
-          <p className="font-semibold text-[#153b50]">Nenhum atendimento elegível</p>
-          <p className="mt-2 text-sm text-slate-600">
-            Rascunhos só podem ser vinculados a atendimentos iniciados ou concluídos do veterinário responsável.
-          </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
         </Card>
+      ) : errorMessage && eligibleAppointments.length === 0 ? null : eligibleAppointments.length === 0 ? (
+        <EmptyState
+          title="Nenhum atendimento elegível"
+          description="Rascunhos só podem ser vinculados a atendimentos iniciados ou concluídos do veterinário responsável."
+        />
       ) : (
         <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.7fr)]">
           <Card
@@ -335,7 +288,9 @@ export function PrescriptionDrafts() {
                           type="button"
                           variant="ghost"
                           onClick={() =>
-                            setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))
+                            setItems((current) =>
+                              current.filter((_, itemIndex) => itemIndex !== index),
+                            )
                           }
                         >
                           Remover item
@@ -351,19 +306,67 @@ export function PrescriptionDrafts() {
                       required
                     />
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <Input name={`prescription-${index}-presentation`} label="Apresentação" value={item.presentation} onChange={(event) => updateItem(index, 'presentation', event.target.value)} maxLength={120} />
-                      <Input name={`prescription-${index}-dose`} label="Dose prescrita" value={item.dose} onChange={(event) => updateItem(index, 'dose', event.target.value)} maxLength={250} />
-                      <Input name={`prescription-${index}-route`} label="Via" value={item.route} onChange={(event) => updateItem(index, 'route', event.target.value)} maxLength={100} />
-                      <Input name={`prescription-${index}-frequency`} label="Frequência" value={item.frequency} onChange={(event) => updateItem(index, 'frequency', event.target.value)} maxLength={160} />
-                      <Input name={`prescription-${index}-duration`} label="Duração" value={item.duration} onChange={(event) => updateItem(index, 'duration', event.target.value)} maxLength={160} />
-                      <Input name={`prescription-${index}-quantity`} label="Quantidade" value={item.quantity} onChange={(event) => updateItem(index, 'quantity', event.target.value)} maxLength={120} />
+                      <Input
+                        name={`prescription-${index}-presentation`}
+                        label="Apresentação"
+                        value={item.presentation}
+                        onChange={(event) =>
+                          updateItem(index, 'presentation', event.target.value)
+                        }
+                        maxLength={120}
+                      />
+                      <Input
+                        name={`prescription-${index}-dose`}
+                        label="Dose prescrita"
+                        value={item.dose}
+                        onChange={(event) => updateItem(index, 'dose', event.target.value)}
+                        maxLength={250}
+                      />
+                      <Input
+                        name={`prescription-${index}-route`}
+                        label="Via"
+                        value={item.route}
+                        onChange={(event) => updateItem(index, 'route', event.target.value)}
+                        maxLength={100}
+                      />
+                      <Input
+                        name={`prescription-${index}-frequency`}
+                        label="Frequência"
+                        value={item.frequency}
+                        onChange={(event) =>
+                          updateItem(index, 'frequency', event.target.value)
+                        }
+                        maxLength={160}
+                      />
+                      <Input
+                        name={`prescription-${index}-duration`}
+                        label="Duração"
+                        value={item.duration}
+                        onChange={(event) =>
+                          updateItem(index, 'duration', event.target.value)
+                        }
+                        maxLength={160}
+                      />
+                      <Input
+                        name={`prescription-${index}-quantity`}
+                        label="Quantidade"
+                        value={item.quantity}
+                        onChange={(event) =>
+                          updateItem(index, 'quantity', event.target.value)
+                        }
+                        maxLength={120}
+                      />
                     </div>
                     <label className="grid gap-1.5">
-                      <span className="text-sm font-semibold text-[#153b50]">Orientações específicas</span>
+                      <span className="text-sm font-semibold text-[#153b50]">
+                        Orientações específicas
+                      </span>
                       <textarea
                         className="min-h-24 rounded-lg border border-slate-300 bg-white p-3 text-sm"
                         value={item.instructions}
-                        onChange={(event) => updateItem(index, 'instructions', event.target.value)}
+                        onChange={(event) =>
+                          updateItem(index, 'instructions', event.target.value)
+                        }
                         maxLength={1000}
                       />
                     </label>
@@ -408,14 +411,30 @@ export function PrescriptionDrafts() {
               </div>
               <div className="mt-4 grid gap-3 rounded-xl border border-dashed border-slate-300 bg-white p-4">
                 {items.map((item, index) => (
-                  <div key={index} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                    <p className="font-semibold text-[#153b50]">{item.name || 'Medicamento não informado'}</p>
-                    {[item.presentation, item.dose, item.route, item.frequency, item.duration, item.quantity]
+                  <div
+                    key={index}
+                    className="border-b border-slate-100 pb-3 last:border-0 last:pb-0"
+                  >
+                    <p className="font-semibold text-[#153b50]">
+                      {item.name || 'Medicamento não informado'}
+                    </p>
+                    {[
+                      item.presentation,
+                      item.dose,
+                      item.route,
+                      item.frequency,
+                      item.duration,
+                      item.quantity,
+                    ]
                       .filter(Boolean)
                       .map((value, valueIndex) => (
-                        <p key={valueIndex} className="mt-1 text-sm text-slate-600">{value}</p>
+                        <p key={valueIndex} className="mt-1 text-sm text-slate-600">
+                          {value}
+                        </p>
                       ))}
-                    {item.instructions && <p className="mt-2 text-sm text-slate-600">{item.instructions}</p>}
+                    {item.instructions && (
+                      <p className="mt-2 text-sm text-slate-600">{item.instructions}</p>
+                    )}
                   </div>
                 ))}
               </div>

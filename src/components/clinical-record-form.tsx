@@ -2,31 +2,17 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { Badge, Button, Card, PageHeader } from '@/components/ui';
-import type { ClinicalRecordStatus } from '@/types/database';
-
-type ClinicalVitals = {
-  weight_kg: number | null;
-  temperature_c: number | null;
-  heart_rate_bpm: number | null;
-  respiratory_rate_rpm: number | null;
-  mucous_membranes: string | null;
-  capillary_refill_seconds: number | null;
-};
-
-type ClinicalRecord = {
-  id: string;
-  appointment_id: string;
-  subjective: string;
-  objective: string;
-  assessment: string;
-  plan: string;
-  vitals: ClinicalVitals;
-  status: ClinicalRecordStatus;
-  finalized_at: string | null;
-  created_at: string;
-  updated_at: string;
-};
+import { Badge, Button, Card, PageHeader, Skeleton } from '@/components/ui';
+import { clinicalRecordSchema } from '@/lib/validations';
+import {
+  buscarProntuarioPorAtendimento,
+  salvarProntuario,
+} from '@/services/clinical-records.service';
+import type {
+  ClinicalRecord,
+  ClinicalRecordStatus,
+  ClinicalVitals,
+} from '@/types/entities';
 
 type ClinicalRecordFields = Pick<
   ClinicalRecord,
@@ -95,21 +81,10 @@ export function ClinicalRecordForm({
     setLoading(true);
     setErrorMessage('');
     try {
-      const response = await fetch(
-        `/api/clinical-records?appointmentId=${encodeURIComponent(appointmentId)}`,
-      );
-      const result: {
-        clinicalRecord?: ClinicalRecord | null;
-        canEdit?: boolean;
-        error?: string;
-      } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar o prontuário.');
-      }
-
-      const loadedRecord = result.clinicalRecord ?? null;
+      const result = await buscarProntuarioPorAtendimento(appointmentId);
+      const loadedRecord = result.clinicalRecord;
       setRecord(loadedRecord);
-      setCanEdit(result.canEdit ?? false);
+      setCanEdit(result.canEdit);
       if (loadedRecord) {
         setFields({
           subjective: loadedRecord.subjective,
@@ -141,36 +116,35 @@ export function ClinicalRecordForm({
   }
 
   async function save(status: ClinicalRecordStatus) {
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = clinicalRecordSchema.safeParse({
+      appointment_id: appointmentId,
+      ...fields,
+      vitals: {
+        weight_kg: optionalNumber(vitals.weight_kg),
+        temperature_c: optionalNumber(vitals.temperature_c),
+        heart_rate_bpm: optionalNumber(vitals.heart_rate_bpm),
+        respiratory_rate_rpm: optionalNumber(vitals.respiratory_rate_rpm),
+        mucous_membranes: vitals.mucous_membranes.trim() || null,
+        capillary_refill_seconds: optionalNumber(vitals.capillary_refill_seconds),
+      },
+    });
+
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os dados informados no prontuário.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/clinical-records', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          appointment_id: appointmentId,
-          ...fields,
-          vitals: {
-            weight_kg: optionalNumber(vitals.weight_kg),
-            temperature_c: optionalNumber(vitals.temperature_c),
-            heart_rate_bpm: optionalNumber(vitals.heart_rate_bpm),
-            respiratory_rate_rpm: optionalNumber(vitals.respiratory_rate_rpm),
-            mucous_membranes: vitals.mucous_membranes.trim() || null,
-            capillary_refill_seconds: optionalNumber(
-              vitals.capillary_refill_seconds,
-            ),
-          },
-          status,
-        }),
+      const result = await salvarProntuario({
+        ...parsed.data,
+        status,
       });
-      const result: {
-        clinicalRecord?: ClinicalRecord;
-        error?: string;
-      } = await response.json();
-      if (!response.ok || !result.clinicalRecord) {
-        throw new Error(result.error ?? 'Não foi possível salvar o prontuário.');
-      }
 
       setRecord(result.clinicalRecord);
       setCanEdit(result.clinicalRecord.status === 'draft');
@@ -198,9 +172,9 @@ export function ClinicalRecordForm({
         action={
           <Link
             className="inline-flex min-h-10 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-[#153b50]"
-            href="/agendamento"
+            href="/prontuarios"
           >
-            Voltar aos agendamentos
+            Voltar aos prontuários
           </Link>
         }
       />
@@ -208,7 +182,8 @@ export function ClinicalRecordForm({
       {record?.status === 'finalized' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
           <p className="text-sm font-semibold text-emerald-900">
-            Registro finalizado em {record.finalized_at ? formatDate(record.finalized_at) : '—'}
+            Registro finalizado em{' '}
+            {record.finalized_at ? formatDate(record.finalized_at) : '—'}
           </p>
           <Badge variant="success">Finalizado</Badge>
         </div>
@@ -227,9 +202,10 @@ export function ClinicalRecordForm({
 
       {loading ? (
         <Card>
-          <p className="py-8 text-center text-sm text-slate-500">
-            Carregando prontuário...
-          </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
         </Card>
       ) : (
         <>

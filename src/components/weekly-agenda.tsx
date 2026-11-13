@@ -10,19 +10,10 @@ import {
   EmptyState,
   MetricCard,
   PageHeader,
+  Skeleton,
 } from '@/components/ui';
-
-type Appointment = {
-  id: string;
-  kind: 'teleconsultation' | 'in_person';
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  reason: string | null;
-  starts_at: string;
-  ends_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: { name: string; species: string } | null;
-};
+import { listarAgendamentos } from '@/services/appointments.service';
+import type { Appointment } from '@/types/entities';
 
 const weekdays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 const workHours = [8, 9, 10, 11, 14, 15, 16, 17];
@@ -104,23 +95,12 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
     setErrorMessage('');
     try {
       const rangeEnd = addDays(weekStart, 5);
-      const params = new URLSearchParams({
+      const result = await listarAgendamentos({
         from: weekStart.toISOString(),
         to: rangeEnd.toISOString(),
       });
-      const response = await fetch(`/api/appointments?${params.toString()}`, {
-        cache: 'no-store',
-      });
-      const result: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar a agenda.');
-      }
-      setAppointments(result.appointments ?? []);
-      setCurrentUserId(result.currentUserId ?? '');
+      setAppointments(result.appointments);
+      setCurrentUserId(result.currentUserId);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar a agenda.',
@@ -218,25 +198,38 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
         />
         <MetricCard
           label="Teleconsultas"
-          value={loading
-            ? '…'
-            : String(activeAppointments.filter((item) => item.kind === 'teleconsultation').length)}
+          value={
+            loading
+              ? '…'
+              : String(
+                  activeAppointments.filter((item) => item.kind === 'teleconsultation')
+                    .length,
+                )
+          }
           detail="Nesta semana"
           icon="◉"
         />
         <MetricCard
           label="Presenciais"
-          value={loading
-            ? '…'
-            : String(activeAppointments.filter((item) => item.kind === 'in_person').length)}
+          value={
+            loading
+              ? '…'
+              : String(
+                  activeAppointments.filter((item) => item.kind === 'in_person').length,
+                )
+          }
           detail="Nesta semana"
           icon="⌖"
         />
         <MetricCard
           label="Aguardando confirmação"
-          value={loading
-            ? '…'
-            : String(activeAppointments.filter((item) => item.status === 'pending').length)}
+          value={
+            loading
+              ? '…'
+              : String(
+                  activeAppointments.filter((item) => item.status === 'pending').length,
+                )
+          }
           detail="Solicitações pendentes"
           icon="◷"
         />
@@ -289,9 +282,10 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
           </div>
 
           {loading ? (
-            <p className="p-8 text-center text-sm text-slate-500">
-              Carregando atendimentos da semana…
-            </p>
+            <div className="grid gap-3 p-5" aria-busy="true">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-48 w-full" />
+            </div>
           ) : errorMessage ? (
             <EmptyState
               title="Agenda indisponível"
@@ -352,7 +346,8 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
                                       {appointment.pet?.name ?? 'Paciente'}
                                     </span>
                                     <span className="mt-1 block text-[11px] text-slate-600">
-                                      {formatTime(appointment.starts_at)}–{formatTime(appointment.ends_at)}
+                                      {formatTime(appointment.starts_at)}–
+                                      {formatTime(appointment.ends_at)}
                                     </span>
                                     <span className="mt-1 flex flex-wrap gap-1">
                                       <Badge variant={statusVariant(appointment.status)}>
@@ -437,7 +432,7 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
           </Card>
           <Card
             title="Disponibilidade"
-            description="Gerencie horários publicados e bloqueios na configuração abaixo."
+            description="Gerencie horários publicados e bloqueios na configuração acima."
           >
             <div className="rounded-xl bg-[#ebf5ff] p-4 text-sm text-slate-600">
               Os horários livres da grade são apenas intervalos sem consulta marcada.

@@ -2,18 +2,12 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-
-type Appointment = {
-  id: string;
-  kind: 'teleconsultation' | 'in_person';
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  reason: string | null;
-  starts_at: string;
-  ends_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: { name: string; species: string } | null;
-};
+import { Button, EmptyState, Skeleton } from '@/components/ui';
+import {
+  atualizarStatusAgendamento,
+  listarAgendamentos,
+} from '@/services/appointments.service';
+import type { Appointment } from '@/types/entities';
 
 const statusLabels: Record<Appointment['status'], string> = {
   pending: 'Aguardando confirmação',
@@ -40,18 +34,9 @@ export function AppointmentsList() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const response = await fetch('/api/appointments');
-      const result: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } =
-        await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar os agendamentos.');
-      }
-      setAppointments(result.appointments ?? []);
-      setCurrentUserId(result.currentUserId ?? '');
+      const result = await listarAgendamentos();
+      setAppointments(result.appointments);
+      setCurrentUserId(result.currentUserId);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar os agendamentos.',
@@ -72,19 +57,11 @@ export function AppointmentsList() {
     setUpdatingId(id);
     setErrorMessage('');
     try {
-      const response = await fetch('/api/appointments', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível alterar o agendamento.');
-      }
+      await atualizarStatusAgendamento(id, status);
       await loadAppointments();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : 'Erro ao cancelar o agendamento.',
+        error instanceof Error ? error.message : 'Erro ao alterar o agendamento.',
       );
     } finally {
       setUpdatingId('');
@@ -109,18 +86,28 @@ export function AppointmentsList() {
       </div>
 
       {errorMessage && (
-        <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {errorMessage}
-        </p>
+        <div
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          role="alert"
+        >
+          <p>{errorMessage}</p>
+          <Button type="button" variant="outline" onClick={() => void loadAppointments()}>
+            Tentar novamente
+          </Button>
+        </div>
       )}
+
       {loading ? (
-        <p className="py-10 text-center text-sm text-slate-500">Carregando agendamentos...</p>
+        <div className="mt-5 grid gap-3" aria-busy="true" aria-label="Carregando agendamentos">
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-2xl" />
+        </div>
       ) : appointments.length === 0 ? (
-        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 p-8 text-center">
-          <p className="font-semibold text-[#153b50]">Nenhum agendamento cadastrado</p>
-          <p className="mt-2 text-sm text-slate-600">
-            Cadastre um pet e escolha um horário disponível para começar.
-          </p>
+        <div className="mt-5">
+          <EmptyState
+            title="Nenhum agendamento cadastrado"
+            description="Cadastre um pet e escolha um horário disponível para começar."
+          />
         </div>
       ) : (
         <ul className="mt-5 grid gap-3">

@@ -4,10 +4,16 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'DrVet',
+    default: 'DrVet — Telemedicina Veterinária',
     template: '%s | DrVet',
   },
-  description: 'Plataforma de cuidado e telemedicina veterinária DrVet.',
+  description: 'Plataforma de cuidado, prontuário clínico e telemedicina veterinária DrVet.',
+  openGraph: {
+    title: 'DrVet — Telemedicina Veterinária',
+    description: 'Plataforma de cuidado, prontuário clínico e telemedicina veterinária DrVet.',
+    type: 'website',
+    locale: 'pt_BR',
+  },
 };
 
 export default function RootLayout({

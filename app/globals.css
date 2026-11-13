@@ -1,17 +1,8 @@
+@import "../src/styles/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  color-scheme: light;
-  --color-brand-navy: #153b50;
-  --color-brand-green: #13a88a;
-  --color-brand-turquoise: #35c6b0;
-  --color-brand-ice: #eaf5f8;
-  --color-floor: #f5f8fa;
-  --color-ink: #183344;
-  --color-muted: #718096;
-}
 
 html {
   min-width: 320px;

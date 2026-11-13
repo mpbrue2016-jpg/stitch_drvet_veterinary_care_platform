@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { loginSchema, resetRequestSchema, signUpSchema } from '@/lib/validations';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    setNeedsSetup(searchParams.get('setup') === 'required');
+    setNeedsSetup(searchParams.get('setup') === 'required' || !isSupabaseConfigured());
     const requestedPath = searchParams.get('next');
     if (requestedPath) {
       const target = new URL(requestedPath, window.location.origin);
@@ -28,7 +29,9 @@ export default function LoginPage() {
       }
     }
     if (searchParams.get('error') === 'callback') {
-      setErrorMessage('Não foi possível confirmar o acesso. Solicite um novo link de confirmação.');
+      setErrorMessage(
+        'Não foi possível confirmar o acesso. Solicite um novo link de confirmação.',
+      );
     }
   }, []);
 
@@ -37,15 +40,40 @@ export default function LoginPage() {
     setMessage('');
     setErrorMessage('');
 
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get('email') ?? '').trim();
+    const password = String(formData.get('password') ?? '');
+    const displayName = String(formData.get('displayName') ?? '').trim();
+
+    if (isResetRequest) {
+      const parsed = resetRequestSchema.safeParse({ email });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'Informe um e-mail válido.');
+        return;
+      }
+    } else if (isSignUp) {
+      const parsed = signUpSchema.safeParse({ email, password, displayName });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'Confira os dados do cadastro.');
+        return;
+      }
+    } else {
+      const parsed = loginSchema.safeParse({ email, password });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'E-mail ou senha inválidos.');
+        return;
+      }
+    }
+
     if (!isSupabaseConfigured()) {
-      setErrorMessage(
-        'O Supabase ainda não está configurado. Preencha o .env.local e reinicie o servidor.',
-      );
+      // TODO(AI Studio): autenticar via Supabase Auth quando NEXT_PUBLIC_SUPABASE_URL/ANON_KEY estiverem configuradas.
+      setMessage('Modo demonstração ativo. Redirecionando para o painel...');
+      window.setTimeout(() => {
+        router.replace(nextPath);
+      }, 600);
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    const email = String(formData.get('email') ?? '').trim();
     const supabase = createSupabaseBrowserClient();
     setIsSubmitting(true);
 
@@ -61,9 +89,7 @@ export default function LoginPage() {
         return;
       }
 
-      const password = String(formData.get('password') ?? '');
       if (isSignUp) {
-        const displayName = String(formData.get('displayName') ?? '').trim();
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -125,11 +151,16 @@ export default function LoginPage() {
 
         {needsSetup && (
           <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
-            Configure o Supabase no arquivo local <code>.env.local</code> para ativar a autenticação.
+            Modo frontend ativo (Supabase não configurado). Você pode testar o formulário
+            com validação Zod ou navegar diretamente para{' '}
+            <Link className="font-bold underline" href="/agendamento">
+              Agendamentos
+            </Link>
+            .
           </div>
         )}
 
-        <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
+        <form className="mt-6 grid gap-4" noValidate onSubmit={handleSubmit}>
           {isSignUp && !isResetRequest && (
             <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
               Nome completo
