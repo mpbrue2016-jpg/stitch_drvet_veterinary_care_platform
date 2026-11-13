@@ -200,3 +200,124 @@ export interface CommissionSummary {
   pix_key_masked: string | null;
   period_label: string;
 }
+
+export type TeleconsultationStatus = 'waiting' | 'in_progress' | 'ended';
+export type SubscriptionInterval = 'monthly' | 'annual';
+export type PetSubscriptionStatus = 'active' | 'paused' | 'cancelled';
+export type PaymentKind = 'teleconsultation' | 'subscription' | 'pharmacy';
+export type PaymentMethod = 'pix' | 'credit_card' | 'voucher';
+export type PaymentOrderStatus = 'pending' | 'paid' | 'refunded' | 'cancelled';
+export type PartnerKind = 'pet_shop' | 'pharmacy';
+export type AdPlacement = 'home_banner' | 'booking_sidebar' | 'partner_coupon';
+export type AdCampaignStatus = 'draft' | 'active' | 'paused' | 'ended';
+
+export interface TeleconsultationSession {
+  id: string;
+  appointment_id: string;
+  organization_id: string;
+  pet_id: string;
+  tutor_id: string;
+  veterinarian_id: string;
+  room_code: string;
+  status: TeleconsultationStatus;
+  recording_consent: boolean;
+  started_at: string | null;
+  ended_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeleconsultationMessage {
+  id: string;
+  session_id: string;
+  sender_id: string;
+  sender_name: string;
+  message: string;
+  created_at: string;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  price_cents: number;
+  interval: SubscriptionInterval;
+  discount_percent: number;
+  benefits: string[];
+  active: boolean;
+}
+
+export interface PetSubscription {
+  id: string;
+  plan_id: string;
+  pet_id: string;
+  owner_id: string;
+  status: PetSubscriptionStatus;
+  discount_percent: number;
+  started_at: string;
+  next_billing_at: string;
+  cancelled_at: string | null;
+  plan_name?: string;
+  pet_name?: string;
+}
+
+export interface PaymentOrder {
+  id: string;
+  user_id: string;
+  appointment_id?: string | null;
+  kind: PaymentKind;
+  description: string;
+  amount_cents: number;
+  discount_cents: number;
+  net_amount_cents: number;
+  method: PaymentMethod;
+  status: PaymentOrderStatus;
+  external_reference: string | null;
+  paid_at: string | null;
+  created_at: string;
+}
+
+export interface PartnerListing {
+  id: string;
+  organization_id: string;
+  kind: PartnerKind;
+  trade_name: string;
+  city: string;
+  state: string;
+  coupon_code: string;
+  discount_percent: number;
+  active: boolean;
+}
+
+export interface AdCampaign {
+  id: string;
+  organization_id: string;
+  title: string;
+  placement: AdPlacement;
+  budget_cents: number;
+  status: AdCampaignStatus;
+  starts_on: string;
+  ends_on: string | null;
+  clicks_count: number;
+}
+
+export type IntegrationProvider =
+  | 'asaas'
+  | 'mercado_pago'
+  | 'livekit'
+  | 'bling'
+  | 'omie';
+export type IntegrationEnvironment = 'sandbox' | 'production';
+
+export interface IntegrationConfig {
+  id: string;
+  organization_id: string | null;
+  provider: IntegrationProvider;
+  environment: IntegrationEnvironment;
+  webhook_endpoint: string;
+  active: boolean;
+  last_status: string;
+  last_checked_at: string | null;
+}

@@ -1,72 +1,114 @@
+import { getSupabaseClient } from '@/lib/supabase';
+import type { Json } from '@/types/database';
 import type { PrescriptionDraft, PrescriptionItem } from '@/types/entities';
-import {
-  MOCK_CURRENT_USER_ID,
-  MOCK_ORGANIZATION_ID,
-  mockAppointments,
-  mockDelay,
-  mockPrescriptionDrafts,
-} from './mock-db';
+import { toFriendlyError } from './errors';
+
+const PRESCRIPTION_COLUMNS =
+  'id, appointment_id, organization_id, pet_id, veterinarian_id, items, updated_by, created_at, updated_at';
+
+function parseItems(raw: Json): PrescriptionItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (item): item is { [key: string]: Json | undefined } =>
+        Boolean(item) && typeof item === 'object' && !Array.isArray(item),
+    )
+    .map((item) => ({
+      name: typeof item.name === 'string' ? item.name : '',
+      presentation: typeof item.presentation === 'string' ? item.presentation : '',
+      dose: typeof item.dose === 'string' ? item.dose : '',
+      route: typeof item.route === 'string' ? item.route : '',
+      frequency: typeof item.frequency === 'string' ? item.frequency : '',
+      duration: typeof item.duration === 'string' ? item.duration : '',
+      quantity: typeof item.quantity === 'string' ? item.quantity : '',
+      instructions: typeof item.instructions === 'string' ? item.instructions : '',
+    }));
+}
 
 export async function listarRascunhosReceita(): Promise<{
   prescriptionDrafts: PrescriptionDraft[];
 }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('prescription_drafts').select('*'))
-  await mockDelay();
-  return { prescriptionDrafts: [...mockPrescriptionDrafts] };
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('prescription_drafts')
+      .select(PRESCRIPTION_COLUMNS)
+      .order('updated_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    return {
+      prescriptionDrafts: (data ?? []).map((row) => ({
+        ...row,
+        items: parseItems(row.items),
+      })),
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar os rascunhos de receita.');
+  }
 }
 
 export async function buscarRascunhoPorAtendimento(
   appointmentId: string,
 ): Promise<PrescriptionDraft | null> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('prescription_drafts').select('*').eq('appointment_id', appointmentId).maybeSingle())
-  await mockDelay(100);
-  return (
-    mockPrescriptionDrafts.find((draft) => draft.appointment_id === appointmentId) ?? null
-  );
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('prescription_drafts')
+      .select(PRESCRIPTION_COLUMNS)
+      .eq('appointment_id', appointmentId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    return {
+      ...data,
+      items: parseItems(data.items),
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar o rascunho de receita.');
+  }
 }
 
 export async function salvarRascunhoReceita(input: {
   appointment_id: string;
   items: PrescriptionItem[];
 }): Promise<{ prescriptionDraft: PrescriptionDraft }> {
-  // TODO(AI Studio): trocar por chamada Supabase RPC (supabase.rpc('save_prescription_draft', ...))
-  await mockDelay();
-  const now = new Date().toISOString();
-  const index = mockPrescriptionDrafts.findIndex(
-    (draft) => draft.appointment_id === input.appointment_id,
-  );
-  if (index !== -1) {
-    const updated: PrescriptionDraft = {
-      ...mockPrescriptionDrafts[index],
-      items: input.items,
-      updated_by: MOCK_CURRENT_USER_ID,
-      updated_at: now,
-    };
-    mockPrescriptionDrafts[index] = updated;
-    return { prescriptionDraft: updated };
-  }
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('save_prescription_draft', {
+      target_appointment: input.appointment_id,
+      target_items: input.items as unknown as Json,
+    });
 
-  const appointment = mockAppointments.find((apt) => apt.id === input.appointment_id);
-  const created: PrescriptionDraft = {
-    id: `rx-draft-${Date.now()}`,
-    appointment_id: input.appointment_id,
-    organization_id: appointment?.organization_id ?? MOCK_ORGANIZATION_ID,
-    pet_id: appointment?.pet_id ?? 'pet-pipoca-001',
-    veterinarian_id: MOCK_CURRENT_USER_ID,
-    items: input.items,
-    updated_by: MOCK_CURRENT_USER_ID,
-    created_at: now,
-    updated_at: now,
-  };
-  mockPrescriptionDrafts.unshift(created);
-  return { prescriptionDraft: created };
+    if (error) throw error;
+
+    return {
+      prescriptionDraft: {
+        ...data,
+        items: parseItems(data.items),
+      },
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível salvar o rascunho de receita.');
+  }
 }
 
 export async function excluirRascunhoReceita(id: string): Promise<void> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('prescription_drafts').delete().eq('id', id))
-  await mockDelay();
-  const index = mockPrescriptionDrafts.findIndex((draft) => draft.id === id);
-  if (index !== -1) {
-    mockPrescriptionDrafts.splice(index, 1);
+  try {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from('prescription_drafts')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Rascunhos clínicos não podem ser excluídos diretamente pela aplicação.',
+    );
   }
 }

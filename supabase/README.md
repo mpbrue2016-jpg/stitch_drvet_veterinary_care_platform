@@ -1,5 +1,9 @@
 # Supabase — DrVet
 
-As **migrations**, **políticas de segurança (RLS)**, **funções/RPCs**, **buckets de Storage** e **seeds** do projeto serão criados, revisados e aplicados no **Google AI Studio** ao conectar o projeto Supabase de destino.
+Esta pasta contém todo o backend SQL e Edge Functions do projeto DrVet:
 
-> Observação: a pasta `supabase/migrations/` contém rascunhos locais iniciais gerados previamente que ainda **não** foram aplicados a nenhum banco remoto e devem ser validados/revisados durante a implementação do backend no AI Studio.
+- `migrations/`: scripts SQL versionados em ordem cronológica (tabelas, triggers `updated_at`, funções RPC, políticas de RLS por perfil e buckets/políticas de Storage).
+- `seed.sql`: dados iniciais e contas de demonstração para homologação.
+- `functions/`: Edge Functions (`request-anticipation` e `payment-webhook`).
+
+Consulte [`../SETUP_SUPABASE.md`](../SETUP_SUPABASE.md) para a ordem exata de aplicação no Supabase.

@@ -8,6 +8,14 @@ import {
   buscarProntuarioPorAtendimento,
   salvarProntuario,
 } from '@/services/clinical-records.service';
+import {
+  excluirArquivoStorage,
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+  type StorageFileEntry,
+} from '@/services/storage.service';
 import type {
   ClinicalRecord,
   ClinicalRecordStatus,
@@ -71,11 +79,45 @@ export function ClinicalRecordForm({
     plan: '',
   });
   const [vitals, setVitals] = useState<VitalFields>(emptyVitals);
+  const [petId, setPetId] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<
+    Array<StorageFileEntry & { signedUrl: string }>
+  >([]);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+
+  const loadAttachments = useCallback(
+    async (targetPetId: string | null) => {
+      if (!targetPetId) {
+        setAttachments([]);
+        return;
+      }
+      try {
+        const files = await listarArquivosStorage(
+          'clinical-attachments',
+          `${targetPetId}/${appointmentId}`,
+        );
+        const withUrls = await Promise.all(
+          files.map(async (file) => {
+            const signedUrl = await obterUrlAssinadaStorage(
+              'clinical-attachments',
+              file.fullPath,
+              600,
+            ).catch(() => '');
+            return { ...file, signedUrl };
+          }),
+        );
+        setAttachments(withUrls);
+      } catch {
+        setAttachments([]);
+      }
+    },
+    [appointmentId],
+  );
 
   const loadRecord = useCallback(async () => {
     setLoading(true);
@@ -85,6 +127,8 @@ export function ClinicalRecordForm({
       const loadedRecord = result.clinicalRecord;
       setRecord(loadedRecord);
       setCanEdit(result.canEdit);
+      setPetId(result.petId);
+      void loadAttachments(result.petId);
       if (loadedRecord) {
         setFields({
           subjective: loadedRecord.subjective,
@@ -101,11 +145,58 @@ export function ClinicalRecordForm({
     } finally {
       setLoading(false);
     }
-  }, [appointmentId]);
+  }, [appointmentId, loadAttachments]);
 
   useEffect(() => {
     void loadRecord();
   }, [loadRecord]);
+
+  async function handleUploadAttachment(file: File | null) {
+    if (!file || !petId) return;
+    setErrorMessage('');
+    setNotice('');
+    setUploadingAttachment(true);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${petId}/${appointmentId}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'clinical-attachments',
+        path,
+        file,
+      });
+      await loadAttachments(petId);
+      setNotice('Anexo clínico enviado com sucesso.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao enviar o anexo clínico.',
+      );
+    } finally {
+      setUploadingAttachment(false);
+    }
+  }
+
+  async function handleDeleteAttachment(fullPath: string) {
+    setErrorMessage('');
+    setNotice('');
+    setUploadingAttachment(true);
+    try {
+      await excluirArquivoStorage('clinical-attachments', [fullPath]);
+      await loadAttachments(petId);
+      setNotice('Anexo clínico removido.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao remover o anexo clínico.',
+      );
+    } finally {
+      setUploadingAttachment(false);
+    }
+  }
 
   function updateField(field: keyof ClinicalRecordFields, value: string) {
     setFields((current) => ({ ...current, [field]: value }));
@@ -298,6 +389,74 @@ export function ClinicalRecordForm({
                       value={vitals.mucous_membranes}
                     />
                   </label>
+                </div>
+              </Card>
+
+              <Card
+                title="Anexos clínicos"
+                description="Documentos, imagens ou atestados vinculados ao atendimento (PDF, JPG, PNG ou WEBP até 10 MB)."
+              >
+                <div className="grid gap-3">
+                  {!readOnly && petId && (
+                    <div className="flex justify-end">
+                      <label className="inline-flex min-h-10 cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-[#153b50] hover:bg-[#ebf5ff]">
+                        {uploadingAttachment ? 'Enviando...' : 'Anexar documento'}
+                        <input
+                          accept="application/pdf,image/jpeg,image/png,image/webp"
+                          className="sr-only"
+                          disabled={uploadingAttachment || saving}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0] ?? null;
+                            event.target.value = '';
+                            void handleUploadAttachment(file);
+                          }}
+                          type="file"
+                        />
+                      </label>
+                    </div>
+                  )}
+                  {attachments.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      Nenhum anexo clínico enviado para este atendimento.
+                    </p>
+                  ) : (
+                    <ul className="grid gap-2">
+                      {attachments.map((file) => (
+                        <li
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#f6faff] px-3 py-2.5 text-sm"
+                          key={file.fullPath}
+                        >
+                          <span className="min-w-0 truncate font-medium text-[#153b50]">
+                            {file.name}
+                          </span>
+                          <div className="flex items-center gap-3 text-xs">
+                            {file.signedUrl && (
+                              <a
+                                className="font-semibold text-[#087a68] underline"
+                                href={file.signedUrl}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Abrir arquivo
+                              </a>
+                            )}
+                            {!readOnly && (
+                              <button
+                                className="font-semibold text-red-700 hover:underline disabled:opacity-50"
+                                disabled={uploadingAttachment || saving}
+                                onClick={() =>
+                                  void handleDeleteAttachment(file.fullPath)
+                                }
+                                type="button"
+                              >
+                                Excluir
+                              </button>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </Card>
 

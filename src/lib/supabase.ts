@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
@@ -9,16 +10,22 @@ const supabaseAnonKey =
 
 export const isSupabaseEnvConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
+let browserClient: SupabaseClient<Database, 'public'> | null = null;
+
 /**
- * Cliente Supabase preparado para integração no Google AI Studio.
- * Não deve ser chamado diretamente nas telas — utilize `src/services/*`.
+ * Cliente Supabase singleton para uso exclusivo na camada `src/services/*`.
  */
-// TODO(AI Studio): substituir os retornos mock de src/services/* por chamadas usando este cliente.
-export function getSupabaseClient() {
+export function getSupabaseClient(): SupabaseClient<Database, 'public'> {
   if (!isSupabaseEnvConfigured) {
     throw new Error(
-      'Variáveis NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY não configuradas.',
+      'Configuração do Supabase ausente. Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no arquivo .env.local.',
     );
   }
-  return createBrowserClient<Database, 'public'>(supabaseUrl, supabaseAnonKey);
+  if (!browserClient) {
+    browserClient = createBrowserClient<Database, 'public'>(
+      supabaseUrl,
+      supabaseAnonKey,
+    ) as unknown as SupabaseClient<Database, 'public'>;
+  }
+  return browserClient;
 }

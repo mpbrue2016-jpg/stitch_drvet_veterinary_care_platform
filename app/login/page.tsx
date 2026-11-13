@@ -4,9 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { loginSchema, resetRequestSchema, signUpSchema } from '@/lib/validations';
+import {
+  cadastrarUsuario,
+  entrarComEmailSenha,
+  enviarRecuperacaoSenha,
+} from '@/services/auth.service';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,24 +69,14 @@ export default function LoginPage() {
       }
     }
 
-    if (!isSupabaseConfigured()) {
-      // TODO(AI Studio): autenticar via Supabase Auth quando NEXT_PUBLIC_SUPABASE_URL/ANON_KEY estiverem configuradas.
-      setMessage('Modo demonstração ativo. Redirecionando para o painel...');
-      window.setTimeout(() => {
-        router.replace(nextPath);
-      }, 600);
-      return;
-    }
-
-    const supabase = createSupabaseBrowserClient();
     setIsSubmitting(true);
 
     try {
       if (isResetRequest) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/senha/nova`,
-        });
-        if (error) throw error;
+        await enviarRecuperacaoSenha(
+          email,
+          `${window.location.origin}/auth/callback?next=/senha/nova`,
+        );
         setMessage(
           'Se houver uma conta com esse e-mail, enviaremos um link para redefinir a senha.',
         );
@@ -90,13 +84,13 @@ export default function LoginPage() {
       }
 
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
+        const data = await cadastrarUsuario({
           email,
           password,
-          options: { data: { display_name: displayName } },
+          displayName,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
         });
 
-        if (error) throw error;
         if (data.session) {
           router.replace('/agendamento');
           router.refresh();
@@ -108,12 +102,7 @@ export default function LoginPage() {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-
+      await entrarComEmailSenha({ email, password });
       router.replace(nextPath);
       router.refresh();
     } catch (error) {

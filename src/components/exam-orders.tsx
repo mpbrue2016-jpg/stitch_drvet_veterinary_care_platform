@@ -9,6 +9,14 @@ import {
   listarPedidosExames,
   registrarResultadoExame,
 } from '@/services/exam-orders.service';
+import {
+  excluirArquivoStorage,
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+  type StorageFileEntry,
+} from '@/services/storage.service';
 import type { Appointment, ExamModality, ExamOrder } from '@/types/entities';
 
 type OrderFields = {
@@ -45,10 +53,47 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
   const [currentUserId, setCurrentUserId] = useState('');
   const [orderFields, setOrderFields] = useState<OrderFields>(initialOrder);
   const [resultFields, setResultFields] = useState<Record<string, ResultFields>>({});
+  const [attachmentsByOrder, setAttachmentsByOrder] = useState<
+    Record<string, Array<StorageFileEntry & { signedUrl: string }>>
+  >({});
+  const [uploadingOrderId, setUploadingOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+
+  const loadOrderAttachments = useCallback(async (loadedOrders: ExamOrder[]) => {
+    if (loadedOrders.length === 0) {
+      setAttachmentsByOrder({});
+      return;
+    }
+
+    const entries = await Promise.all(
+      loadedOrders.map(async (order) => {
+        try {
+          const files = await listarArquivosStorage(
+            'exam-reports',
+            `${order.pet_id}/${order.id}`,
+          );
+          const withUrls = await Promise.all(
+            files.map(async (file) => {
+              const signedUrl = await obterUrlAssinadaStorage(
+                'exam-reports',
+                file.fullPath,
+                600,
+              ).catch(() => '');
+              return { ...file, signedUrl };
+            }),
+          );
+          return [order.id, withUrls] as const;
+        } catch {
+          return [order.id, []] as const;
+        }
+      }),
+    );
+
+    setAttachmentsByOrder(Object.fromEntries(entries));
+  }, []);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -64,6 +109,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       setCurrentUserId(appointmentsResult.currentUserId);
       const loadedOrders = ordersResult.examOrders;
       setOrders(loadedOrders);
+      void loadOrderAttachments(loadedOrders);
       setResultFields((current) => {
         const next = { ...current };
         loadedOrders.forEach((order) => {
@@ -91,11 +137,54 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     } finally {
       setLoading(false);
     }
-  }, [appointmentId]);
+  }, [appointmentId, loadOrderAttachments]);
 
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  async function handleUploadReport(order: ExamOrder, file: File | null) {
+    if (!file) return;
+    setErrorMessage('');
+    setNotice('');
+    setUploadingOrderId(order.id);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${order.pet_id}/${order.id}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'exam-reports',
+        path,
+        file,
+      });
+      await loadOrderAttachments(orders);
+      setNotice('Arquivo anexado ao exame com sucesso.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao enviar o anexo do exame.',
+      );
+    } finally {
+      setUploadingOrderId(null);
+    }
+  }
+
+  async function handleDeleteReport(orderId: string, fullPath: string) {
+    setErrorMessage('');
+    setNotice('');
+    setUploadingOrderId(orderId);
+    try {
+      await excluirArquivoStorage('exam-reports', [fullPath]);
+      await loadOrderAttachments(orders);
+      setNotice('Anexo removido do exame.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao remover o anexo.',
+      );
+    } finally {
+      setUploadingOrderId(null);
+    }
+  }
 
   const eligibleAppointments = useMemo(
     () =>
@@ -382,6 +471,68 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                     )}
                   </div>
                 )}
+
+                <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-bold uppercase tracking-wide text-[#153b50]">
+                      Anexos e laudos (PDF ou imagem)
+                    </p>
+                    <label className="inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-[#153b50] hover:bg-[#ebf5ff]">
+                      {uploadingOrderId === order.id ? 'Enviando...' : 'Anexar arquivo'}
+                      <input
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        disabled={uploadingOrderId === order.id}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0] ?? null;
+                          event.target.value = '';
+                          void handleUploadReport(order, file);
+                        }}
+                        type="file"
+                      />
+                    </label>
+                  </div>
+                  {(attachmentsByOrder[order.id] ?? []).length === 0 ? (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Nenhum laudo anexado até o momento.
+                    </p>
+                  ) : (
+                    <ul className="mt-2 grid gap-2">
+                      {(attachmentsByOrder[order.id] ?? []).map((file) => (
+                        <li
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#f6faff] px-3 py-2 text-xs"
+                          key={file.fullPath}
+                        >
+                          <span className="min-w-0 truncate font-medium text-[#153b50]">
+                            {file.name}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            {file.signedUrl && (
+                              <a
+                                className="font-semibold text-[#087a68] underline"
+                                href={file.signedUrl}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Abrir arquivo
+                              </a>
+                            )}
+                            <button
+                              className="font-semibold text-red-700 hover:underline disabled:opacity-50"
+                              disabled={uploadingOrderId === order.id}
+                              onClick={() =>
+                                void handleDeleteReport(order.id, file.fullPath)
+                              }
+                              type="button"
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
 
                 {order.status === 'requested' &&
                   order.veterinarian_id === currentUserId && (

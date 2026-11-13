@@ -177,3 +177,17 @@ export const anticipationRequestSchema = z.object({
   amount_cents: z.number().int().positive('Informe um valor válido para antecipação.'),
   notes: z.string().trim().max(300).optional(),
 });
+
+export const updateProfileSchema = z.object({
+  display_name: z
+    .string()
+    .trim()
+    .min(2, 'Informe seu nome (mínimo 2 caracteres).')
+    .max(120, 'Nome deve ter até 120 caracteres.'),
+  phone: z
+    .string()
+    .trim()
+    .max(32, 'Telefone deve ter até 32 caracteres.')
+    .nullable()
+    .optional(),
+});

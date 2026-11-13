@@ -1,11 +1,6 @@
-import type { ExamModality, ExamOrder } from '@/types/entities';
-import {
-  MOCK_CURRENT_USER_ID,
-  MOCK_ORGANIZATION_ID,
-  mockAppointments,
-  mockDelay,
-  mockExamOrders,
-} from './mock-db';
+import { getSupabaseClient } from '@/lib/supabase';
+import type { ExamModality, ExamOrder, PetSummary } from '@/types/entities';
+import { toFriendlyError } from './errors';
 
 export interface CreateExamOrderInput {
   appointment_id: string;
@@ -22,77 +17,130 @@ export interface RecordExamResultInput {
   performed_at?: string | null;
 }
 
+const EXAM_ORDER_COLUMNS =
+  'id, appointment_id, organization_id, pet_id, veterinarian_id, modality, exam_name, clinical_indication, instructions, status, result_summary, laboratory_name, performed_at, requested_at, resulted_at, created_at';
+
+async function attachPets<T extends { pet_id: string }>(
+  rows: T[],
+): Promise<Map<string, PetSummary>> {
+  const petIds = Array.from(new Set(rows.map((row) => row.pet_id)));
+  if (petIds.length === 0) return new Map();
+
+  const supabase = getSupabaseClient();
+  const { data: pets, error } = await supabase
+    .from('pets')
+    .select('id, name, species')
+    .in('id', petIds);
+
+  if (error) throw error;
+  return new Map((pets ?? []).map((pet) => [pet.id, pet]));
+}
+
 export async function listarPedidosExames(
   appointmentId?: string,
 ): Promise<{ examOrders: ExamOrder[] }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('exam_orders').select('*, pet:pets(id, name, species)'))
-  await mockDelay();
-  const filtered = appointmentId
-    ? mockExamOrders.filter((order) => order.appointment_id === appointmentId)
-    : mockExamOrders;
-  return {
-    examOrders: [...filtered].sort(
-      (a, b) => new Date(b.requested_at).getTime() - new Date(a.requested_at).getTime(),
-    ),
-  };
+  try {
+    const supabase = getSupabaseClient();
+    let query = supabase
+      .from('exam_orders')
+      .select(EXAM_ORDER_COLUMNS)
+      .order('requested_at', { ascending: false })
+      .limit(100);
+
+    if (appointmentId) {
+      query = query.eq('appointment_id', appointmentId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data ?? [];
+    const petById = await attachPets(rows);
+
+    return {
+      examOrders: rows.map((row) => ({
+        ...row,
+        pet: petById.get(row.pet_id) ?? null,
+      })),
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar os pedidos de exames.');
+  }
 }
 
-export async function buscarPedidoExamePorId(id: string): Promise<ExamOrder | null> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('exam_orders').select('*').eq('id', id).maybeSingle())
-  await mockDelay(100);
-  return mockExamOrders.find((order) => order.id === id) ?? null;
+export async function buscarPedidoExamePorId(
+  id: string,
+): Promise<ExamOrder | null> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('exam_orders')
+      .select(EXAM_ORDER_COLUMNS)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    const petById = await attachPets([data]);
+    return {
+      ...data,
+      pet: petById.get(data.pet_id) ?? null,
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar o pedido de exame.');
+  }
 }
 
 export async function criarPedidoExame(
   input: CreateExamOrderInput,
 ): Promise<{ examOrder: ExamOrder }> {
-  // TODO(AI Studio): trocar por chamada Supabase RPC (supabase.rpc('create_exam_order', ...))
-  await mockDelay();
-  const appointment = mockAppointments.find((apt) => apt.id === input.appointment_id);
-  if (!appointment) {
-    throw new Error('Atendimento não encontrado.');
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('create_exam_order', {
+      target_appointment: input.appointment_id,
+      target_modality: input.modality,
+      target_exam_name: input.exam_name.trim(),
+      target_clinical_indication: input.clinical_indication.trim(),
+      target_instructions: input.instructions?.trim() || null,
+    });
+
+    if (error) throw error;
+
+    const petById = await attachPets([data]);
+    return {
+      examOrder: {
+        ...data,
+        pet: petById.get(data.pet_id) ?? null,
+      },
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível criar o pedido de exame.');
   }
-  const now = new Date().toISOString();
-  const created: ExamOrder = {
-    id: `exam-${Date.now()}`,
-    appointment_id: input.appointment_id,
-    organization_id: appointment.organization_id ?? MOCK_ORGANIZATION_ID,
-    pet_id: appointment.pet_id,
-    veterinarian_id: MOCK_CURRENT_USER_ID,
-    modality: input.modality,
-    exam_name: input.exam_name.trim(),
-    clinical_indication: input.clinical_indication.trim(),
-    instructions: input.instructions?.trim() || null,
-    status: 'requested',
-    result_summary: null,
-    laboratory_name: null,
-    performed_at: null,
-    requested_at: now,
-    resulted_at: null,
-    created_at: now,
-    pet: appointment.pet,
-  };
-  mockExamOrders.unshift(created);
-  return { examOrder: created };
 }
 
 export async function registrarResultadoExame(
   input: RecordExamResultInput,
 ): Promise<{ examOrder: ExamOrder }> {
-  // TODO(AI Studio): trocar por chamada Supabase RPC (supabase.rpc('record_exam_result', ...))
-  await mockDelay();
-  const index = mockExamOrders.findIndex((order) => order.id === input.id);
-  if (index === -1) {
-    throw new Error('Pedido de exame não encontrado.');
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('record_exam_result', {
+      target_exam_order: input.id,
+      target_result_summary: input.result_summary.trim(),
+      target_laboratory_name: input.laboratory_name?.trim() || null,
+      target_performed_at: input.performed_at || null,
+    });
+
+    if (error) throw error;
+
+    const petById = await attachPets([data]);
+    return {
+      examOrder: {
+        ...data,
+        pet: petById.get(data.pet_id) ?? null,
+      },
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível registrar o resultado do exame.');
   }
-  const updated: ExamOrder = {
-    ...mockExamOrders[index],
-    status: 'resulted',
-    result_summary: input.result_summary.trim(),
-    laboratory_name: input.laboratory_name?.trim() || null,
-    performed_at: input.performed_at || null,
-    resulted_at: new Date().toISOString(),
-  };
-  mockExamOrders[index] = updated;
-  return { examOrder: updated };
 }

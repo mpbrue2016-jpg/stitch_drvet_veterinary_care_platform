@@ -1,11 +1,6 @@
-import type { VaccinationRecord } from '@/types/entities';
-import {
-  MOCK_CURRENT_USER_ID,
-  MOCK_ORGANIZATION_ID,
-  mockAppointments,
-  mockDelay,
-  mockVaccinations,
-} from './mock-db';
+import { getSupabaseClient } from '@/lib/supabase';
+import type { PetSummary, VaccinationRecord } from '@/types/entities';
+import { toFriendlyError } from './errors';
 
 export interface CreateVaccinationInput {
   appointment_id: string;
@@ -17,47 +12,102 @@ export interface CreateVaccinationInput {
   notes?: string | null;
 }
 
-export async function listarVacinas(): Promise<{ vaccinations: VaccinationRecord[] }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('vaccination_records').select('*, pet:pets(id, name, species)'))
-  await mockDelay();
-  return {
-    vaccinations: [...mockVaccinations].sort(
-      (a, b) =>
-        new Date(b.administered_on).getTime() - new Date(a.administered_on).getTime(),
-    ),
-  };
+const VACCINATION_COLUMNS =
+  'id, appointment_id, organization_id, pet_id, veterinarian_id, vaccine_name, administered_on, batch_number, manufacturer, next_due_on, notes, created_at';
+
+async function attachPets<T extends { pet_id: string }>(
+  rows: T[],
+): Promise<Map<string, PetSummary>> {
+  const petIds = Array.from(new Set(rows.map((row) => row.pet_id)));
+  if (petIds.length === 0) return new Map();
+
+  const supabase = getSupabaseClient();
+  const { data: pets, error } = await supabase
+    .from('pets')
+    .select('id, name, species')
+    .in('id', petIds);
+
+  if (error) throw error;
+  return new Map((pets ?? []).map((pet) => [pet.id, pet]));
 }
 
-export async function buscarVacinaPorId(id: string): Promise<VaccinationRecord | null> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('vaccination_records').select('*').eq('id', id).maybeSingle())
-  await mockDelay(100);
-  return mockVaccinations.find((item) => item.id === id) ?? null;
+export async function listarVacinas(): Promise<{
+  vaccinations: VaccinationRecord[];
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('vaccination_records')
+      .select(VACCINATION_COLUMNS)
+      .order('administered_on', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    const rows = data ?? [];
+    const petById = await attachPets(rows);
+
+    return {
+      vaccinations: rows.map((row) => ({
+        ...row,
+        pet: petById.get(row.pet_id) ?? null,
+      })),
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar a carteira de vacinas.');
+  }
+}
+
+export async function buscarVacinaPorId(
+  id: string,
+): Promise<VaccinationRecord | null> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('vaccination_records')
+      .select(VACCINATION_COLUMNS)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    const petById = await attachPets([data]);
+    return {
+      ...data,
+      pet: petById.get(data.pet_id) ?? null,
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar o registro vacinal.');
+  }
 }
 
 export async function criarRegistroVacina(
   input: CreateVaccinationInput,
 ): Promise<{ vaccination: VaccinationRecord }> {
-  // TODO(AI Studio): trocar por chamada Supabase RPC (supabase.rpc('create_vaccination_record', ...))
-  await mockDelay();
-  const appointment = mockAppointments.find((apt) => apt.id === input.appointment_id);
-  if (!appointment) {
-    throw new Error('Atendimento não encontrado.');
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('create_vaccination_record', {
+      target_appointment: input.appointment_id,
+      target_vaccine_name: input.vaccine_name.trim(),
+      target_administered_on: input.administered_on,
+      target_batch_number: input.batch_number?.trim() || null,
+      target_manufacturer: input.manufacturer?.trim() || null,
+      target_next_due_on: input.next_due_on || null,
+      target_notes: input.notes?.trim() || null,
+    });
+
+    if (error) throw error;
+
+    const petById = await attachPets([data]);
+    return {
+      vaccination: {
+        ...data,
+        pet: petById.get(data.pet_id) ?? null,
+      },
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível registrar a vacinação.');
   }
-  const created: VaccinationRecord = {
-    id: `vac-${Date.now()}`,
-    appointment_id: input.appointment_id,
-    organization_id: appointment.organization_id ?? MOCK_ORGANIZATION_ID,
-    pet_id: appointment.pet_id,
-    veterinarian_id: MOCK_CURRENT_USER_ID,
-    vaccine_name: input.vaccine_name.trim(),
-    administered_on: input.administered_on,
-    batch_number: input.batch_number?.trim() || null,
-    manufacturer: input.manufacturer?.trim() || null,
-    next_due_on: input.next_due_on || null,
-    notes: input.notes?.trim() || null,
-    created_at: new Date().toISOString(),
-    pet: appointment.pet,
-  };
-  mockVaccinations.unshift(created);
-  return { vaccination: created };
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -8,6 +9,12 @@ import { createBookingSchema, createPetSchema } from '@/lib/validations';
 import { criarAgendamento } from '@/services/appointments.service';
 import { listarDisponibilidade } from '@/services/availability.service';
 import { criarPet, listarPets } from '@/services/pets.service';
+import {
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+} from '@/services/storage.service';
 import type { AppointmentKind, AvailabilitySlot, Pet } from '@/types/entities';
 
 type BookingResult = {
@@ -68,6 +75,8 @@ export function BookingFlow() {
   const [kind, setKind] = useState<AppointmentKind>('teleconsultation');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [petAvatarUrl, setPetAvatarUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState<BookingResult | null>(null);
 
@@ -127,6 +136,66 @@ export function BookingFlow() {
   const selectedSlot = availability.find((slot) => slot.id === selectedSlotId);
   const selectedPet = pets.find((pet) => pet.id === petId);
   const hasSelection = Boolean((petId || newPet) && selectedSlot);
+
+  const loadPetAvatar = useCallback(async (pet: Pet | undefined) => {
+    if (!pet) {
+      setPetAvatarUrl('');
+      return;
+    }
+    try {
+      const files = await listarArquivosStorage(
+        'pet-avatars',
+        `${pet.owner_id}/${pet.id}`,
+      );
+      const latest = files[0];
+      if (!latest) {
+        setPetAvatarUrl('');
+        return;
+      }
+      const signedUrl = await obterUrlAssinadaStorage(
+        'pet-avatars',
+        latest.fullPath,
+        600,
+      );
+      setPetAvatarUrl(signedUrl);
+    } catch {
+      setPetAvatarUrl('');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (newPet || !selectedPet) {
+      setPetAvatarUrl('');
+      return;
+    }
+    void loadPetAvatar(selectedPet);
+  }, [newPet, selectedPet, loadPetAvatar]);
+
+  async function handleAvatarUpload(file: File | null) {
+    if (!file || !selectedPet) return;
+    setErrorMessage('');
+    setUploadingAvatar(true);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${selectedPet.owner_id}/${selectedPet.id}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'pet-avatars',
+        path,
+        file,
+      });
+      await loadPetAvatar(selectedPet);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar a foto do pet.',
+      );
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -364,15 +433,44 @@ export function BookingFlow() {
             </p>
           )}
           {!newPet && selectedPet && (
-            <div className="mt-4 flex items-center gap-3 rounded-xl bg-[#ebf5ff] p-3">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#d4ebff] text-xl text-[#006b57]">
-                ♧
-              </span>
-              <div className="min-w-0">
+            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl bg-[#ebf5ff] p-3">
+              {petAvatarUrl ? (
+                <Image
+                  alt={selectedPet.name}
+                  className="h-12 w-12 shrink-0 rounded-full object-cover"
+                  height={48}
+                  referrerPolicy="no-referrer"
+                  src={petAvatarUrl}
+                  width={48}
+                />
+              ) : (
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#d4ebff] text-xl text-[#006b57]">
+                  ♧
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
                 <p className="truncate font-bold text-[#153b50]">{selectedPet.name}</p>
                 <p className="text-sm text-slate-600">{selectedPet.species}</p>
               </div>
-              <span className="ml-auto rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-800">
+              <label className="inline-flex min-h-8 cursor-pointer items-center rounded-full border border-[#087a68]/30 bg-white px-3 text-[11px] font-semibold text-[#087a68] hover:bg-[#dff0ff]">
+                {uploadingAvatar
+                  ? 'Enviando...'
+                  : petAvatarUrl
+                    ? 'Alterar foto'
+                    : 'Enviar foto'}
+                <input
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={uploadingAvatar || submitting}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    event.target.value = '';
+                    void handleAvatarUpload(file);
+                  }}
+                  type="file"
+                />
+              </label>
+              <span className="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-800">
                 Ativo
               </span>
             </div>

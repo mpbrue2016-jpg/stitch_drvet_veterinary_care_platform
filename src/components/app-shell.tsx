@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { observarMudancaAutenticacao, sairDaConta } from '@/services/auth.service';
 import { Footer } from '@/components/footer';
 import { PawMark, PublicHeader, WorkspaceHeader } from '@/components/header';
 
@@ -13,11 +13,20 @@ const navigation = [
   { href: '/', label: 'Início / Dashboard', icon: 'dashboard' },
   { href: '/agenda', label: 'Agenda & Consultas', icon: 'calendar' },
   { href: '/agendamento', label: 'Agendamentos', icon: 'event' },
+  { href: '/teleconsulta', label: 'Sala de Teleconsulta', icon: 'event' },
+  { href: '/pets', label: 'Meus Pets', icon: 'health' },
   { href: '/prontuarios', label: 'Prontuários SOAP', icon: 'document' },
   { href: '/carteira/vacinas', label: 'Carteira de vacinas', icon: 'health' },
   { href: '/exames', label: 'Exames', icon: 'document' },
   { href: '/receitas', label: 'Rascunhos de receita', icon: 'document' },
+  { href: '/assinaturas', label: 'Clube DrVet', icon: 'health' },
+  { href: '/pagamentos', label: 'Pagamentos & Checkout', icon: 'payments' },
+  { href: '/parceiros', label: 'Parceiros B2B', icon: 'dashboard' },
+  { href: '/anuncios', label: 'DrVet Ads', icon: 'dashboard' },
   { href: '/comissoes', label: 'Faturamento & Repasses', icon: 'payments' },
+  { href: '/admin', label: 'Admin Master', icon: 'dashboard' },
+  { href: '/admin/integracoes', label: 'Integrações & CDC', icon: 'dashboard' },
+  { href: '/perfil', label: 'Meu Perfil', icon: 'dashboard' },
 ] as const;
 
 const navigationIconPaths = {
@@ -60,6 +69,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pageTitle =
     navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
 
+  useEffect(() => {
+    if (!isSupabaseConfigured() || isPublicHome || isAuthPage) return;
+    return observarMudancaAutenticacao((authenticated) => {
+      if (!authenticated) {
+        router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      }
+    });
+  }, [isAuthPage, isPublicHome, pathname, router]);
+
   async function signOut() {
     setAuthError('');
     if (!isSupabaseConfigured()) {
@@ -67,8 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const { error } = await createSupabaseBrowserClient().auth.signOut();
-      if (error) throw error;
+      await sairDaConta();
       router.replace('/login');
       router.refresh();
     } catch (error) {
@@ -99,7 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                 Prática médica
               </p>
-              {navigation.slice(0, 7).map((item) => {
+              {navigation.slice(0, 9).map((item) => {
                 const active = isActiveRoute(pathname, item.href);
                 return (
                   <Link
@@ -123,7 +140,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="px-3 pb-2 pt-6 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                 Gestão &amp; sistema
               </p>
-              {navigation.slice(7).map((item) => {
+              {navigation.slice(9).map((item) => {
                 const active = isActiveRoute(pathname, item.href);
                 return (
                   <Link

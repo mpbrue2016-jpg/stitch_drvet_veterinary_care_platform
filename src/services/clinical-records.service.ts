@@ -1,15 +1,12 @@
+import { getSupabaseClient } from '@/lib/supabase';
+import type { Json } from '@/types/database';
 import type {
   ClinicalRecord,
   ClinicalRecordStatus,
   ClinicalVitals,
+  PetSummary,
 } from '@/types/entities';
-import {
-  MOCK_CURRENT_USER_ID,
-  MOCK_ORGANIZATION_ID,
-  mockAppointments,
-  mockClinicalRecords,
-  mockDelay,
-} from './mock-db';
+import { toFriendlyError } from './errors';
 
 export interface SaveClinicalRecordInput {
   appointment_id: string;
@@ -21,83 +18,157 @@ export interface SaveClinicalRecordInput {
   status: ClinicalRecordStatus;
 }
 
-export async function listarProntuarios(): Promise<{
-  clinicalRecords: ClinicalRecord[];
-}> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('clinical_records').select('*, pet:pets(id, name, species)'))
-  await mockDelay();
+const CLINICAL_COLUMNS =
+  'id, appointment_id, organization_id, pet_id, veterinarian_id, subjective, objective, assessment, plan, vitals, status, finalized_at, created_at, updated_at';
+
+function parseVitals(raw: Json): ClinicalVitals {
+  const obj =
+    raw && typeof raw === 'object' && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : {};
+  const toNum = (val: unknown) =>
+    typeof val === 'number' && Number.isFinite(val) ? val : null;
+
   return {
-    clinicalRecords: [...mockClinicalRecords].sort(
-      (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-    ),
+    weight_kg: toNum(obj.weight_kg),
+    temperature_c: toNum(obj.temperature_c),
+    heart_rate_bpm: toNum(obj.heart_rate_bpm),
+    respiratory_rate_rpm: toNum(obj.respiratory_rate_rpm),
+    mucous_membranes:
+      typeof obj.mucous_membranes === 'string' ? obj.mucous_membranes : null,
+    capillary_refill_seconds: toNum(obj.capillary_refill_seconds),
   };
 }
 
-export async function buscarProntuarioPorAtendimento(appointmentId: string): Promise<{
+export async function listarProntuarios(): Promise<{
+  clinicalRecords: ClinicalRecord[];
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('clinical_records')
+      .select(CLINICAL_COLUMNS)
+      .order('updated_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    const rows = data ?? [];
+    const petIds = Array.from(new Set(rows.map((row) => row.pet_id)));
+    const { data: pets, error: petsError } =
+      petIds.length > 0
+        ? await supabase.from('pets').select('id, name, species').in('id', petIds)
+        : { data: [], error: null };
+
+    if (petsError) throw petsError;
+    const petById = new Map<string, PetSummary>(
+      (pets ?? []).map((pet) => [pet.id, pet]),
+    );
+
+    return {
+      clinicalRecords: rows.map((row) => ({
+        ...row,
+        vitals: parseVitals(row.vitals),
+        pet: petById.get(row.pet_id) ?? null,
+      })),
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar os prontuários.');
+  }
+}
+
+export async function buscarProntuarioPorAtendimento(
+  appointmentId: string,
+): Promise<{
   clinicalRecord: ClinicalRecord | null;
   canEdit: boolean;
+  petId: string | null;
 }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('clinical_records').select('*').eq('appointment_id', appointmentId).maybeSingle())
-  await mockDelay();
-  const existing =
-    mockClinicalRecords.find((record) => record.appointment_id === appointmentId) ?? null;
-  const appointment = mockAppointments.find((apt) => apt.id === appointmentId);
-  const canEdit =
-    (!existing || existing.status === 'draft') &&
-    (!appointment || appointment.veterinarian_id === MOCK_CURRENT_USER_ID);
-  return {
-    clinicalRecord: existing,
-    canEdit,
-  };
+  try {
+    const supabase = getSupabaseClient();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      throw new Error('Faça login para acessar o prontuário.');
+    }
+
+    const [{ data: record, error: recordError }, { data: appointment, error: aptError }] =
+      await Promise.all([
+        supabase
+          .from('clinical_records')
+          .select(CLINICAL_COLUMNS)
+          .eq('appointment_id', appointmentId)
+          .maybeSingle(),
+        supabase
+          .from('appointments')
+          .select('id, veterinarian_id, status, starts_at, pet_id')
+          .eq('id', appointmentId)
+          .maybeSingle(),
+      ]);
+
+    if (recordError) throw recordError;
+    if (aptError) throw aptError;
+
+    const targetPetId = record?.pet_id ?? appointment?.pet_id ?? null;
+    let pet: PetSummary | null = null;
+    if (targetPetId) {
+      const { data: petRow } = await supabase
+        .from('pets')
+        .select('id, name, species')
+        .eq('id', targetPetId)
+        .maybeSingle();
+      pet = petRow ?? null;
+    }
+
+    const canEdit =
+      (!record || record.status === 'draft') &&
+      Boolean(
+        appointment &&
+          appointment.veterinarian_id === authData.user.id &&
+          (appointment.status === 'completed' ||
+            (appointment.status === 'confirmed' &&
+              new Date(appointment.starts_at).getTime() <= Date.now())),
+      );
+
+    return {
+      clinicalRecord: record
+        ? {
+            ...record,
+            vitals: parseVitals(record.vitals),
+            pet,
+          }
+        : null,
+      canEdit,
+      petId: targetPetId,
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar o prontuário.');
+  }
 }
 
 export async function salvarProntuario(
   input: SaveClinicalRecordInput,
 ): Promise<{ clinicalRecord: ClinicalRecord }> {
-  // TODO(AI Studio): trocar por chamada Supabase RPC (supabase.rpc('save_clinical_record', ...))
-  await mockDelay();
-  const now = new Date().toISOString();
-  const index = mockClinicalRecords.findIndex(
-    (record) => record.appointment_id === input.appointment_id,
-  );
-  const appointment = mockAppointments.find((apt) => apt.id === input.appointment_id);
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('save_clinical_record', {
+      target_appointment: input.appointment_id,
+      target_subjective: input.subjective,
+      target_objective: input.objective,
+      target_assessment: input.assessment,
+      target_plan: input.plan,
+      target_vitals: input.vitals as unknown as Json,
+      target_status: input.status,
+    });
 
-  if (index !== -1) {
-    if (mockClinicalRecords[index].status === 'finalized') {
-      throw new Error('Este prontuário já foi finalizado e não pode ser alterado.');
-    }
-    const updated: ClinicalRecord = {
-      ...mockClinicalRecords[index],
-      subjective: input.subjective,
-      objective: input.objective,
-      assessment: input.assessment,
-      plan: input.plan,
-      vitals: input.vitals,
-      status: input.status,
-      finalized_at: input.status === 'finalized' ? now : null,
-      updated_at: now,
+    if (error) throw error;
+
+    return {
+      clinicalRecord: {
+        ...data,
+        vitals: parseVitals(data.vitals),
+      },
     };
-    mockClinicalRecords[index] = updated;
-    return { clinicalRecord: updated };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível salvar o prontuário.');
   }
-
-  const created: ClinicalRecord = {
-    id: `soap-${Date.now()}`,
-    appointment_id: input.appointment_id,
-    organization_id: appointment?.organization_id ?? MOCK_ORGANIZATION_ID,
-    pet_id: appointment?.pet_id ?? 'pet-pipoca-001',
-    veterinarian_id: MOCK_CURRENT_USER_ID,
-    subjective: input.subjective,
-    objective: input.objective,
-    assessment: input.assessment,
-    plan: input.plan,
-    vitals: input.vitals,
-    status: input.status,
-    finalized_at: input.status === 'finalized' ? now : null,
-    created_at: now,
-    updated_at: now,
-    pet: appointment?.pet ?? null,
-  };
-  mockClinicalRecords.unshift(created);
-  return { clinicalRecord: created };
 }

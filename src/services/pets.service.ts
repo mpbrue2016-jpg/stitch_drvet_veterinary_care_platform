@@ -1,5 +1,6 @@
+import { getSupabaseClient } from '@/lib/supabase';
 import type { Pet } from '@/types/entities';
-import { MOCK_TUTOR_ID, mockDelay, mockPets } from './mock-db';
+import { toFriendlyError } from './errors';
 
 export interface CreatePetInput {
   name: string;
@@ -14,59 +15,100 @@ export interface UpdatePetInput extends Partial<CreatePetInput> {
   id: string;
 }
 
+const PET_COLUMNS =
+  'id, owner_id, name, species, breed, birth_date, sex, notes, created_at, updated_at';
+
 export async function listarPets(): Promise<{ pets: Pet[] }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('pets').select('*'))
-  await mockDelay();
-  return { pets: [...mockPets] };
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('pets')
+      .select(PET_COLUMNS)
+      .order('name');
+
+    if (error) throw error;
+    return { pets: data ?? [] };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar os pets.');
+  }
 }
 
 export async function buscarPetPorId(id: string): Promise<Pet | null> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('pets').select('*').eq('id', id).maybeSingle())
-  await mockDelay(100);
-  return mockPets.find((pet) => pet.id === id) ?? null;
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('pets')
+      .select(PET_COLUMNS)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data ?? null;
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar os dados do pet.');
+  }
 }
 
 export async function criarPet(input: CreatePetInput): Promise<{ pet: Pet }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('pets').insert(...).select().single())
-  await mockDelay();
-  const now = new Date().toISOString();
-  const created: Pet = {
-    id: `pet-${Date.now()}`,
-    owner_id: MOCK_TUTOR_ID,
-    name: input.name.trim(),
-    species: input.species.trim(),
-    breed: input.breed?.trim() || null,
-    birth_date: input.birth_date || null,
-    sex: input.sex ?? null,
-    notes: input.notes?.trim() || null,
-    created_at: now,
-    updated_at: now,
-  };
-  mockPets.push(created);
-  return { pet: created };
+  try {
+    const supabase = getSupabaseClient();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      throw new Error('Faça login para cadastrar um pet.');
+    }
+
+    const { data, error } = await supabase
+      .from('pets')
+      .insert({
+        owner_id: authData.user.id,
+        name: input.name.trim(),
+        species: input.species.trim(),
+        breed: input.breed?.trim() || null,
+        birth_date: input.birth_date || null,
+        sex: input.sex ?? null,
+        notes: input.notes?.trim() || null,
+      })
+      .select(PET_COLUMNS)
+      .single();
+
+    if (error) throw error;
+    return { pet: data };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível cadastrar o pet.');
+  }
 }
 
 export async function atualizarPet(input: UpdatePetInput): Promise<{ pet: Pet }> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('pets').update(...).eq('id', input.id))
-  await mockDelay();
-  const index = mockPets.findIndex((pet) => pet.id === input.id);
-  if (index === -1) {
-    throw new Error('Pet não encontrado.');
+  try {
+    const supabase = getSupabaseClient();
+    const { id, ...fields } = input;
+    const { data, error } = await supabase
+      .from('pets')
+      .update({
+        ...(fields.name !== undefined ? { name: fields.name.trim() } : {}),
+        ...(fields.species !== undefined ? { species: fields.species.trim() } : {}),
+        ...(fields.breed !== undefined ? { breed: fields.breed?.trim() || null } : {}),
+        ...(fields.birth_date !== undefined ? { birth_date: fields.birth_date || null } : {}),
+        ...(fields.sex !== undefined ? { sex: fields.sex ?? null } : {}),
+        ...(fields.notes !== undefined ? { notes: fields.notes?.trim() || null } : {}),
+      })
+      .eq('id', id)
+      .select(PET_COLUMNS)
+      .single();
+
+    if (error) throw error;
+    return { pet: data };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível atualizar os dados do pet.');
   }
-  const updated: Pet = {
-    ...mockPets[index],
-    ...input,
-    updated_at: new Date().toISOString(),
-  };
-  mockPets[index] = updated;
-  return { pet: updated };
 }
 
 export async function excluirPet(id: string): Promise<void> {
-  // TODO(AI Studio): trocar por chamada Supabase (supabase.from('pets').delete().eq('id', id))
-  await mockDelay();
-  const index = mockPets.findIndex((pet) => pet.id === id);
-  if (index !== -1) {
-    mockPets.splice(index, 1);
+  try {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase.from('pets').delete().eq('id', id);
+    if (error) throw error;
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível excluir o pet.');
   }
 }

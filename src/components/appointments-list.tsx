@@ -160,6 +160,26 @@ export function AppointmentsList() {
                       Concluir
                     </button>
                   )}
+                {appointment.kind === 'teleconsultation' &&
+                  (appointment.status === 'confirmed' ||
+                    appointment.status === 'completed') && (
+                    <Link
+                      className="inline-flex min-h-10 items-center rounded-full border border-[#087a68] px-4 text-sm font-semibold text-[#087a68]"
+                      href="/teleconsulta"
+                    >
+                      Sala de teleconsulta
+                    </Link>
+                  )}
+                {appointment.tutor_id === currentUserId &&
+                  (appointment.status === 'pending' ||
+                    appointment.status === 'confirmed') && (
+                    <Link
+                      className="inline-flex min-h-10 items-center rounded-full border border-slate-300 px-4 text-sm font-semibold text-[#153b50]"
+                      href="/pagamentos"
+                    >
+                      Pagamentos
+                    </Link>
+                  )}
                 {(appointment.status === 'completed' ||
                   (appointment.veterinarian_id === currentUserId &&
                     appointment.status === 'confirmed' &&

@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { newPasswordSchema } from '@/lib/validations';
+import { atualizarSenha } from '@/services/auth.service';
 
 export default function NewPasswordPage() {
   const router = useRouter();
@@ -31,21 +30,9 @@ export default function NewPasswordPage() {
       return;
     }
 
-    if (!isSupabaseConfigured()) {
-      // TODO(AI Studio): atualizar senha via Supabase Auth quando configurado.
-      setMessage('Validação concluída (modo demonstração). Redirecionando...');
-      window.setTimeout(() => {
-        router.replace('/agendamento');
-      }, 800);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const { error } = await createSupabaseBrowserClient().auth.updateUser({
-        password: parsed.data.password,
-      });
-      if (error) throw error;
+      await atualizarSenha(parsed.data.password);
 
       setMessage('Senha alterada. Você já pode continuar usando sua conta.');
       window.setTimeout(() => {
