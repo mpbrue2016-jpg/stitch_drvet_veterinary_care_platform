@@ -78,10 +78,18 @@ export function TeleconsultaRoom() {
       );
       setSessions(sessionResult.sessions);
       setCurrentUserId(sessionResult.currentUserId);
+      const queryAppointmentId =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('appointmentId') ?? ''
+          : '';
+      const matchedQuerySession = queryAppointmentId
+        ? sessionResult.sessions.find((s) => s.appointment_id === queryAppointmentId)
+        : undefined;
       setSelectedSessionId((current) =>
-        sessionResult.sessions.some((s) => s.id === current)
+        matchedQuerySession?.id ??
+        (sessionResult.sessions.some((s) => s.id === current)
           ? current
-          : sessionResult.sessions[0]?.id ?? '',
+          : sessionResult.sessions[0]?.id ?? ''),
       );
     } catch (error) {
       setErrorMessage(
@@ -403,6 +411,14 @@ export function TeleconsultaRoom() {
                     >
                       Abrir prontuário SOAP
                     </Link>
+                    {isSessionVet && (
+                      <Link
+                        className="inline-flex min-h-10 items-center rounded-lg border border-white/40 bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"
+                        href={`/receitas?appointmentId=${selectedSession.appointment_id}`}
+                      >
+                        Rascunho de receita
+                      </Link>
+                    )}
                   </div>
                 </div>
 

@@ -165,7 +165,7 @@ export function AppointmentsList() {
                     appointment.status === 'completed') && (
                     <Link
                       className="inline-flex min-h-10 items-center rounded-full border border-[#087a68] px-4 text-sm font-semibold text-[#087a68]"
-                      href="/teleconsulta"
+                      href={`/teleconsulta?appointmentId=${appointment.id}`}
                     >
                       Sala de teleconsulta
                     </Link>
@@ -175,7 +175,7 @@ export function AppointmentsList() {
                     appointment.status === 'confirmed') && (
                     <Link
                       className="inline-flex min-h-10 items-center rounded-full border border-slate-300 px-4 text-sm font-semibold text-[#153b50]"
-                      href="/pagamentos"
+                      href={`/pagamentos?appointmentId=${appointment.id}`}
                     >
                       Pagamentos
                     </Link>
@@ -197,12 +197,20 @@ export function AppointmentsList() {
                   (appointment.status === 'completed' ||
                     (appointment.status === 'confirmed' &&
                       new Date(appointment.starts_at) <= new Date())) && (
-                    <Link
-                      className="inline-flex min-h-10 items-center rounded-full border border-slate-300 px-4 text-sm font-semibold text-[#153b50]"
-                      href={`/exames?appointmentId=${appointment.id}`}
-                    >
-                      Exames
-                    </Link>
+                    <>
+                      <Link
+                        className="inline-flex min-h-10 items-center rounded-full border border-slate-300 px-4 text-sm font-semibold text-[#153b50]"
+                        href={`/receitas?appointmentId=${appointment.id}`}
+                      >
+                        Receita
+                      </Link>
+                      <Link
+                        className="inline-flex min-h-10 items-center rounded-full border border-slate-300 px-4 text-sm font-semibold text-[#153b50]"
+                        href={`/exames?appointmentId=${appointment.id}`}
+                      >
+                        Exames
+                      </Link>
+                    </>
                   )}
                 {(appointment.status === 'pending' ||
                   appointment.status === 'confirmed') && (

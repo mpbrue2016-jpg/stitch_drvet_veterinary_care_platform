@@ -89,7 +89,21 @@ export function PrescriptionDrafts() {
       setAppointments(loadedAppointments);
       setCurrentUserId(loadedUserId);
       setDrafts(loadedDrafts);
+      const queryAppointmentId =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('appointmentId') ?? ''
+          : '';
       setAppointmentId((current) => {
+        if (
+          queryAppointmentId &&
+          loadedAppointments.some(
+            (appointment) =>
+              appointment.id === queryAppointmentId &&
+              isEligibleAppointment(appointment, loadedUserId),
+          )
+        ) {
+          return queryAppointmentId;
+        }
         if (
           current &&
           loadedAppointments.some(

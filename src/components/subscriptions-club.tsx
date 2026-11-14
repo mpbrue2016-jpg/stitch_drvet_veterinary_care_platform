@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Badge,
@@ -205,19 +206,32 @@ export function SubscriptionsClub() {
                     description="Escolha o pet e a forma de pagamento para ativar um plano."
                   >
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <Select
-                        id="club-pet"
-                        label="Pet beneficiado"
-                        onChange={(event) => setSelectedPetId(event.target.value)}
-                        value={selectedPetId}
-                      >
-                        <option value="">Selecione um pet</option>
-                        {pets.map((pet) => (
-                          <option key={pet.id} value={pet.id}>
-                            {pet.name} · {pet.species}
-                          </option>
-                        ))}
-                      </Select>
+                      <div className="grid gap-1.5">
+                        <Select
+                          id="club-pet"
+                          label="Pet beneficiado"
+                          onChange={(event) => setSelectedPetId(event.target.value)}
+                          value={selectedPetId}
+                        >
+                          <option value="">Selecione um pet</option>
+                          {pets.map((pet) => (
+                            <option key={pet.id} value={pet.id}>
+                              {pet.name} · {pet.species}
+                            </option>
+                          ))}
+                        </Select>
+                        {pets.length === 0 && (
+                          <p className="text-xs text-slate-600">
+                            Nenhum pet cadastrado ainda.{' '}
+                            <Link
+                              className="font-semibold text-[#006b57] underline"
+                              href="/pets/novo"
+                            >
+                              Cadastre seu pet primeiro →
+                            </Link>
+                          </p>
+                        )}
+                      </div>
                       <Select
                         id="club-method"
                         label="Forma de pagamento"

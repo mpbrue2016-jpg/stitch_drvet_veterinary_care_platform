@@ -75,18 +75,22 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authError, setAuthError] = useState('');
   const isPublicHome = pathname === '/';
+  const isPublicRoute =
+    isPublicHome ||
+    pathname === '/cadastro' ||
+    pathname === '/apresentacao';
   const isAuthPage = pathname === '/login' || pathname === '/senha/nova';
   const pageTitle =
     navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
 
   useEffect(() => {
-    if (!isSupabaseConfigured() || isPublicHome || isAuthPage) return;
+    if (!isSupabaseConfigured() || isPublicRoute || isAuthPage) return;
     return observarMudancaAutenticacao((authenticated) => {
       if (!authenticated) {
         router.replace(`/login?next=${encodeURIComponent(pathname)}`);
       }
     });
-  }, [isAuthPage, isPublicHome, pathname, router]);
+  }, [isAuthPage, isPublicRoute, pathname, router]);
 
   async function signOut() {
     setAuthError('');

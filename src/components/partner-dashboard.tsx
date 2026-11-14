@@ -33,6 +33,25 @@ function formatCurrency(cents: number) {
   }).format(cents / 100);
 }
 
+const placementLabels: Record<AdCampaign['placement'], string> = {
+  home_banner: 'Banner na Home',
+  booking_sidebar: 'Lateral do Agendamento',
+  partner_coupon: 'Destaque de Cupom',
+};
+
+const campaignStatusLabels: Record<AdCampaign['status'], string> = {
+  active: 'Ativa',
+  paused: 'Pausada',
+  draft: 'Rascunho',
+  ended: 'Encerrada',
+};
+
+const commissionStatusLabels: Record<CommissionEntry['status'], string> = {
+  available: 'Disponível',
+  pending: 'Pendente D+1',
+  paid: 'Repassado',
+};
+
 export function PartnerDashboard() {
   const configured = isSupabaseConfigured();
   const [partners, setPartners] = useState<PartnerListing[]>([]);
@@ -272,12 +291,12 @@ export function PartnerDashboard() {
                       {campaigns.map((camp) => (
                         <tr key={camp.id}>
                           <TableCell className="font-semibold">{camp.title}</TableCell>
-                          <TableCell>{camp.placement}</TableCell>
+                          <TableCell>{placementLabels[camp.placement]}</TableCell>
                           <TableCell>{formatCurrency(camp.budget_cents)}</TableCell>
                           <TableCell>{camp.clicks_count}</TableCell>
                           <TableCell>
                             <Badge variant={camp.status === 'active' ? 'success' : 'neutral'}>
-                              {camp.status}
+                              {campaignStatusLabels[camp.status]}
                             </Badge>
                           </TableCell>
                         </tr>
@@ -308,7 +327,7 @@ export function PartnerDashboard() {
                           </TableCell>
                           <TableCell>
                             <Badge variant={entry.status === 'available' ? 'success' : 'info'}>
-                              {entry.status}
+                              {commissionStatusLabels[entry.status]}
                             </Badge>
                           </TableCell>
                         </tr>

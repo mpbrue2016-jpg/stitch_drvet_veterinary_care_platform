@@ -290,7 +290,7 @@ export function VetDashboard() {
                         {item.kind === 'teleconsultation' && item.status === 'confirmed' && (
                           <Link
                             className="inline-flex min-h-10 items-center justify-center rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
-                            href="/teleconsulta"
+                            href={`/teleconsulta?appointmentId=${item.id}`}
                           >
                             Entrar no vídeo
                           </Link>
