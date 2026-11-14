@@ -86,9 +86,10 @@ export function PartnerTutorOnboarding() {
         if (displayName.trim().length < 2) {
           throw new Error('Informe seu nome completo para criar a conta.');
         }
+        const callbackNext = `/cadastro?cupom=${encodeURIComponent(couponCode)}&parceiro=${encodeURIComponent(partnerName)}`;
         const redirect =
           typeof window !== 'undefined'
-            ? `${window.location.origin}/auth/callback?next=/cadastro`
+            ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackNext)}`
             : undefined;
         const result = await cadastrarUsuario({
           email: email.trim(),
