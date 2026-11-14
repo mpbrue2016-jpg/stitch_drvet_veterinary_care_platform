@@ -28,6 +28,23 @@ const brl = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 });
 
+const paymentStatusLabels: Record<PaymentOrder['status'], string> = {
+  paid: 'Pago',
+  pending: 'Pendente',
+  refunded: 'Estornado',
+  cancelled: 'Cancelado',
+};
+
+const paymentStatusVariants: Record<
+  PaymentOrder['status'],
+  'success' | 'warning' | 'neutral' | 'danger'
+> = {
+  paid: 'success',
+  pending: 'warning',
+  refunded: 'neutral',
+  cancelled: 'danger',
+};
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'medium',
@@ -83,8 +100,10 @@ export function PaymentsCheckout() {
       const requestedPayable = requestedAptId
         ? payableList.find((apt) => apt.id === requestedAptId)
         : undefined;
-      setSelectedAppointmentId(
-        (curr) => curr || requestedPayable?.id || payableList[0]?.id || '',
+      setSelectedAppointmentId((curr) =>
+        curr && payableList.some((apt) => apt.id === curr)
+          ? curr
+          : requestedPayable?.id ?? payableList[0]?.id ?? '',
       );
     } catch (error) {
       setErrorMessage(
@@ -287,12 +306,8 @@ export function PaymentsCheckout() {
                       <span className="font-bold text-[#153b50]">
                         {brl.format(payment.net_amount_cents / 100)}
                       </span>
-                      <Badge
-                        variant={
-                          payment.status === 'paid' ? 'success' : 'warning'
-                        }
-                      >
-                        {payment.status === 'paid' ? 'Pago' : payment.status}
+                      <Badge variant={paymentStatusVariants[payment.status]}>
+                        {paymentStatusLabels[payment.status]}
                       </Badge>
                     </div>
                   </li>
