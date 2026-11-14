@@ -70,6 +70,7 @@ export function PrescriptionDrafts() {
   const [items, setItems] = useState<PrescriptionItem[]>([{ ...emptyItem }]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pendingSwitchId, setPendingSwitchId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
 
@@ -161,15 +162,19 @@ export function PrescriptionDrafts() {
   }
 
   function changeAppointment(nextAppointmentId: string) {
-    if (
-      hasUnsavedChanges &&
-      !window.confirm(
-        'Há alterações não salvas. Deseja descartá-las e trocar de atendimento?',
-      )
-    ) {
+    if (hasUnsavedChanges) {
+      setPendingSwitchId(nextAppointmentId);
       return;
     }
+    setPendingSwitchId(null);
     setAppointmentId(nextAppointmentId);
+    setNotice('');
+  }
+
+  function confirmAppointmentSwitch() {
+    if (pendingSwitchId === null) return;
+    setAppointmentId(pendingSwitchId);
+    setPendingSwitchId(null);
     setNotice('');
   }
 
@@ -271,6 +276,31 @@ export function PrescriptionDrafts() {
                   </option>
                 ))}
               </Select>
+
+              {pendingSwitchId !== null && (
+                <div
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950"
+                  role="alert"
+                >
+                  <span>Há alterações não salvas. Deseja descartá-las e trocar de atendimento?</span>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setPendingSwitchId(null)}
+                      type="button"
+                      variant="outline"
+                    >
+                      Manter atual
+                    </Button>
+                    <Button
+                      onClick={confirmAppointmentSwitch}
+                      type="button"
+                      variant="secondary"
+                    >
+                      Trocar atendimento
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <fieldset
                 className="grid gap-5 disabled:opacity-70"

@@ -20,10 +20,17 @@ const protectedPaths = [
   '/prontuarios',
   '/receitas',
   '/comissoes',
+  '/painel',
   '/senha/nova',
 ];
 
-const professionalOnlyPaths = ['/agenda', '/receitas', '/comissoes'];
+const professionalOnlyPaths = [
+  '/agenda',
+  '/receitas',
+  '/comissoes',
+  '/painel/veterinario',
+  '/painel/parceiro',
+];
 const adminOnlyPaths = ['/admin'];
 
 export async function middleware(request: NextRequest) {
@@ -67,7 +74,10 @@ export async function middleware(request: NextRequest) {
   if (error || !data.user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', request.nextUrl.pathname);
+    loginUrl.searchParams.set(
+      'next',
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    );
     const redirect = NextResponse.redirect(loginUrl);
     response.cookies.getAll().forEach((cookie) =>
       redirect.cookies.set(cookie),
@@ -160,6 +170,7 @@ export const config = {
     '/prontuarios/:path*',
     '/receitas/:path*',
     '/comissoes/:path*',
+    '/painel/:path*',
     '/senha/nova',
   ],
 };

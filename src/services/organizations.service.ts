@@ -171,3 +171,47 @@ export async function aprovarVeterinario(input: {
     throw toFriendlyError(error, 'Não foi possível aprovar o profissional.');
   }
 }
+
+export async function listarVeterinariosAprovados(): Promise<{
+  professionals: VeterinarianProfile[];
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data: professionals, error } = await supabase
+      .from('veterinarian_profiles')
+      .select(
+        'organization_id, user_id, registration_number, registration_region, specialty, status, created_at',
+      )
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const rows = professionals ?? [];
+    const userIds = Array.from(new Set(rows.map((item) => item.user_id)));
+    const { data: profileRows } =
+      userIds.length > 0
+        ? await supabase
+            .from('profiles')
+            .select('id, display_name')
+            .in('id', userIds)
+        : { data: [] };
+
+    const displayNameById = new Map(
+      (profileRows ?? []).map((profile) => [profile.id, profile.display_name]),
+    );
+
+    return {
+      professionals: rows.map((professional) => ({
+        ...professional,
+        display_name: displayNameById.get(professional.user_id) || undefined,
+      })),
+    };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível carregar os médicos-veterinários credenciados.',
+    );
+  }
+}
+

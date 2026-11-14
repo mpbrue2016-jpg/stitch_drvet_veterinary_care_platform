@@ -84,7 +84,7 @@ export function PublicHeader() {
               quality={95}
               referrerPolicy="no-referrer"
               sizes="240px"
-              src="/home/drvets-logo.png"
+              src="/home/drvets-logo.webp"
               width={300}
             />
           </Link>

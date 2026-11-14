@@ -41,7 +41,7 @@ const specialists: Specialist[] = [
     price: 'R$ 89,90',
     ctaLabel: 'Consultar Agora',
     ctaPrimary: true,
-    avatarSrc: '/home/vet-juliana.png',
+    avatarSrc: '/home/vet-juliana.webp',
     borderTone: 'border-emerald-400',
   },
   {
@@ -61,7 +61,7 @@ const specialists: Specialist[] = [
     price: 'R$ 139,00',
     ctaLabel: 'Ver Agenda',
     ctaPrimary: false,
-    avatarSrc: '/home/vet-ricardo.png',
+    avatarSrc: '/home/vet-ricardo.webp',
     borderTone: 'border-blue-400',
   },
   {
@@ -81,7 +81,7 @@ const specialists: Specialist[] = [
     price: 'R$ 139,00',
     ctaLabel: 'Consultar Agora',
     ctaPrimary: true,
-    avatarSrc: '/home/vet-leticia.png',
+    avatarSrc: '/home/vet-leticia.webp',
     borderTone: 'border-purple-400',
   },
   {
@@ -101,7 +101,7 @@ const specialists: Specialist[] = [
     price: 'R$ 159,00',
     ctaLabel: 'Ver Agenda',
     ctaPrimary: false,
-    avatarSrc: '/home/vet-marcos.png',
+    avatarSrc: '/home/vet-marcos.webp',
     borderTone: 'border-emerald-400',
   },
   {
@@ -121,7 +121,7 @@ const specialists: Specialist[] = [
     price: 'R$ 165,00',
     ctaLabel: 'Consultar Agora',
     ctaPrimary: true,
-    avatarSrc: '/home/vet-beatriz.png',
+    avatarSrc: '/home/vet-beatriz.webp',
     borderTone: 'border-rose-400',
   },
   {
@@ -141,7 +141,7 @@ const specialists: Specialist[] = [
     price: 'R$ 149,00',
     ctaLabel: 'Ver Agenda',
     ctaPrimary: false,
-    avatarSrc: '/home/vet-fernando.png',
+    avatarSrc: '/home/vet-fernando.webp',
     borderTone: 'border-indigo-400',
   },
 ];
@@ -152,21 +152,21 @@ const testimonials = [
       '"Meu cachorro Pipoca começou a tossir e se engasgar tarde da noite de domingo. Em menos de 7 minutos eu estava em chamada com a Dra. Mariana. Ela me acalmou, identificou o quadro alérgico e mandou a receita pro meu celular. Salvou nossa noite!"',
     author: 'Rodrigo F. & Pipoca (Spitz)',
     location: 'São Paulo, SP • Atendimento Plantão',
-    avatarSrc: '/home/tutor-rodrigo.png',
+    avatarSrc: '/home/tutor-rodrigo.webp',
   },
   {
     quote:
       '"Levar minha gata Mia ao veterinário sempre foi um trauma gigante: ela hiperventilava no carro. A teleconsulta da DrVets foi a melhor descoberta. O veterinário observou ela calma no sofá e resolveu o problema de pele com extrema delicadeza."',
     author: 'Beatriz M. & Mia (Persa)',
     location: 'Curitiba, PR • Medicina Felina',
-    avatarSrc: '/home/tutor-beatriz.png',
+    avatarSrc: '/home/tutor-beatriz.webp',
   },
   {
     quote:
       '"Sou médico humano e sei avaliar seriedade clínica. A plataforma DrVets é impecável: anamnese aprofundada, prontuário detalhado e prescrição digital aceita sem nenhum questionamento na drogaria."',
     author: 'Dr. Gustavo A. & Bob (Golden)',
     location: 'Belo Horizonte, MG • Nutrologia',
-    avatarSrc: '/home/tutor-gustavo.png',
+    avatarSrc: '/home/tutor-gustavo.webp',
   },
 ];
 
@@ -234,7 +234,7 @@ export function HomeLanding() {
                     quality={95}
                     referrerPolicy="no-referrer"
                     sizes="280px"
-                    src="/home/drvets-logo.png"
+                    src="/home/drvets-logo.webp"
                     width={360}
                   />
                 </div>
@@ -387,7 +387,7 @@ export function HomeLanding() {
                     quality={95}
                     referrerPolicy="no-referrer"
                     sizes="(max-width: 1024px) 100vw, 560px"
-                    src="/home/hero-campanha.png"
+                    src="/home/hero-campanha.webp"
                     width={1536}
                   />
                   <div className="absolute bottom-3 right-3 rounded-xl border border-white/20 bg-[#153B50]/90 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur-md">
@@ -1074,7 +1074,7 @@ export function HomeLanding() {
                       quality={95}
                       referrerPolicy="no-referrer"
                       sizes="(max-width: 768px) 100vw, 480px"
-                      src="/home/cockpit-theo.png"
+                      src="/home/cockpit-theo.webp"
                       width={1408}
                     />
                     <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-lg bg-[#153B50]/80 px-2.5 py-1 text-[10px] font-bold backdrop-blur-md">
@@ -1089,7 +1089,7 @@ export function HomeLanding() {
                         quality={95}
                         referrerPolicy="no-referrer"
                         sizes="160px"
-                        src="/home/cockpit-camila.png"
+                        src="/home/cockpit-camila.webp"
                         width={320}
                       />
                     </div>
@@ -1277,7 +1277,7 @@ export function HomeLanding() {
                   quality={95}
                   referrerPolicy="no-referrer"
                   sizes="220px"
-                  src="/home/drvets-logo.png"
+                  src="/home/drvets-logo.webp"
                   width={330}
                 />
               </div>

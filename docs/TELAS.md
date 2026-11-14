@@ -27,23 +27,39 @@ O shell distingue a navegacao publica da area profissional e adapta a navegacao 
 
 O hero da home agora usa o arquivo visual exportado do Stitch, salvo localmente em `public/stitch-vet-hero.webp`, em vez do ícone decorativo usado como ilustração.
 
-## Rotas Next.js observadas
+## Rotas Next.js observadas (27 rotas ativas)
 
 | Rota | Arquivo | Situacao observada |
 |---|---|---|
-| `/` | `app/page.tsx` | Landing page estatica; links internos apontam para rotas existentes. |
+| `/` | `app/page.tsx` | Landing pública alinhada a `home_desktop_drvet_telemedicina_veterin_ria_2` com ativos WebP otimizados e envio da triagem para `/agendamento/edit`. |
+| `/cadastro` | `app/cadastro/page.tsx` | Onboarding público via QR Code de Pet Shop parceiro (`?cupom=&parceiro=`) com cadastro de conta e do primeiro pet via Supabase. |
 | `/login` | `app/login/page.tsx` | Login/cadastro e solicitação de recuperação por e-mail; depende de `.env.local` e de Redirect URL autorizada no Supabase Auth. |
 | `/senha/nova` | `app/senha/nova/page.tsx` | Redefinição autenticada após retorno seguro pelo callback; exige link válido e sessão de recuperação. |
+| `/pets` | `app/pets/page.tsx` | Gestão CRUD de pets do tutor, upload/visualização de avatar em bucket privado `pet-avatars`, resumo de vacinas e Clube DrVet. |
+| `/pets/novo` | `app/pets/novo/page.tsx` | Fluxo dedicado de cadastro de novo pet com seleção automática no formulário. |
+| `/perfil` | `app/perfil/page.tsx` | Dados da conta autenticada, atualização de nome/telefone respeitando RLS, selo RBAC e atalhos rápidos. |
 | `/agenda` | `app/agenda/page.tsx` | Grade semanal, métricas e próximo atendimento ligados à API; configuração de organização, cadastro/aprovação de veterinários e publicação/bloqueio de horários próprios. |
 | `/agendamento` | `app/agendamento/page.tsx` | Lista consultas da conta, atualiza estados via API e permite solicitar novo agendamento. |
-| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Fluxo responsivo baseado no export `agendamento_da_1_teleconsulta_com_15_off_drvet`: lê pets e horários disponíveis, permite cadastrar pet, escolher modalidade/motivo e grava solicitação pendente via API; preço, cupom, voucher e pagamento do protótipo não são ativados. |
-| `/prontuarios/[appointmentId]` | `app/prontuarios/[appointmentId]/page.tsx` | Consulta e edição do SOAP por profissional designado; tutor lê somente registro finalizado. |
+| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Fluxo responsivo com pré-carregamento da triagem vinda da Home (`?species=&need=&timing=`), cadastro de pet e gravação pendente no Supabase. |
+| `/teleconsulta` | `app/teleconsulta/page.tsx` | Sala de teleconsulta com consentimento de gravação e chat em tempo real via Supabase Realtime. |
+| `/prontuarios` | `app/prontuarios/page.tsx` | Índice geral de prontuários SOAP e acesso ao registro por atendimento. |
+| `/prontuarios/[appointmentId]` | `app/prontuarios/[appointmentId]/page.tsx` | Consulta e edição do SOAP por profissional designado e upload de anexos clínicos; tutor lê somente registro finalizado. |
 | `/carteira/vacinas` | `app/carteira/vacinas/page.tsx` | Histórico autorizado; profissional designado registra vacinação após o atendimento. |
-| `/exames` | `app/exames/page.tsx` | Veterinário designado solicita exame e registra resultado; usuário autorizado consulta os pedidos. |
-| `/comissoes` | `app/comissoes/page.tsx` | Protótipo estático com dados demonstrativos e botões desativados até integração. |
-| `/receitas` | `app/receitas/page.tsx` | Rascunhos de receita ligados à API e ao atendimento; emissão e assinatura indisponíveis. |
+| `/exames` | `app/exames/page.tsx` | Veterinário designado solicita exame e registra resultado/anexos; usuário autorizado consulta os pedidos. |
+| `/receitas` | `app/receitas/page.tsx` | Rascunhos de receita ligados à API e ao atendimento com visualização prévia estruturada. |
+| `/assinaturas` | `app/assinaturas/page.tsx` | Planos preventivos Clube DrVet com adesão, cancelamento e acompanhamento por pet no Supabase. |
+| `/pagamentos` | `app/pagamentos/page.tsx` | Checkout de teleconsultas, aplicação de cupons parceiros e histórico de comprovantes. |
+| `/parceiros` | `app/parceiros/page.tsx` | Credenciamento B2B de Pet Shops e Farmácias e visualização de cupons ativos. |
+| `/anuncios` | `app/anuncios/page.tsx` | Criação, ativação, pausa e encerramento de campanhas DrVet Ads com métricas de cliques e orçamento. |
+| `/comissoes` | `app/comissoes/page.tsx` | Extrato financeiro de honorários/splits, conta de repasse e solicitação de antecipação via Edge Function / RPC. |
+| `/painel` | `app/painel/page.tsx` | Central Operacional com busca de veterinários, exportação contábil `.csv`/`.ofx` e repositório de contratos digitais. |
+| `/painel/veterinario` | `app/painel/veterinario/page.tsx` | Cockpit operacional exclusivo do médico-veterinário (fila de consultas, CRMV, horários e repasses). |
+| `/painel/parceiro` | `app/painel/parceiro/page.tsx` | Cockpit comercial do Pet Shop/Farmácia parceira com gerador de link QR de balcão, splits e campanhas Ads. |
+| `/admin` | `app/admin/page.tsx` | Console Admin Master com gestão RBAC de usuários, aprovação de veterinários e resumo de integrações. |
+| `/admin/integracoes` | `app/admin/integracoes/page.tsx` | Assistente de webhooks/chaves (Asaas, Mercado Pago, LiveKit, Bling, Omie) e teste ao vivo de latência SQL & Realtime WebSocket. |
+| `/apresentacao` | `app/apresentacao/page.tsx` | Apresentação executiva interativa cobrindo toda a arquitetura e mapa navegável de rotas do DrVet. |
 
-Nao foi encontrado `app/pagamentos/page.tsx`; a pasta `app/pagamentos` esta vazia. O shell responsivo e os componentes comuns foram implementados. O menu ainda nao varia por perfil, e os modulos fora de pets/agenda continuam sem dados reais.
+Todas as rotas da barra lateral, cabeçalho e matriz de permissões RBAC (`middleware.ts`) estão conectadas. A execução real contra banco depende apenas da configuração de `.env.local` e aplicação das migrations em `supabase/migrations/`.
 
 ## Inventario completo dos exports
 

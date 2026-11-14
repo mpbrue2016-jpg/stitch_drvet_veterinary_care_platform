@@ -11,6 +11,7 @@ import { PawMark, PublicHeader, WorkspaceHeader } from '@/components/header';
 
 const navigation = [
   { href: '/', label: 'Início / Dashboard', icon: 'dashboard' },
+  { href: '/painel/veterinario', label: 'Painel Veterinário', icon: 'dashboard' },
   { href: '/agenda', label: 'Agenda & Consultas', icon: 'calendar' },
   { href: '/agendamento', label: 'Agendamentos', icon: 'event' },
   { href: '/teleconsulta', label: 'Sala de Teleconsulta', icon: 'event' },
@@ -21,11 +22,15 @@ const navigation = [
   { href: '/receitas', label: 'Rascunhos de receita', icon: 'document' },
   { href: '/assinaturas', label: 'Clube DrVet', icon: 'health' },
   { href: '/pagamentos', label: 'Pagamentos & Checkout', icon: 'payments' },
+  { href: '/painel/parceiro', label: 'Painel Parceiro B2B', icon: 'dashboard' },
   { href: '/parceiros', label: 'Parceiros B2B', icon: 'dashboard' },
   { href: '/anuncios', label: 'DrVet Ads', icon: 'dashboard' },
   { href: '/comissoes', label: 'Faturamento & Repasses', icon: 'payments' },
-  { href: '/admin', label: 'Admin Master', icon: 'dashboard' },
+  { href: '/painel', label: 'Central & OFX', icon: 'document' },
+  { href: '/cadastro', label: 'Cadastro QR', icon: 'health' },
+  { href: '/apresentacao', label: 'Apresentação', icon: 'dashboard' },
   { href: '/admin/integracoes', label: 'Integrações & CDC', icon: 'dashboard' },
+  { href: '/admin', label: 'Admin Master', icon: 'dashboard' },
   { href: '/perfil', label: 'Meu Perfil', icon: 'dashboard' },
 ] as const;
 
@@ -56,7 +61,12 @@ function NavigationIcon({ name }: { name: keyof typeof navigationIconPaths }) {
 }
 
 function isActiveRoute(pathname: string, href: string) {
-  return href === '/' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+  if (href === '/') return pathname === '/';
+  const exactOnlyRoutes = ['/painel', '/admin'];
+  if (exactOnlyRoutes.includes(href)) {
+    return pathname === href;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -116,7 +126,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                 Prática médica
               </p>
-              {navigation.slice(0, 9).map((item) => {
+              {navigation.slice(0, 10).map((item) => {
                 const active = isActiveRoute(pathname, item.href);
                 return (
                   <Link
@@ -140,7 +150,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="px-3 pb-2 pt-6 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                 Gestão &amp; sistema
               </p>
-              {navigation.slice(9).map((item) => {
+              {navigation.slice(10).map((item) => {
                 const active = isActiveRoute(pathname, item.href);
                 return (
                   <Link
@@ -163,7 +173,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="mt-1">
               {isSupabaseConfigured()
                 ? 'Conecte uma conta autorizada para acessar os dados clínicos.'
-                : 'Dados locais simulados via src/services prontos para troca por Supabase.'}
+                : 'Configure NEXT_PUBLIC_SUPABASE_URL e ANON_KEY em .env.local para ativar os dados.'}
             </p>
           </div>
         </aside>

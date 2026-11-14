@@ -42,18 +42,22 @@ npm run build
 ## Estrutura de pastas
 
 ```text
-├── app/                        # Rotas Next.js App Router (páginas, Auth callback e rotas SSR)
+├── app/                        # Rotas Next.js App Router (27 páginas + APIs + Auth callback)
+│   ├── page.tsx                # Landing pública DrVets (WebP otimizado + triagem interativa)
 │   ├── admin/                  # Painel Master Admin, RBAC e /integracoes (restrita a admin)
 │   ├── agenda/                 # Agenda semanal do médico-veterinário (protegida por perfil)
-│   ├── agendamento/            # Lista e fluxo de novo agendamento (/edit)
+│   ├── agendamento/            # Lista e fluxo de novo agendamento (/edit com pré-triagem)
 │   ├── anuncios/               # Gestão dedicada de campanhas DrVet Ads
+│   ├── apresentacao/           # Apresentação executiva interativa e mapa completo de rotas
 │   ├── assinaturas/            # Clube DrVet (assinaturas preventivas)
 │   ├── auth/callback/          # Troca de código PKCE do Supabase Auth por sessão
+│   ├── cadastro/               # Onboarding QR Code de tutor e cadastro do primeiro pet
 │   ├── carteira/vacinas/       # Carteira de vacinação digital
 │   ├── comissoes/              # Faturamento, comissões e repasses (protegida por perfil)
 │   ├── exames/                 # Pedidos, resultados e upload de laudos (Storage)
 │   ├── login/                  # Autenticação, cadastro e recuperação de senha
 │   ├── pagamentos/             # Checkout de consultas, cupons e comprovantes
+│   ├── painel/                 # Central Operacional CSV/OFX/Contratos, /veterinario e /parceiro
 │   ├── parceiros/              # Portal B2B de farmácias/pet shops e DrVet Ads
 │   ├── perfil/                 # Dados da conta, perfil RBAC e atalhos do usuário
 │   ├── pets/                   # Meus Pets, upload de foto (Storage) e cadastro (/novo)

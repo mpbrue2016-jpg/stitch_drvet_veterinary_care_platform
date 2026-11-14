@@ -92,7 +92,7 @@ export default function LoginPage() {
         });
 
         if (data.session) {
-          router.replace('/agendamento');
+          router.replace(nextPath);
           router.refresh();
           return;
         }
@@ -140,10 +140,21 @@ export default function LoginPage() {
 
         {needsSetup && (
           <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
-            Modo frontend ativo (Supabase não configurado). Você pode testar o formulário
-            com validação Zod ou navegar diretamente para{' '}
-            <Link className="font-bold underline" href="/agendamento">
-              Agendamentos
+            Supabase ainda não configurado neste ambiente (falta definir{' '}
+            <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_URL</code> e{' '}
+            <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> no{' '}
+            <code className="font-mono text-xs">.env.local</code>). Enquanto isso, acesse as
+            rotas públicas{' '}
+            <Link className="font-bold underline" href="/">
+              Home
+            </Link>
+            ,{' '}
+            <Link className="font-bold underline" href="/cadastro">
+              Cadastro QR
+            </Link>{' '}
+            ou{' '}
+            <Link className="font-bold underline" href="/apresentacao">
+              Apresentação
             </Link>
             .
           </div>

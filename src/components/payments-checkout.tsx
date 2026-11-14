@@ -59,18 +59,33 @@ export function PaymentsCheckout() {
       setCurrentUserId(aptRes.currentUserId);
       setPayments(payRes.payments);
 
+      const urlParams =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search)
+          : null;
+      const requestedAptId = urlParams?.get('appointmentId') ?? '';
+      const requestedCoupon = urlParams?.get('cupom') ?? '';
+      if (requestedCoupon) {
+        setCouponCode((curr) => curr || requestedCoupon.trim().toUpperCase().slice(0, 24));
+      }
+
       const paidIds = new Set(
         payRes.payments
           .filter((p) => p.status === 'paid' && p.appointment_id)
           .map((p) => p.appointment_id),
       );
-      const firstUnpaid = aptRes.appointments.find(
+      const payableList = aptRes.appointments.filter(
         (apt) =>
           apt.tutor_id === aptRes.currentUserId &&
           apt.status !== 'cancelled' &&
           !paidIds.has(apt.id),
       );
-      setSelectedAppointmentId((curr) => curr || firstUnpaid?.id || '');
+      const requestedPayable = requestedAptId
+        ? payableList.find((apt) => apt.id === requestedAptId)
+        : undefined;
+      setSelectedAppointmentId(
+        (curr) => curr || requestedPayable?.id || payableList[0]?.id || '',
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error
