@@ -1,124 +1,81 @@
-# Handoff para Google AI Studio — DrVet (Frontend → Supabase Backend)
+# Handoff & Arquitetura — DrVet (Next.js App Router + Supabase)
 
-Este documento reúne todas as informações necessárias para conectar o frontend **DrVet** ao backend **Supabase** no Google AI Studio.
-
----
-
-## a) Lista de telas e rotas
-
-### Rotas implementadas no frontend (`app/`)
-
-| Rota | Arquivo | Descrição |
-|---|---|---|
-| `/` | `app/page.tsx` | Landing page pública DrVet com etapas do cuidado e especialidades |
-| `/login` | `app/login/page.tsx` | Login, cadastro de conta e solicitação de recuperação de senha |
-| `/senha/nova` | `app/senha/nova/page.tsx` | Definição de nova senha após callback de recuperação |
-| `/auth/callback` | `app/auth/callback/route.ts` | Callback de troca de código OAuth / recuperação de senha |
-| `/agenda` | `app/agenda/page.tsx` | Grade semanal do veterinário, métricas, organização e bloqueio/liberação de horários |
-| `/agendamento` | `app/agendamento/page.tsx` | Lista de agendamentos com confirmação, conclusão e cancelamento |
-| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Fluxo de solicitação de consulta + cadastro rápido de pet + escolha de data/horário |
-| `/prontuarios` | `app/prontuarios/page.tsx` | Índice de prontuários clínicos SOAP |
-| `/prontuarios/[appointmentId]` | `app/prontuarios/[appointmentId]/page.tsx` | Edição/visualização do prontuário SOAP e sinais vitais |
-| `/carteira/vacinas` | `app/carteira/vacinas/page.tsx` | Histórico vacinal e registro de novas vacinas após atendimento |
-| `/exames` | `app/exames/page.tsx` | Solicitação de exames laboratoriais/imagem e registro de resultados |
-| `/receitas` | `app/receitas/page.tsx` | Rascunhos de prescrição veterinária vinculados ao atendimento |
-| `/comissoes` | `app/comissoes/page.tsx` | Extrato financeiro, filtros de comissões e solicitação de antecipação |
-
-### Telas futuras mapeadas dos protótipos Stitch (ver `docs/TELAS.md`)
-
-Os 110 protótipos HTML originais estão inventariados em `docs/TELAS.md` e apontam futuras expansões de produto: `/teleconsulta` (sala LiveKit), `/pets/novo`, `/assinaturas` (Clube DrVet), `/parceiros` (Pet Shops / Farmácias), `/anuncios` (DrVet Ads) e `/admin` (painel master e integrações Asaas/Mercado Pago/ERP).
+Este documento resume a arquitetura implementada do **DrVet / DrVets**, cobrindo todas as rotas, entidades do banco PostgreSQL, serviços client-side, políticas RBAC/RLS e variáveis necessárias para deploy (GitHub + Supabase + Vercel).
 
 ---
 
-## b) Entidades e campos sugeridos (`src/types/entities.ts`)
+## a) Rotas ativas no App Router (`app/` — 27 páginas + APIs)
 
-1. **`profiles` (`UserProfile`)**: `id` (uuid PK -> auth.users), `display_name`, `email`, `phone`, `role` (`tutor | veterinarian | partner | admin`), `created_at`, `updated_at`.
-2. **`organizations` (`Organization`)**: `id` (uuid PK), `name`, `created_by` (uuid), `created_at`.
-3. **`organization_memberships`**: `organization_id` (uuid FK), `user_id` (uuid FK), `role` (`owner | admin | veterinarian | staff | billing`), `created_at`.
-4. **`veterinarian_profiles` (`VeterinarianProfile`)**: `organization_id` (uuid FK), `user_id` (uuid FK), `registration_number` (CRMV), `registration_region` (UF), `specialty`, `status` (`pending | approved | suspended`), `created_at`.
-5. **`pets` (`Pet`)**: `id` (uuid PK), `owner_id` (uuid FK -> profiles), `name`, `species`, `breed`, `birth_date`, `sex` (`female | male | unknown`), `notes`, `created_at`, `updated_at`.
-6. **`professional_availability` (`AvailabilitySlot`)**: `id` (uuid PK), `organization_id`, `veterinarian_id`, `starts_at`, `ends_at`, `is_available`, `is_blocked`, `blocked_at`, `block_reason`, `created_at`.
-7. **`appointments` (`Appointment`)**: `id` (uuid PK), `availability_id` (FK), `organization_id`, `pet_id` (FK), `tutor_id` (FK), `veterinarian_id` (FK), `kind` (`teleconsultation | in_person`), `status` (`pending | confirmed | cancelled | completed`), `reason`, `starts_at`, `ends_at`, `created_at`, `updated_at`.
-8. **`clinical_records` (`ClinicalRecord`)**: `id` (uuid PK), `appointment_id` (FK único), `organization_id`, `pet_id`, `veterinarian_id`, `subjective`, `objective`, `assessment`, `plan`, `vitals` (jsonb: peso, temperatura, FC, FR, mucosas, TPC), `status` (`draft | finalized`), `finalized_at`, `created_at`, `updated_at`.
-9. **`vaccination_records` (`VaccinationRecord`)**: `id` (uuid PK), `appointment_id`, `organization_id`, `pet_id`, `veterinarian_id`, `vaccine_name`, `administered_on`, `batch_number`, `manufacturer`, `next_due_on`, `notes`, `created_at`.
-10. **`exam_orders` (`ExamOrder`)**: `id` (uuid PK), `appointment_id`, `organization_id`, `pet_id`, `veterinarian_id`, `modality` (`laboratory | imaging`), `exam_name`, `clinical_indication`, `instructions`, `status` (`requested | resulted`), `result_summary`, `laboratory_name`, `performed_at`, `requested_at`, `resulted_at`, `created_at`.
-11. **`prescription_drafts` (`PrescriptionDraft`)**: `id` (uuid PK), `appointment_id` (FK), `organization_id`, `pet_id`, `veterinarian_id`, `items` (jsonb array de `PrescriptionItem`), `updated_by`, `created_at`, `updated_at`.
-12. **`commission_ledger` (`CommissionEntry` — a criar)**: `id` (uuid PK), `organization_id`, `veterinarian_id`, `reference`, `tutor_name`, `pet_name`, `origin` (`teleconsultation | in_person | pharmacy_split | partner_plan`), `gross_amount_cents`, `net_amount_cents`, `status` (`available | pending | paid`), `occurred_at`.
-
----
-
-## c) Operações por tela
-
-- **`/login` e `/senha/nova`**: Login, cadastro de usuário, envio de e-mail de recuperação de senha e atualização autenticada da senha.
-- **`/agenda`**:
-  - Listar consultas da semana por intervalo (`from`/`to`) e calcular KPIs.
-  - Criar organização; registrar e aprovar veterinário na equipe.
-  - Criar horários de disponibilidade; bloquear/liberar horários futuros sem consulta ativa.
-- **`/agendamento`**:
-  - Listar consultas do usuário (tutor ou veterinário).
-  - Atualizar status (`pending` → `confirmed` / `cancelled`, `confirmed` → `completed`).
-- **`/agendamento/edit`**:
-  - Listar pets do tutor; criar novo pet; listar horários disponíveis; criar solicitação de agendamento.
-- **`/prontuarios` e `/prontuarios/[appointmentId]`**:
-  - Listar prontuários; buscar prontuário por `appointment_id`; salvar rascunho SOAP + sinais vitais; finalizar prontuário (imutável).
-- **`/carteira/vacinas`**:
-  - Listar vacinas por pet/usuário; registrar nova vacina vinculada a atendimento concluído (imutável).
-- **`/exames`**:
-  - Listar pedidos (com filtro opcional por `appointmentId`); criar pedido laboratorial/imagem; registrar resultado textual (imutável); futuro upload de PDF/laudo no Storage.
-- **`/receitas`**:
-  - Listar rascunhos de receita; buscar por atendimento; salvar/atualizar itens da prescrição em rascunho; futuro fluxo de assinatura ICP-Brasil.
-- **`/comissoes`**:
-  - Buscar resumo financeiro; listar lançamentos com busca textual e filtros (`origin`, `status`); solicitar antecipação de recebíveis.
+| Rota | Arquivo | Perfil / Acesso | Descrição |
+|---|---|---|---|
+| `/` | `app/page.tsx` | Público | Landing page DrVets fiel ao Stitch com ativos WebP em `public/home/*.webp` e triagem rápida para `/agendamento/edit` |
+| `/cadastro` | `app/cadastro/page.tsx` | Público | Onboarding via QR Code do Pet Shop (`?cupom=&parceiro=`), cadastro/login e cadastro do 1º pet |
+| `/apresentacao` | `app/apresentacao/page.tsx` | Público | Apresentação executiva interativa e mapa navegável de rotas |
+| `/login` | `app/login/page.tsx` | Público | Login, criação de conta e solicitação de recuperação de senha (preserva `?next=`) |
+| `/auth/callback` | `app/auth/callback/route.ts` | Público (PKCE) | Troca de código do Supabase Auth por sessão |
+| `/senha/nova` | `app/senha/nova/page.tsx` | Autenticado | Redefinição de senha após callback de recuperação |
+| `/pets` | `app/pets/page.tsx` | Autenticado | CRUD de pets do tutor, avatar no Storage (`pet-avatars`), vacinas e status no Clube DrVet |
+| `/pets/novo` | `app/pets/novo/page.tsx` | Autenticado | Cadastro dedicado de novo paciente |
+| `/perfil` | `app/perfil/page.tsx` | Autenticado | Dados da conta, edição de nome/telefone, selo RBAC e atalhos |
+| `/agendamento` | `app/agendamento/page.tsx` | Autenticado | Lista de consultas, confirmação/conclusão/cancelamento via RPC `transition_appointment` |
+| `/agendamento/edit` | `app/agendamento/edit/page.tsx` | Autenticado | Solicitação de consulta com suporte a `?species=&need=&timing=&vet=&cupom=` |
+| `/teleconsulta` | `app/teleconsulta/page.tsx` | Autenticado | Sala de atendimento remoto, consentimento de gravação e chat em tempo real (Realtime) |
+| `/prontuarios` | `app/prontuarios/page.tsx` | Autenticado | Índice geral de prontuários SOAP |
+| `/prontuarios/[appointmentId]` | `app/prontuarios/[appointmentId]/page.tsx` | Autenticado | Edição SOAP pelo veterinário designado, anexos clínicos e leitura pelo tutor após finalizado |
+| `/carteira/vacinas` | `app/carteira/vacinas/page.tsx` | Autenticado | Carteira digital de vacinação e registro imutável pós-atendimento |
+| `/exames` | `app/exames/page.tsx` | Autenticado | Pedidos de exames laboratoriais/imagem, registro de resultados e upload de laudos (`exam-reports`) |
+| `/assinaturas` | `app/assinaturas/page.tsx` | Autenticado | Planos preventivos Clube DrVet (`subscription_plans` e `pet_subscriptions`) |
+| `/pagamentos` | `app/pagamentos/page.tsx` | Autenticado | Checkout de teleconsultas via Pix/cartão/voucher, cupons e comprovantes (`payment_orders`) |
+| `/parceiros` | `app/parceiros/page.tsx` | Autenticado | Portal B2B de farmácias/pet shops credenciados e gestão de campanhas |
+| `/anuncios` | `app/anuncios/page.tsx` | Autenticado | Gestão dedicada de campanhas DrVet Ads (`ad_campaigns`) |
+| `/painel` | `app/painel/page.tsx` | Autenticado | Central Operacional: busca de especialistas aprovados, exportação `.csv`/`.ofx` e termos digitais |
+| `/agenda` | `app/agenda/page.tsx` | Profissional / Org | Grade semanal, métricas, organização e publicação/bloqueio de horários |
+| `/receitas` | `app/receitas/page.tsx` | Profissional / Org | Rascunhos estruturados de prescrição vinculados ao atendimento |
+| `/comissoes` | `app/comissoes/page.tsx` | Profissional / Org | Extrato `commission_ledger`, conta de repasse e solicitação de antecipação |
+| `/painel/veterinario` | `app/painel/veterinario/page.tsx` | Profissional / Org | Cockpit do médico-veterinário (fila de consultas, CRMV, horários e saldo) |
+| `/painel/parceiro` | `app/painel/parceiro/page.tsx` | Profissional / Org | Cockpit comercial B2B com gerador de link QR de balcão, splits e campanhas |
+| `/admin` e `/admin/integracoes` | `app/admin/page.tsx` | Admin Master | Governança RBAC (`admin_list_users`, `admin_update_user_role`), aprovação de CRMV e teste PostgreSQL/Realtime |
 
 ---
 
-## d) Onde ficam os mocks a substituir
+## b) Camada de Serviços (`src/services/`) — 100% Supabase
 
-Toda a camada de acesso a dados do frontend está isolada em `src/services/`, marcada com `// TODO(AI Studio): trocar por chamada Supabase`:
+Não há camada de mocks em memória (`mock-db` foi removido). Toda a persistência ocorre diretamente via `@supabase/supabase-js` respeitando RLS e RPCs em `src/services/`:
 
-- `src/services/mock-db.ts` — Massa de dados local em memória (remover após migração completa).
-- `src/services/appointments.service.ts` — CRUD e transição de status de agendamentos.
-- `src/services/availability.service.ts` — Horários publicados e bloqueio/liberação.
-- `src/services/pets.service.ts` — CRUD de pets.
-- `src/services/organizations.service.ts` — Organizações e aprovação de veterinários.
-- `src/services/clinical-records.service.ts` — Prontuário SOAP.
-- `src/services/vaccinations.service.ts` — Carteira de vacinas.
-- `src/services/exam-orders.service.ts` — Pedidos e resultados de exames.
-- `src/services/prescriptions.service.ts` — Rascunhos de receita.
-- `src/services/commissions.service.ts` — Resumo financeiro, extrato e antecipações.
-- `src/lib/supabase.ts` — Cliente browser Supabase pronto para ser usado dentro de `src/services/`.
-
----
-
-## e) Requisitos de autenticação e perfis de usuário
-
-1. **Tutor**: autentica via Supabase Auth; gerencia seus próprios pets, solicita agendamentos, visualiza prontuários finalizados, vacinas e resultados de exames dos seus pets.
-2. **Médico-Veterinário (aprovado)**: gerencia sua disponibilidade, confirma/conclui atendimentos designados, preenche e finaliza SOAP, registra vacinas, solicita exames/registra resultados e edita rascunhos de receita.
-3. **Owner / Admin de Organização**: cria organização, cadastra e aprova médicos-veterinários (validação CRMV), acompanha visão financeira/repasses.
-4. **Parceiros / Admin Master (futuro)**: portais B2B de pet shops, farmácias, anúncios e auditoria global.
+- `auth.service.ts` — Login, cadastro, recuperação de senha, atualização e leitura/edição de `profiles`.
+- `organizations.service.ts` — Organizações, vínculo/aprovação CRMV e `listarVeterinariosAprovados()`.
+- `pets.service.ts` — CRUD de `pets`.
+- `availability.service.ts` — Consulta pública autenticada de slots livres e bloqueio via `set_availability_block`.
+- `appointments.service.ts` — Agendamentos e transições seguras via `transition_appointment`.
+- `clinical-records.service.ts` — Prontuário SOAP via `save_clinical_record`.
+- `vaccinations.service.ts` — Vacinas via `create_vaccination_record`.
+- `exam-orders.service.ts` — Pedidos e resultados via `create_exam_order` e `record_exam_result`.
+- `prescriptions.service.ts` — Rascunhos via `save_prescription_draft`.
+- `commissions.service.ts` — Resumo financeiro, extrato e antecipação via Edge Function `request-anticipation` (com fallback para RPC `request_commission_anticipation`).
+- `teleconsultations.service.ts` — Sala via `open_teleconsultation_session` e chat Realtime em `teleconsultation_messages`.
+- `subscriptions.service.ts` — Clube DrVet (`subscribe_pet_to_plan`), checkout (`create_teleconsultation_payment`) e comprovantes.
+- `partners.service.ts` — `partner_listings` e campanhas `ad_campaigns`.
+- `admin.service.ts` — RPCs administrativas (`admin_list_users`, `admin_update_user_role`) e `integration_configs`.
+- `storage.service.ts` — Upload/listagem/URLs assinadas nos buckets privados `pet-avatars`, `exam-reports` e `clinical-attachments`.
 
 ---
 
-## f) Tarefas do backend para o Google AI Studio
+## c) Banco, Storage e Edge Functions (`supabase/`)
 
-1. **Revisar e aplicar migrations SQL**: validar os rascunhos em `supabase/migrations/` contra o projeto Supabase de destino e criar as tabelas faltantes (`commission_ledger`, anexos clínicos, parceiros/assinaturas conforme prioridade).
-2. **Configurar RLS (Row Level Security)**: garantir isolamento estrito por `auth.uid()` (tutor vê apenas seus pets/atendimentos; veterinário aprovado vê apenas atendimentos da organização/designados; registros finalizados e vacinas/resultados permanecem imutáveis).
-3. **Configurar Supabase Auth**: habilitar provedor e-mail/senha, configurar Redirect URL `${origin}/auth/callback?next=/senha/nova` e trigger de criação automática em `profiles`.
-4. **Configurar Storage**: criar buckets privados para laudos de exames (PDF/imagens), anexos clínicos e avatares de pets com políticas RLS via signed URLs.
-5. **RPCs e Edge Functions**: implementar/validar RPCs transacionais (prevenção de conflito de horário, transição de status, finalização imutável) e Edge Functions futuras para webhooks Asaas/Mercado Pago, emissão ICP-Brasil e salas LiveKit.
-6. **Seeds de desenvolvimento**: popular organização exemplo, veterinário aprovado, horários de teste e pets iniciais para homologação.
-7. **Ligar `src/services/*` ao Supabase**: substituir os mocks em `src/services/*.ts` por chamadas usando `src/lib/supabase.ts` (ou route handlers autenticados em `app/api/*`) e reativar a obrigatoriedade de login no `middleware.ts`.
+- **Migrations (`supabase/migrations/`)**: 11 arquivos SQL em ordem cronológica (`20261112210000` até `20261113000500`), incluindo exclusão temporal (`btree_gist`), triggers `updated_at`, funções `SECURITY DEFINER`, RLS por perfil/organização e buckets de Storage.
+- **Seed (`supabase/seed.sql`)**: massa de homologação idempotente com 4 contas de teste (`admin@drvet.local`, `camila.vet@drvet.local`, `rafael.vet@drvet.local`, `mariana.tutor@drvet.local`, senha `DrVet@2026`).
+- **Edge Functions (`supabase/functions/`)**:
+  - `request-anticipation` — Validação server-side e protocolo de antecipação.
+  - `payment-webhook` — Conciliação de status no `commission_ledger` validada por `x-webhook-secret` e `SUPABASE_SERVICE_ROLE_KEY`.
 
 ---
 
-## g) Variáveis de ambiente necessárias
-
-Configure no `.env.local` (desenvolvimento) e nas Environment Variables da Vercel:
+## d) Variáveis de ambiente (`.env.local` e Vercel)
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SUPABASE_URL=https://<seu-project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<sua-anon-key>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<opcional-se-usar-publishable-key>
 ```
 
-*(As variáveis de gateways de pagamento, WebRTC ou assinatura digital deverão ficar exclusivamente no servidor — nunca com prefixo `NEXT_PUBLIC_`.)*
+Consulte [`SETUP_SUPABASE.md`](./SETUP_SUPABASE.md) para a ordem completa de provisionamento.

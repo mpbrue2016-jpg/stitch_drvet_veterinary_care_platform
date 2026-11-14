@@ -2,30 +2,27 @@
 
 ## Escopo e criterios
 
-- Foram encontrados **110** diretorios com `code.html`; **95** tambem tem `screen.png`, **15** nao tem captura. Existem ainda **2** imagens `screen.png` sem `code.html` associado.
-- As pastas exportadas contem prototipos HTML; a interface Next.js usa conteudo demonstrativo onde os fluxos ainda nao foram integrados. Perfis, rotas pretendidas e acoes abaixo sao inferidos pelo nome/titulo da tela, nao confirmados por requisitos funcionais.
-- Existem factories de cliente Supabase, APIs e uma migration local para o primeiro fluxo de autenticação, pets e agendamentos. A migration não foi aplicada e as consultas não foram testadas contra um banco real.
-- O produto foi confirmado como DrVet para a interface e os metadados Next.js. Nenhuma logo oficial nem pasta de referencia visual foi encontrada na raiz do projeto.
-- O layout comum DrVet usa navegação responsiva. Login e proteção de rotas já existem; os menus e as permissões ainda não são filtrados completamente por perfil.
+- Os **110** diretórios de protótipos Stitch originais foram consolidados em **27 rotas ativas** no Next.js App Router (`app/`), conectadas a **15 módulos de serviço** em `src/services/`, **11 migrações SQL** em `supabase/migrations/`, **2 Edge Functions** em `supabase/functions/` e **3 buckets privados de Storage**.
+- A identidade visual e o produto estão padronizados como **DrVets / DrVet**, com middleware de autenticação e controle RBAC por perfil (`tutor`, `veterinarian`, `partner`, `admin`) em `middleware.ts`.
+- Em ambiente local sem `.env.local`, rotas públicas (`/`, `/cadastro`, `/apresentacao`, `/login`) operam diretamente e rotas protegidas redirecionam para `/login?setup=required`. Ao configurar `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ou `PUBLISHABLE_KEY`) e aplicar as migrações, todo o fluxo passa a ler/gravar no PostgreSQL do Supabase.
 
 ## Alinhamento visual com as referencias Stitch
 
-A rodada visual atual aproxima as rotas implementadas das referencias Stitch correspondentes, mantendo o nome DrVet e sem apresentar dados clinicos, agenda ou valores financeiros ficticios como reais:
+A interface atual consolida os fluxos aprovados do Stitch mantendo o layout da Home (`home_desktop_drvet_telemedicina_veterin_ria_2`) com ativos locais WebP otimizados em `public/home/*.webp` e tipografia `Plus Jakarta Sans`:
 
 | Tela | Direcao visual aplicada | Estado funcional |
 |---|---|---|
-| `/` | Landing publica com hero, areas de atendimento e etapas de cuidado. | Conteudo informativo; disponibilidade sujeita a confirmacao. |
-| `/agenda` | Painel profissional com indicadores, grade semanal e próximo atendimento. | Grade, indicadores e próximo atendimento carregam os dados da API Supabase; configuração e bloqueio/liberação de horários próprios disponíveis; depende de `.env.local` e migrations aplicadas. |
-| `/agendamento` | Lista e filtros no estilo de gestao de agendamentos. | Lista ligada a API; abertura de prontuario SOAP por consulta disponivel. |
-| `/prontuarios/[appointmentId]` | Registro SOAP por consulta, com sinais vitais. | Rascunho e finalizacao ligados a API; assinatura, receitas e anexos nao sao simulados. |
-| `/carteira/vacinas` | Histórico de vacinas do pet. | Leitura para tutor/veterinário autorizado; registro imutável pelo veterinário designado após o atendimento. |
-| `/exames` | Solicitação laboratorial ou de imagem e registro de resultado. | Pedido/resultados ligados a API, visibilidade protegida; integração externa e anexos pendentes. |
-| `/receitas` | Cadastro manual de itens e prévia de rascunho vinculados ao atendimento. | Rascunhos persistidos para o veterinário designado; catálogo, assinatura, emissão oficial, PDF e envio permanecem desativados. |
-| `/comissoes` | Indicadores financeiros e extrato. | Sem saldos ou transacoes; acoes financeiras desativadas. |
-
-O shell distingue a navegacao publica da area profissional e adapta a navegacao para telas pequenas. Icones e elementos decorativos nao representam uma logo oficial.
-
-O hero da home agora usa o arquivo visual exportado do Stitch, salvo localmente em `public/stitch-vet-hero.webp`, em vez do ícone decorativo usado como ilustração.
+| `/` | Landing pública com hero, triagem rápida, especialistas, Pet Shop B2B, DrVet Ads, cockpit clínico, CFMV e depoimentos. | Ativa; encaminha a triagem (`?species=&need=&timing=`) diretamente para `/agendamento/edit`. |
+| `/cadastro` | Onboarding público via QR Code do Pet Shop parceiro (`?cupom=&parceiro=`). | Cadastro/login do tutor, vínculo do 1º pet e handoff de cupom para `/agendamento/edit`. |
+| `/agenda` | Painel semanal do veterinário com indicadores, organização e bloqueio/liberação de horários. | Conectada a `professional_availability`, `appointments`, `organizations` e `veterinarian_profiles`. |
+| `/agendamento` e `/agendamento/edit` | Lista de consultas + fluxo responsivo de agendamento com filtro `?vet=` e `?cupom=`. | Conectadas a `pets`, `professional_availability`, `appointments` e Storage (`pet-avatars`). |
+| `/prontuarios` e `/prontuarios/[appointmentId]` | Índice e editor SOAP por consulta com sinais vitais e anexos clínicos. | Rascunho e finalização imutável via RPC `save_clinical_record` + bucket privado `clinical-attachments`. |
+| `/carteira/vacinas` | Carteira vacinal do paciente com histórico e alertas. | Leitura autorizada + registro via `create_vaccination_record`. |
+| `/exames` | Pedidos laboratoriais/imagem, registro de resultado e upload de laudos. | RPCs `create_exam_order`/`record_exam_result` + bucket privado `exam-reports`. |
+| `/receitas` | Rascunho de prescrição estruturada vinculado ao atendimento e prévia lateral. | Persistência via `save_prescription_draft` (emissão ICP-Brasil/assinatura aguardando provedor). |
+| `/comissoes` | Indicadores financeiros D+1, extrato `commission_ledger` e solicitação de antecipação. | Integrada a `payout_accounts`, `commission_ledger` e Edge Function / RPC `request-anticipation`. |
+| `/teleconsulta`, `/assinaturas`, `/pagamentos`, `/parceiros`, `/anuncios` | Sala de vídeo/chat Realtime, Clube DrVet, checkout com cupons, portal B2B e DrVet Ads. | Conectadas às tabelas e RPCs criadas nas migrações `20261113000400` e `20261113000500`. |
+| `/painel`, `/painel/veterinario`, `/painel/parceiro`, `/admin`, `/admin/integracoes`, `/apresentacao` | Central operacional (busca de especialistas, CSV/OFX, contratos), cockpits por perfil, Master Admin RBAC e deck executivo. | Ativas no App Router e protegidas por `middleware.ts`. |
 
 ## Rotas Next.js observadas (27 rotas ativas)
 
@@ -61,9 +58,9 @@ O hero da home agora usa o arquivo visual exportado do Stitch, salvo localmente 
 
 Todas as rotas da barra lateral, cabeçalho e matriz de permissões RBAC (`middleware.ts`) estão conectadas. A execução real contra banco depende apenas da configuração de `.env.local` e aplicação das migrations em `supabase/migrations/`.
 
-## Inventario completo dos exports
+## Inventario completo dos exports (histórico Stitch → rotas consolidadas)
 
-A coluna Supabase descreve o codigo observado, nao o banco remoto. Acoes e perfis sao hipoteses para orientar a proxima fase.
+A tabela abaixo preserva o mapeamento histórico dos **110 protótipos HTML** originais do Stitch para referência visual; todas as rotas-alvo listadas na coluna **Rota atual/alvo** já estão implementadas no App Router conforme a seção anterior.
 
 | # | Tela (titulo do HTML) | Arquivos no diretorio | Rota atual/alvo | Perfil aparente | Supabase observado | Acoes inferidas | Status da tela |
 |---:|---|---|---|---|---|---|---|

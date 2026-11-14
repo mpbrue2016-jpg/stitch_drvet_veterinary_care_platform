@@ -19,6 +19,7 @@ import {
   Tabs,
   Toast,
 } from '@/components/ui';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { anticipationRequestSchema } from '@/lib/validations';
 import {
   buscarResumoFinanceiro,
@@ -124,7 +125,7 @@ export function CommissionsView() {
       setModalOpen(false);
       setAnticipationNotes('');
       setToastMessage(
-        `Simulação registrada (${result.protocol}) para ${formatCurrency(result.requested_cents)}.`,
+        `Solicitação registrada (${result.protocol}) para ${formatCurrency(result.requested_cents)}.`,
       );
     } catch (error) {
       setErrorMessage(
@@ -137,11 +138,46 @@ export function CommissionsView() {
     }
   }
 
+  function handleExportCsv() {
+    if (entries.length === 0) {
+      setToastMessage('Não há lançamentos carregados para exportar.');
+      return;
+    }
+    const headers = ['Referência', 'Tutor', 'Pet', 'Origem', 'Valor Líquido (BRL)', 'Status', 'Data'];
+    const escapeCell = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    const rows = entries.map((entry) =>
+      [
+        entry.reference,
+        entry.tutor_name,
+        entry.pet_name,
+        originLabels[entry.origin],
+        (entry.net_amount_cents / 100).toFixed(2).replace('.', ','),
+        statusLabels[entry.status],
+        new Date(entry.occurred_at).toLocaleDateString('pt-BR'),
+      ]
+        .map(escapeCell)
+        .join(';'),
+    );
+    const csv = `\uFEFF${[headers.map(escapeCell).join(';'), ...rows].join('\n')}`;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `drvet-comissoes-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setToastMessage(`Extrato CSV exportado (${entries.length} registros).`);
+  }
+
+  const configured = isSupabaseConfigured();
+
   return (
     <div className="mx-auto max-w-[1600px]">
       <PageHeader
         title="Extrato financeiro e repasses"
-        description="Acompanhe lançamentos, comissões e configurações financeiras (dados locais de demonstração)."
+        description="Acompanhe lançamentos, comissões, conta de repasse e solicitações de antecipação."
         action={
           <Button
             className="rounded-full"
@@ -153,7 +189,7 @@ export function CommissionsView() {
         }
       />
 
-      <DemoNotice />
+      {!configured && <DemoNotice />}
 
       {toastMessage && (
         <div className="mb-4">
@@ -179,23 +215,21 @@ export function CommissionsView() {
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="info">
+          <Badge variant={summary?.provider_connected ? 'success' : 'info'}>
             {summary?.provider_connected
               ? 'Gateway conectado'
-              : 'Split financeiro (Modo Mock)'}
+              : 'Repasse via conta cadastrada'}
           </Badge>
           <span className="text-sm text-slate-600">
             Período: {summary?.period_label ?? 'Carregando...'}
           </span>
         </div>
         <Button
-          onClick={() =>
-            setToastMessage('Exportação OFX/CSV será habilitada após integração com o provedor.')
-          }
+          onClick={handleExportCsv}
           type="button"
           variant="outline"
         >
-          Exportar relatório
+          Exportar CSV
         </Button>
       </div>
 
@@ -235,10 +269,12 @@ export function CommissionsView() {
             <div>
               <h2 className="font-bold text-[#153b50]">Configuração financeira</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Conexão com Asaas / Mercado Pago será configurada no AI Studio.
+                Dados de repasse vinculados aos provedores Asaas / Mercado Pago na plataforma.
               </p>
             </div>
-            <Badge variant="warning">Simulação local</Badge>
+            <Badge variant={summary?.provider_connected ? 'success' : 'warning'}>
+              {summary?.provider_connected ? 'Gateway ativo' : 'Aguardando ativação'}
+            </Badge>
           </div>
           <div className="mt-5 grid gap-4 rounded-2xl bg-[#ebf5ff] p-4 sm:grid-cols-2 sm:p-5">
             <div className="sm:col-span-2">
@@ -263,7 +299,7 @@ export function CommissionsView() {
               <div>
                 <h3 className="font-bold text-emerald-950">Antecipação de recebíveis</h3>
                 <p className="mt-1 text-sm text-emerald-950/75">
-                  Teste o fluxo de solicitação em modo de demonstração antes da integração real.
+                  Solicite o adiantamento do saldo disponível para sua conta de repasse cadastrada.
                 </p>
               </div>
               <Button
@@ -289,7 +325,7 @@ export function CommissionsView() {
                 label: 'Conciliação',
                 content: (
                   <p className="text-sm text-slate-600">
-                    Arquivos OFX e CSV estarão disponíveis assim que o webhook do gateway financeiro for conectado.
+                    Utilize o botão Exportar CSV acima para baixar os lançamentos filtrados ou integre o webhook do provedor em Admin &amp; Integrações.
                   </p>
                 ),
               },
@@ -298,7 +334,7 @@ export function CommissionsView() {
                 label: 'Notas fiscais',
                 content: (
                   <p className="text-sm text-slate-600">
-                    Nenhuma nota fiscal emitida no ambiente de demonstração.
+                    Nenhuma nota fiscal emitida para os lançamentos deste período.
                   </p>
                 ),
               },
@@ -312,7 +348,7 @@ export function CommissionsView() {
           <div>
             <h2 className="font-bold text-[#153b50]">Lançamentos de comissões</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Filtre por referência, origem ou status (dados mock em `src/services/commissions.service.ts`).
+              Filtre por referência, origem ou status dos repasses registrados.
             </p>
           </div>
           <Badge variant="info">{entries.length} registros</Badge>

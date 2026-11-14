@@ -623,8 +623,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
         )}
       </Card>
       <p className="text-xs leading-5 text-slate-500">
-        Resultados são registros informativos associados ao pedido; anexos e integração
-        com laboratórios ainda não estão habilitados.
+        Resultados e laudos anexados (bucket privado exam-reports) permanecem vinculados ao pedido e ao histórico do paciente.
       </p>
     </div>
   );
