@@ -2,7 +2,11 @@ import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+import { normalizeSupabaseUrl } from './supabase/config';
+
+const supabaseUrl = normalizeSupabaseUrl(
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+);
 const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
@@ -18,7 +22,7 @@ let browserClient: SupabaseClient<Database, 'public'> | null = null;
 export function getSupabaseClient(): SupabaseClient<Database, 'public'> {
   if (!isSupabaseEnvConfigured) {
     throw new Error(
-      'Configuração do Supabase ausente. Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no arquivo .env.local.',
+      'Configuração do Supabase ausente. Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY no arquivo .env.local.',
     );
   }
   if (!browserClient) {

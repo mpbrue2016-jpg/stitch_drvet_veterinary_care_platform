@@ -1,15 +1,20 @@
+export function normalizeSupabaseUrl(rawUrl: string): string {
+  return rawUrl.trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
+}
+
 export function getSupabasePublicConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !key) {
+  if (!rawUrl || !key) {
     throw new Error(
       'Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou NEXT_PUBLIC_SUPABASE_ANON_KEY) no .env.local.',
     );
   }
 
+  const url = normalizeSupabaseUrl(rawUrl);
   const parsedUrl = new URL(url);
   const isLoopback =
     parsedUrl.hostname === 'localhost' ||
