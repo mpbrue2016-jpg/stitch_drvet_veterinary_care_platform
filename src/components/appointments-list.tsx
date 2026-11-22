@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, EmptyState, Skeleton } from '@/components/ui';
+import { PushInlineBanner } from '@/components/push-inline-banner';
 import {
   atualizarStatusAgendamento,
   listarAgendamentos,
@@ -83,6 +84,10 @@ export function AppointmentsList() {
         >
           Novo agendamento
         </Link>
+      </div>
+
+      <div className="mt-4">
+        <PushInlineBanner audience="tutor" />
       </div>
 
       {errorMessage && (

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const createPetSchema = z
   .object({
@@ -45,10 +46,7 @@ export async function GET() {
     .order('name');
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os pets.' },
-      { status: 500 },
-    );
+    return supabaseErrorResponse(error, 'Não foi possível carregar os pets.', 500);
   }
 
   return NextResponse.json({ pets: data });
@@ -88,10 +86,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível cadastrar o pet.' },
-      { status: 500 },
-    );
+    return supabaseErrorResponse(error, 'Não foi possível cadastrar o pet.', 500);
   }
 
   return NextResponse.json({ pet: data }, { status: 201 });

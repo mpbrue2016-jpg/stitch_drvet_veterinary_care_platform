@@ -14,6 +14,7 @@ const navigation = [
   { href: '/painel/veterinario', label: 'Painel Veterinário', icon: 'dashboard' },
   { href: '/agenda', label: 'Agenda & Consultas', icon: 'calendar' },
   { href: '/agendamento', label: 'Agendamentos', icon: 'event' },
+  { href: '/notificacoes', label: 'Notificações & Push', icon: 'bell' },
   { href: '/teleconsulta', label: 'Sala de Teleconsulta', icon: 'event' },
   { href: '/pets', label: 'Meus Pets', icon: 'health' },
   { href: '/prontuarios', label: 'Prontuários SOAP', icon: 'document' },
@@ -41,6 +42,7 @@ const navigationIconPaths = {
   health: 'M12 3v18M3 12h18M5.5 5.5l13 13m0-13-13 13',
   document: 'M7 3h7l4 4v14H7a2 2 0 01-2-2V5a2 2 0 012-2zm7 0v5h5m-10 4h6m-6 4h6',
   payments: 'M3 6h18v13H3V6zm0 4h18M7 3h10M7 14h4',
+  bell: 'M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
 } as const;
 
 function NavigationIcon({ name }: { name: keyof typeof navigationIconPaths }) {
@@ -78,10 +80,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isPublicRoute =
     isPublicHome ||
     pathname === '/cadastro' ||
-    pathname === '/apresentacao';
+    pathname === '/apresentacao' ||
+    pathname === '/setup-supabase';
   const isAuthPage = pathname === '/login' || pathname === '/senha/nova';
   const pageTitle =
-    navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
+    pathname === '/setup-supabase'
+      ? 'Conexão Supabase & 12 Migrations SQL'
+      : navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
 
   useEffect(() => {
     if (!isSupabaseConfigured() || isPublicRoute || isAuthPage) return;
@@ -177,8 +182,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="mt-1">
               {isSupabaseConfigured()
                 ? 'Conecte uma conta autorizada para acessar os dados clínicos.'
-                : 'Configure NEXT_PUBLIC_SUPABASE_URL e ANON_KEY em .env.local para ativar os dados.'}
+                : 'Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY em .env.local.'}
             </p>
+            <Link
+              className="mt-2 inline-flex font-bold text-[#0B68C2] hover:underline"
+              href="/setup-supabase"
+            >
+              Schema &amp; 12 Migrations SQL →
+            </Link>
           </div>
         </aside>
       )}

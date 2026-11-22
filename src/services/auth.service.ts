@@ -1,6 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase';
 import type { UserProfile } from '@/types/entities';
-import { toFriendlyError } from './errors';
+import { isSchemaMissingError, toFriendlyError } from './errors';
 
 function mapAuthError(error: unknown, fallback: string): Error {
   const raw =
@@ -125,7 +125,7 @@ export async function buscarPerfilAtual(): Promise<UserProfile | null> {
       .eq('id', authData.user.id)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error && !isSchemaMissingError(error)) throw error;
     if (!profile) {
       return {
         id: authData.user.id,

@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabasePublicConfig, isSupabaseConfigured } from '@/lib/supabase/config';
+import { isSchemaMissingError } from '@/services/errors';
 import type { Database } from '@/types/database';
 
 const protectedPaths = [
@@ -21,6 +22,7 @@ const protectedPaths = [
   '/receitas',
   '/comissoes',
   '/painel',
+  '/notificacoes',
   '/senha/nova',
 ];
 
@@ -92,7 +94,10 @@ export async function middleware(request: NextRequest) {
   );
 
   if (requiresProfessionalRole) {
-    const [{ data: profile }, { data: memberships }] = await Promise.all([
+    const [
+      { data: profile, error: profileError },
+      { data: memberships, error: membershipError },
+    ] = await Promise.all([
       supabase
         .from('profiles')
         .select('role')
@@ -104,6 +109,17 @@ export async function middleware(request: NextRequest) {
         .eq('user_id', data.user.id)
         .limit(1),
     ]);
+
+    if (isSchemaMissingError(profileError) || isSchemaMissingError(membershipError)) {
+      const setupUrl = request.nextUrl.clone();
+      setupUrl.pathname = '/setup-supabase';
+      setupUrl.search = '';
+      const redirect = NextResponse.redirect(setupUrl);
+      response.cookies.getAll().forEach((cookie) =>
+        redirect.cookies.set(cookie),
+      );
+      return redirect;
+    }
 
     const role = profile?.role ?? 'tutor';
     const hasOrgMembership = (memberships?.length ?? 0) > 0;
@@ -132,11 +148,22 @@ export async function middleware(request: NextRequest) {
   );
 
   if (requiresAdminRole) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', data.user.id)
       .maybeSingle();
+
+    if (isSchemaMissingError(profileError)) {
+      const setupUrl = request.nextUrl.clone();
+      setupUrl.pathname = '/setup-supabase';
+      setupUrl.search = '';
+      const redirect = NextResponse.redirect(setupUrl);
+      response.cookies.getAll().forEach((cookie) =>
+        redirect.cookies.set(cookie),
+      );
+      return redirect;
+    }
 
     if (profile?.role !== 'admin') {
       const restrictedUrl = request.nextUrl.clone();
@@ -171,6 +198,7 @@ export const config = {
     '/receitas/:path*',
     '/comissoes/:path*',
     '/painel/:path*',
+    '/notificacoes/:path*',
     '/senha/nova',
   ],
 };

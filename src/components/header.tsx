@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { isSupabaseEnvConfigured } from '@/lib/supabase';
+import { NotificationBell } from '@/components/notification-bell';
 
 export function PawMark({ small = false }: { small?: boolean }) {
   return (
@@ -253,8 +254,9 @@ export function WorkspaceHeader({
             <p className="text-lg font-bold text-brand-ink">{pageTitle}</p>
           </div>
         </div>
-        <div className="hidden items-center gap-3 sm:flex">
-          <span className="rounded-full bg-[#dff0ff] px-3 py-1.5 text-xs font-semibold text-slate-700">
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+          <span className="hidden rounded-full bg-[#dff0ff] px-3 py-1.5 text-xs font-semibold text-slate-700 sm:inline-flex">
             {isSupabaseEnvConfigured ? 'Sessão autenticada' : 'Modo demonstração (Mock)'}
           </span>
           <span className="hidden text-sm font-medium text-brand-muted xl:block">
@@ -262,7 +264,7 @@ export function WorkspaceHeader({
           </span>
           {isSupabaseEnvConfigured ? (
             <button
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="hidden rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:inline-flex"
               onClick={onSignOut}
               type="button"
             >
@@ -270,7 +272,7 @@ export function WorkspaceHeader({
             </button>
           ) : (
             <Link
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="hidden rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:inline-flex"
               href="/login"
             >
               Entrar

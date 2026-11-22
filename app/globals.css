@@ -1,8 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "../src/styles/tokens.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-plus-jakarta: 'Plus Jakarta Sans';
+  --font-caveat: 'Caveat';
+}
 
 html {
   min-width: 320px;

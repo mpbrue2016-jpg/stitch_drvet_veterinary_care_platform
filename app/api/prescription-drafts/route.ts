@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const itemSchema = z
   .object({
@@ -62,9 +63,10 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await query;
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os rascunhos de receita.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível carregar os rascunhos de receita.',
+      500,
     );
   }
 
@@ -111,14 +113,12 @@ export async function POST(request: NextRequest) {
           : error.code === '22023'
             ? 400
             : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '22023'
-            ? 'Revise os itens e os limites de texto do rascunho.'
-            : 'Não foi possível salvar o rascunho de receita.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '22023'
+        ? 'Revise os itens e os limites de texto do rascunho.'
+        : 'Não foi possível salvar o rascunho de receita.',
+      status,
     );
   }
 

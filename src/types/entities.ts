@@ -4,6 +4,7 @@ import type {
   ClinicalRecordStatus,
   ExamModality,
   ExamOrderStatus,
+  NotificationKind,
   OrganizationRole,
   ProfessionalStatus,
 } from './database';
@@ -14,9 +15,38 @@ export type {
   ClinicalRecordStatus,
   ExamModality,
   ExamOrderStatus,
+  NotificationKind,
   OrganizationRole,
   ProfessionalStatus,
 };
+
+export interface PushNotificationItem {
+  id: string;
+  recipient_id: string;
+  appointment_id: string | null;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  action_url: string;
+  read_at: string | null;
+  pushed_at: string | null;
+  created_at: string;
+}
+
+export interface PushSubscriptionItem {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  user_agent: string | null;
+  role_hint: 'tutor' | 'veterinarian' | 'partner' | 'admin';
+  reminder_lead_minutes: number;
+  notify_appointments: boolean;
+  notify_queue: boolean;
+  is_active: boolean;
+  last_notified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface UserProfile {
   id: string;

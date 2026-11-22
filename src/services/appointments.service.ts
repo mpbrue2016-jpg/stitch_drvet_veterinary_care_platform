@@ -150,6 +150,14 @@ export async function criarAgendamento(
       throw error;
     }
 
+    if (typeof window !== 'undefined') {
+      void fetch('/api/push/dispatch-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointmentId: data.id, event: 'created' }),
+      }).catch(() => null);
+    }
+
     const petById = await attachPetSummaries([data]);
     return {
       appointment: {
@@ -174,6 +182,17 @@ export async function atualizarStatusAgendamento(
     });
 
     if (error) throw error;
+
+    if (
+      typeof window !== 'undefined' &&
+      (status === 'confirmed' || status === 'cancelled')
+    ) {
+      void fetch('/api/push/dispatch-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointmentId: data.id, event: status }),
+      }).catch(() => null);
+    }
 
     const petById = await attachPetSummaries([data]);
     return {

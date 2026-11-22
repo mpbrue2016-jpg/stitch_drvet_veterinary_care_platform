@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const registerVeterinarianSchema = z
   .object({
@@ -54,9 +55,10 @@ export async function POST(request: NextRequest) {
   if (error) {
     const status =
       error.code === '42501' ? 403 : error.code === '23505' ? 409 : 400;
-    return NextResponse.json(
-      { error: 'Não foi possível cadastrar. Confirme a conta e as permissões.' },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível cadastrar. Confirme a conta e as permissões.',
+      status,
     );
   }
 
@@ -93,9 +95,10 @@ export async function PATCH(request: NextRequest) {
   if (error) {
     const status =
       error.code === '42501' ? 403 : error.code === 'P0002' ? 404 : 400;
-    return NextResponse.json(
-      { error: 'Não foi possível aprovar este profissional.' },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível aprovar este profissional.',
+      status,
     );
   }
 

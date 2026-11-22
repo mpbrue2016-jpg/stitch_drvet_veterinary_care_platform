@@ -48,6 +48,12 @@ export type AdPlacement = 'home_banner' | 'booking_sidebar' | 'partner_coupon';
 export type AdCampaignStatus = 'draft' | 'active' | 'paused' | 'ended';
 export type IntegrationProvider = 'asaas' | 'mercado_pago' | 'livekit' | 'bling' | 'omie';
 export type IntegrationEnvironment = 'sandbox' | 'production';
+export type NotificationKind =
+  | 'appointment_reminder'
+  | 'appointment_confirmed'
+  | 'appointment_cancelled'
+  | 'vet_queue_new'
+  | 'system_test';
 
 export interface Database {
   public: {
@@ -652,6 +658,68 @@ export interface Database {
           updated_at?: string;
         }
       >;
+      push_subscriptions: Table<
+        {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth_secret: string;
+          user_agent: string | null;
+          role_hint: UserRole;
+          reminder_lead_minutes: number;
+          notify_appointments: boolean;
+          notify_queue: boolean;
+          is_active: boolean;
+          last_notified_at: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth_secret: string;
+          user_agent?: string | null;
+          role_hint?: UserRole;
+          reminder_lead_minutes?: number;
+          notify_appointments?: boolean;
+          notify_queue?: boolean;
+          is_active?: boolean;
+          last_notified_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
+      notifications: Table<
+        {
+          id: string;
+          recipient_id: string;
+          appointment_id: string | null;
+          kind: NotificationKind;
+          title: string;
+          body: string;
+          action_url: string;
+          dedupe_key: string | null;
+          read_at: string | null;
+          pushed_at: string | null;
+          created_at: string;
+        },
+        {
+          id?: string;
+          recipient_id: string;
+          appointment_id?: string | null;
+          kind: NotificationKind;
+          title: string;
+          body: string;
+          action_url?: string;
+          dedupe_key?: string | null;
+          read_at?: string | null;
+          pushed_at?: string | null;
+          created_at?: string;
+        }
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -778,6 +846,14 @@ export interface Database {
           target_coupon?: string | null;
         };
         Returns: Database['public']['Tables']['payment_orders']['Row'];
+      };
+      enqueue_appointment_reminders: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database['public']['Tables']['notifications']['Row'][];
+      };
+      mark_all_notifications_read: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
       };
     };
     Enums: {

@@ -13,6 +13,8 @@ import {
   Skeleton,
   Toast,
 } from '@/components/ui';
+import { PushInlineBanner } from '@/components/push-inline-banner';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { atualizarStatusAgendamento, listarAgendamentos } from '@/services/appointments.service';
 import { buscarPerfilAtual } from '@/services/auth.service';
@@ -103,6 +105,32 @@ export function VetDashboard() {
     void loadDashboard();
   }, [loadDashboard]);
 
+  const currentVetId = profile?.id ?? '';
+
+  useEffect(() => {
+    if (!configured || !currentVetId) return;
+    const supabase = createSupabaseBrowserClient();
+    const channel = supabase
+      .channel(`vet-queue-live-${currentVetId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'appointments',
+          filter: `veterinarian_id=eq.${currentVetId}`,
+        },
+        () => {
+          void loadDashboard();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [configured, currentVetId, loadDashboard]);
+
   async function handleStatusTransition(
     id: string,
     status: Extract<AppointmentStatus, 'confirmed' | 'cancelled' | 'completed'>,
@@ -157,6 +185,7 @@ export function VetDashboard() {
       />
 
       {!configured && <DemoNotice />}
+      <PushInlineBanner audience="veterinarian" />
       {notice && (
         <div className="mb-4">
           <Toast message={notice} onDismiss={() => setNotice('')} variant="success" />

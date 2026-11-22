@@ -1,21 +1,6 @@
 import type { Metadata } from 'next';
-import { Caveat, Plus_Jakarta_Sans } from 'next/font/google';
 import { AppShell } from '@/components/app-shell';
 import './globals.css';
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-plus-jakarta',
-  display: 'swap',
-});
-
-const caveat = Caveat({
-  subsets: ['latin'],
-  weight: ['600', '700'],
-  variable: '--font-caveat',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +9,11 @@ export const metadata: Metadata = {
   },
   description:
     'Plataforma de telemedicina veterinária 24h, prontuário clínico, prescrição ICP-Brasil e ecossistema pet DrVets.',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/pwa-192x192.png',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'DrVets — Telemedicina Veterinária 24h | Seu pet sempre por perto',
     description:
@@ -39,10 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      className={`${plusJakarta.variable} ${caveat.variable}`}
-      lang="pt-BR"
-    >
+    <html lang="pt-BR">
       <body className="bg-brand-floor font-sans text-brand-ink">
         <AppShell>{children}</AppShell>
       </body>

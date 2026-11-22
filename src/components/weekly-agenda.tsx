@@ -12,6 +12,7 @@ import {
   PageHeader,
   Skeleton,
 } from '@/components/ui';
+import { PushInlineBanner } from '@/components/push-inline-banner';
 import { listarAgendamentos } from '@/services/appointments.service';
 import type { Appointment } from '@/types/entities';
 
@@ -173,6 +174,7 @@ export function WeeklyAgenda({ setup }: { setup?: ReactNode }) {
       />
 
       {setup}
+      <PushInlineBanner audience="veterinarian" />
 
       {errorMessage && (
         <div

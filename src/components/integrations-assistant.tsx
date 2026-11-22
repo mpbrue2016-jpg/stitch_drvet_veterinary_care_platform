@@ -15,8 +15,10 @@ import {
   Skeleton,
   Toast,
 } from '@/components/ui';
+import { SupabaseSchemaPanel } from '@/components/supabase-schema-panel';
 import { getSupabaseClient } from '@/lib/supabase';
 import { listarIntegracoes, salvarIntegracao } from '@/services/admin.service';
+import { isSchemaMissingError } from '@/services/errors';
 import type {
   IntegrationConfig,
   IntegrationEnvironment,
@@ -67,11 +69,18 @@ export function IntegrationsAssistant() {
       const result = await listarIntegracoes();
       setIntegrations(result.integrations);
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível carregar as integrações.',
-      );
+      if (isSchemaMissingError(error)) {
+        setIntegrations([]);
+        setNotice(
+          'Aguardando aplicação das 11 migrations SQL no Supabase para liberar integration_configs.',
+        );
+      } else {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar as integrações.',
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -108,15 +117,19 @@ export function IntegrationsAssistant() {
     setNotice('');
     const started = performance.now();
     try {
-      const supabase = getSupabaseClient();
-      const { error } = await supabase
-        .from('subscription_plans')
-        .select('id')
-        .limit(1);
-      if (error) throw error;
+      const schemaRes = await fetch('/api/supabase/schema-status', {
+        cache: 'no-store',
+      });
+      const schema = (await schemaRes.json()) as {
+        authOk: boolean;
+        locatedTablesCount: number;
+        totalTables: number;
+        schemaReady: boolean;
+      };
       const elapsed = Math.round(performance.now() - started);
 
       let realtimeOk = false;
+      const supabase = getSupabaseClient();
       await new Promise<void>((resolve) => {
         const channel = supabase.channel(`health-check-${Date.now()}`);
         const timer = setTimeout(() => {
@@ -134,13 +147,17 @@ export function IntegrationsAssistant() {
       });
 
       setDbHealth({
-        status: '200 OK · PostgreSQL & RLS ativos',
+        status: schema.schemaReady
+          ? '200 OK · PostgreSQL & RLS ativos'
+          : `Auth OK · ${schema.locatedTablesCount}/${schema.totalTables} tabelas no schema`,
         latencyMs: elapsed,
         realtimeOk,
         checkedAt: new Date().toISOString(),
       });
       setNotice(
-        `Conexão validada em ${elapsed} ms${realtimeOk ? ' com Realtime CDC ativo' : ''}.`,
+        schema.schemaReady
+          ? `Conexão validada em ${elapsed} ms (${schema.totalTables}/${schema.totalTables} tabelas)${realtimeOk ? ' com Realtime CDC ativo' : ''}.`
+          : `Auth conectado em ${elapsed} ms. Localizadas ${schema.locatedTablesCount} de ${schema.totalTables} tabelas — execute o SQL consolidado abaixo no SQL Editor.`,
       );
     } catch (error) {
       setDbHealth({
@@ -351,6 +368,8 @@ export function IntegrationsAssistant() {
           </div>
         )}
       </Card>
+
+      <SupabaseSchemaPanel />
     </div>
   );
 }
