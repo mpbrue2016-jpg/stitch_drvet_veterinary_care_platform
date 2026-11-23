@@ -1,38 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, PageHeader } from '@/components/ui';
+import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/ui';
+import { createExamOrderSchema, recordExamResultSchema } from '@/lib/validations';
+import { listarAgendamentos } from '@/services/appointments.service';
+import {
+  criarPedidoExame,
+  listarPedidosExames,
+  registrarResultadoExame,
+} from '@/services/exam-orders.service';
+import {
+  excluirArquivoStorage,
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+  type StorageFileEntry,
+} from '@/services/storage.service';
+import type { Appointment, ExamModality, ExamOrder } from '@/types/entities';
 
-type Pet = { id: string; name: string; species: string };
-type Appointment = {
-  id: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  starts_at: string;
-  ends_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: Pet | null;
-};
-type ExamOrder = {
-  id: string;
-  appointment_id: string;
-  pet_id: string;
-  veterinarian_id: string;
-  modality: 'laboratory' | 'imaging';
-  exam_name: string;
-  clinical_indication: string;
-  instructions: string | null;
-  status: 'requested' | 'resulted';
-  result_summary: string | null;
-  laboratory_name: string | null;
-  performed_at: string | null;
-  requested_at: string;
-  resulted_at: string | null;
-  pet: Pet | null;
-};
 type OrderFields = {
   appointment_id: string;
-  modality: 'laboratory' | 'imaging';
+  modality: ExamModality;
   exam_name: string;
   clinical_indication: string;
   instructions: string;
@@ -64,48 +53,63 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
   const [currentUserId, setCurrentUserId] = useState('');
   const [orderFields, setOrderFields] = useState<OrderFields>(initialOrder);
   const [resultFields, setResultFields] = useState<Record<string, ResultFields>>({});
+  const [attachmentsByOrder, setAttachmentsByOrder] = useState<
+    Record<string, Array<StorageFileEntry & { signedUrl: string }>>
+  >({});
+  const [uploadingOrderId, setUploadingOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
 
+  const loadOrderAttachments = useCallback(async (loadedOrders: ExamOrder[]) => {
+    if (loadedOrders.length === 0) {
+      setAttachmentsByOrder({});
+      return;
+    }
+
+    const entries = await Promise.all(
+      loadedOrders.map(async (order) => {
+        try {
+          const files = await listarArquivosStorage(
+            'exam-reports',
+            `${order.pet_id}/${order.id}`,
+          );
+          const withUrls = await Promise.all(
+            files.map(async (file) => {
+              const signedUrl = await obterUrlAssinadaStorage(
+                'exam-reports',
+                file.fullPath,
+                600,
+              ).catch(() => '');
+              return { ...file, signedUrl };
+            }),
+          );
+          return [order.id, withUrls] as const;
+        } catch {
+          return [order.id, []] as const;
+        }
+      }),
+    );
+
+    setAttachmentsByOrder(Object.fromEntries(entries));
+  }, []);
+
   const loadData = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      const ordersUrl = appointmentId
-        ? `/api/exam-orders?appointmentId=${encodeURIComponent(appointmentId)}`
-        : '/api/exam-orders';
-      const [appointmentsResponse, ordersResponse] = await Promise.all([
-        fetch('/api/appointments'),
-        fetch(ordersUrl),
+      const [appointmentsResult, ordersResult] = await Promise.all([
+        listarAgendamentos(),
+        listarPedidosExames(appointmentId || undefined),
       ]);
-      const appointmentsResult: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } = await appointmentsResponse.json();
-      const ordersResult: {
-        examOrders?: ExamOrder[];
-        error?: string;
-      } = await ordersResponse.json();
 
-      if (!appointmentsResponse.ok) {
-        throw new Error(
-          appointmentsResult.error ?? 'Não foi possível carregar os atendimentos.',
-        );
-      }
-      if (!ordersResponse.ok) {
-        throw new Error(
-          ordersResult.error ?? 'Não foi possível carregar os exames.',
-        );
-      }
-
-      const loadedAppointments = appointmentsResult.appointments ?? [];
+      const loadedAppointments = appointmentsResult.appointments;
       setAppointments(loadedAppointments);
-      setCurrentUserId(appointmentsResult.currentUserId ?? '');
-      const loadedOrders = ordersResult.examOrders ?? [];
+      setCurrentUserId(appointmentsResult.currentUserId);
+      const loadedOrders = ordersResult.examOrders;
       setOrders(loadedOrders);
+      void loadOrderAttachments(loadedOrders);
       setResultFields((current) => {
         const next = { ...current };
         loadedOrders.forEach((order) => {
@@ -126,16 +130,61 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : 'Erro ao carregar solicitações de exames.',
+        error instanceof Error
+          ? error.message
+          : 'Erro ao carregar solicitações de exames.',
       );
     } finally {
       setLoading(false);
     }
-  }, [appointmentId]);
+  }, [appointmentId, loadOrderAttachments]);
 
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  async function handleUploadReport(order: ExamOrder, file: File | null) {
+    if (!file) return;
+    setErrorMessage('');
+    setNotice('');
+    setUploadingOrderId(order.id);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${order.pet_id}/${order.id}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'exam-reports',
+        path,
+        file,
+      });
+      await loadOrderAttachments(orders);
+      setNotice('Arquivo anexado ao exame com sucesso.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao enviar o anexo do exame.',
+      );
+    } finally {
+      setUploadingOrderId(null);
+    }
+  }
+
+  async function handleDeleteReport(orderId: string, fullPath: string) {
+    setErrorMessage('');
+    setNotice('');
+    setUploadingOrderId(orderId);
+    try {
+      await excluirArquivoStorage('exam-reports', [fullPath]);
+      await loadOrderAttachments(orders);
+      setNotice('Anexo removido do exame.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao remover o anexo.',
+      );
+    } finally {
+      setUploadingOrderId(null);
+    }
+  }
 
   const eligibleAppointments = useMemo(
     () =>
@@ -151,22 +200,23 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
 
   async function createOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = createExamOrderSchema.safeParse({
+      ...orderFields,
+      instructions: orderFields.instructions.trim() || null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Preencha corretamente os dados do exame.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/exam-orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...orderFields,
-          instructions: orderFields.instructions.trim() || null,
-        }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível solicitar o exame.');
-      }
+      await criarPedidoExame(parsed.data);
       setOrderFields((current) => ({
         ...initialOrder,
         appointment_id: current.appointment_id,
@@ -190,26 +240,27 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     const values = resultFields[orderId];
     if (!values) return;
 
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = recordExamResultSchema.safeParse({
+      id: orderId,
+      result_summary: values.result_summary,
+      laboratory_name: values.laboratory_name.trim() || null,
+      performed_at: values.performed_at
+        ? new Date(values.performed_at).toISOString()
+        : null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Confira os dados do resultado.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/exam-orders', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: orderId,
-          result_summary: values.result_summary,
-          laboratory_name: values.laboratory_name.trim() || null,
-          performed_at: values.performed_at
-            ? new Date(values.performed_at).toISOString()
-            : null,
-        }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível registrar o resultado.');
-      }
+      await registrarResultadoExame(parsed.data);
       setNotice('Resultado registrado e bloqueado para alterações.');
       await loadData();
     } catch (error) {
@@ -229,9 +280,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       />
 
       {errorMessage && (
-        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {errorMessage}
-        </p>
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          role="alert"
+        >
+          <p>{errorMessage}</p>
+          <Button type="button" variant="outline" onClick={() => void loadData()}>
+            Tentar novamente
+          </Button>
+        </div>
       )}
       {notice && (
         <p
@@ -356,16 +413,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
         description="Resultados são adicionados uma vez e não podem ser alterados pela aplicação."
       >
         {loading ? (
-          <p className="py-8 text-center text-sm text-slate-500">
-            Carregando exames...
-          </p>
-        ) : orders.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
-            <p className="font-semibold text-[#153b50]">Nenhum exame encontrado</p>
-            <p className="mt-2 text-sm text-slate-600">
-              Os pedidos aparecerão após serem registrados para um atendimento.
-            </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-28 w-full rounded-2xl" />
+            <Skeleton className="h-28 w-full rounded-2xl" />
           </div>
+        ) : orders.length === 0 ? (
+          <EmptyState
+            title="Nenhum exame encontrado"
+            description="Os pedidos aparecerão após serem registrados para um atendimento."
+          />
         ) : (
           <ul className="grid gap-4">
             {orders.map((order) => (
@@ -378,9 +434,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                         ? `${order.pet.name} · ${order.pet.species}`
                         : 'Paciente'}
                       {' · '}
-                      {order.modality === 'laboratory'
-                        ? 'Laboratorial'
-                        : 'Imagem'}
+                      {order.modality === 'laboratory' ? 'Laboratorial' : 'Imagem'}
                     </p>
                   </div>
                   <Badge variant={order.status === 'resulted' ? 'success' : 'warning'}>
@@ -417,6 +471,70 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                     )}
                   </div>
                 )}
+
+                <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-bold uppercase tracking-wide text-[#153b50]">
+                      Anexos e laudos (PDF ou imagem)
+                    </p>
+                    <label className="inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-[#153b50] hover:bg-[#ebf5ff]">
+                      {uploadingOrderId === order.id ? 'Enviando...' : 'Anexar arquivo'}
+                      <input
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        disabled={uploadingOrderId === order.id}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0] ?? null;
+                          event.target.value = '';
+                          void handleUploadReport(order, file);
+                        }}
+                        type="file"
+                      />
+                    </label>
+                  </div>
+                  {(attachmentsByOrder[order.id] ?? []).length === 0 ? (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Nenhum laudo anexado até o momento.
+                    </p>
+                  ) : (
+                    <ul className="mt-2 grid gap-2">
+                      {(attachmentsByOrder[order.id] ?? []).map((file) => (
+                        <li
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#f6faff] px-3 py-2 text-xs"
+                          key={file.fullPath}
+                        >
+                          <span className="min-w-0 truncate font-medium text-[#153b50]">
+                            {file.name}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            {file.signedUrl && (
+                              <a
+                                className="font-semibold text-[#087a68] underline"
+                                href={file.signedUrl}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Abrir arquivo
+                              </a>
+                            )}
+                            {Boolean(currentUserId) && file.ownerId === currentUserId && (
+                              <button
+                                className="font-semibold text-red-700 hover:underline disabled:opacity-50"
+                                disabled={uploadingOrderId === order.id}
+                                onClick={() =>
+                                  void handleDeleteReport(order.id, file.fullPath)
+                                }
+                                type="button"
+                              >
+                                Excluir
+                              </button>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
 
                 {order.status === 'requested' &&
                   order.veterinarian_id === currentUserId && (
@@ -507,8 +625,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
         )}
       </Card>
       <p className="text-xs leading-5 text-slate-500">
-        Resultados são registros informativos associados ao pedido; anexos e integração
-        com laboratórios ainda não estão habilitados.
+        Resultados e laudos anexados (bucket privado exam-reports) permanecem vinculados ao pedido e ao histórico do paciente.
       </p>
     </div>
   );

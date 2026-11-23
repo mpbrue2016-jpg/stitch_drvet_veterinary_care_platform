@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const createAvailabilitySchema = z
   .object({
@@ -76,9 +77,10 @@ export async function GET(request: NextRequest) {
   const { data, error } = await availabilityQuery;
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os horários.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível carregar os horários.',
+      500,
     );
   }
 
@@ -116,9 +118,10 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   if (professionalError) {
-    return NextResponse.json(
-      { error: 'Não foi possível verificar o cadastro profissional.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      professionalError,
+      'Não foi possível verificar o cadastro profissional.',
+      500,
     );
   }
   if (!professional) {
@@ -142,17 +145,12 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json(
-      {
-        error:
-          error.code === '23P01'
-            ? 'Este horário se sobrepõe a outro horário disponível.'
-            : 'Não foi possível criar o horário. Verifique aprovação e permissões.',
-      },
-      {
-        status:
-          error.code === '23P01' ? 409 : error.code === '42501' ? 403 : 500,
-      },
+    return supabaseErrorResponse(
+      error,
+      error.code === '23P01'
+        ? 'Este horário se sobrepõe a outro horário disponível.'
+        : 'Não foi possível criar o horário. Verifique aprovação e permissões.',
+      error.code === '23P01' ? 409 : error.code === '42501' ? 403 : 500,
     );
   }
 
@@ -204,16 +202,14 @@ export async function PATCH(request: NextRequest) {
             : error.code === '23P01'
               ? 409
               : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '23P01'
-            ? 'Este horário possui um agendamento ativo e não pode ser bloqueado.'
-            : error.code === '22023'
-              ? 'O horário já começou ou o motivo do bloqueio é inválido.'
-              : 'Não foi possível atualizar a disponibilidade.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '23P01'
+        ? 'Este horário possui um agendamento ativo e não pode ser bloqueado.'
+        : error.code === '22023'
+          ? 'O horário já começou ou o motivo do bloqueio é inválido.'
+          : 'Não foi possível atualizar a disponibilidade.',
+      status,
     );
   }
 

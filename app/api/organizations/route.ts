@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const createOrganizationSchema = z
   .object({ name: z.string().trim().min(2).max(120) })
@@ -27,9 +28,10 @@ export async function GET() {
     .eq('user_id', authData.user.id);
 
   if (membershipError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar as organizações.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      membershipError,
+      'Não foi possível carregar as organizações.',
+      500,
     );
   }
 
@@ -57,9 +59,10 @@ export async function GET() {
     ]);
 
   if (organizationError || professionalError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os dados profissionais.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      organizationError ?? professionalError,
+      'Não foi possível carregar os dados profissionais.',
+      500,
     );
   }
 
@@ -103,9 +106,10 @@ export async function POST(request: NextRequest) {
     organization_name: parsed.data.name,
   });
   if (error || !data) {
-    return NextResponse.json(
-      { error: 'Não foi possível criar a organização.' },
-      { status: error?.code === '42501' ? 403 : 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível criar a organização.',
+      error?.code === '42501' ? 403 : 500,
     );
   }
 

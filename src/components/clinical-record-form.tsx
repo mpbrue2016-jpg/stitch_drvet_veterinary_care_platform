@@ -2,31 +2,25 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { Badge, Button, Card, PageHeader } from '@/components/ui';
-import type { ClinicalRecordStatus } from '@/types/database';
-
-type ClinicalVitals = {
-  weight_kg: number | null;
-  temperature_c: number | null;
-  heart_rate_bpm: number | null;
-  respiratory_rate_rpm: number | null;
-  mucous_membranes: string | null;
-  capillary_refill_seconds: number | null;
-};
-
-type ClinicalRecord = {
-  id: string;
-  appointment_id: string;
-  subjective: string;
-  objective: string;
-  assessment: string;
-  plan: string;
-  vitals: ClinicalVitals;
-  status: ClinicalRecordStatus;
-  finalized_at: string | null;
-  created_at: string;
-  updated_at: string;
-};
+import { Badge, Button, Card, PageHeader, Skeleton } from '@/components/ui';
+import { clinicalRecordSchema } from '@/lib/validations';
+import {
+  buscarProntuarioPorAtendimento,
+  salvarProntuario,
+} from '@/services/clinical-records.service';
+import {
+  excluirArquivoStorage,
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+  type StorageFileEntry,
+} from '@/services/storage.service';
+import type {
+  ClinicalRecord,
+  ClinicalRecordStatus,
+  ClinicalVitals,
+} from '@/types/entities';
 
 type ClinicalRecordFields = Pick<
   ClinicalRecord,
@@ -85,31 +79,56 @@ export function ClinicalRecordForm({
     plan: '',
   });
   const [vitals, setVitals] = useState<VitalFields>(emptyVitals);
+  const [petId, setPetId] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<
+    Array<StorageFileEntry & { signedUrl: string }>
+  >([]);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
 
+  const loadAttachments = useCallback(
+    async (targetPetId: string | null) => {
+      if (!targetPetId) {
+        setAttachments([]);
+        return;
+      }
+      try {
+        const files = await listarArquivosStorage(
+          'clinical-attachments',
+          `${targetPetId}/${appointmentId}`,
+        );
+        const withUrls = await Promise.all(
+          files.map(async (file) => {
+            const signedUrl = await obterUrlAssinadaStorage(
+              'clinical-attachments',
+              file.fullPath,
+              600,
+            ).catch(() => '');
+            return { ...file, signedUrl };
+          }),
+        );
+        setAttachments(withUrls);
+      } catch {
+        setAttachments([]);
+      }
+    },
+    [appointmentId],
+  );
+
   const loadRecord = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      const response = await fetch(
-        `/api/clinical-records?appointmentId=${encodeURIComponent(appointmentId)}`,
-      );
-      const result: {
-        clinicalRecord?: ClinicalRecord | null;
-        canEdit?: boolean;
-        error?: string;
-      } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar o prontuário.');
-      }
-
-      const loadedRecord = result.clinicalRecord ?? null;
+      const result = await buscarProntuarioPorAtendimento(appointmentId);
+      const loadedRecord = result.clinicalRecord;
       setRecord(loadedRecord);
-      setCanEdit(result.canEdit ?? false);
+      setCanEdit(result.canEdit);
+      setPetId(result.petId);
+      void loadAttachments(result.petId);
       if (loadedRecord) {
         setFields({
           subjective: loadedRecord.subjective,
@@ -126,11 +145,58 @@ export function ClinicalRecordForm({
     } finally {
       setLoading(false);
     }
-  }, [appointmentId]);
+  }, [appointmentId, loadAttachments]);
 
   useEffect(() => {
     void loadRecord();
   }, [loadRecord]);
+
+  async function handleUploadAttachment(file: File | null) {
+    if (!file || !petId) return;
+    setErrorMessage('');
+    setNotice('');
+    setUploadingAttachment(true);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${petId}/${appointmentId}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'clinical-attachments',
+        path,
+        file,
+      });
+      await loadAttachments(petId);
+      setNotice('Anexo clínico enviado com sucesso.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao enviar o anexo clínico.',
+      );
+    } finally {
+      setUploadingAttachment(false);
+    }
+  }
+
+  async function handleDeleteAttachment(fullPath: string) {
+    setErrorMessage('');
+    setNotice('');
+    setUploadingAttachment(true);
+    try {
+      await excluirArquivoStorage('clinical-attachments', [fullPath]);
+      await loadAttachments(petId);
+      setNotice('Anexo clínico removido.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao remover o anexo clínico.',
+      );
+    } finally {
+      setUploadingAttachment(false);
+    }
+  }
 
   function updateField(field: keyof ClinicalRecordFields, value: string) {
     setFields((current) => ({ ...current, [field]: value }));
@@ -141,36 +207,35 @@ export function ClinicalRecordForm({
   }
 
   async function save(status: ClinicalRecordStatus) {
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
+
+    const parsed = clinicalRecordSchema.safeParse({
+      appointment_id: appointmentId,
+      ...fields,
+      vitals: {
+        weight_kg: optionalNumber(vitals.weight_kg),
+        temperature_c: optionalNumber(vitals.temperature_c),
+        heart_rate_bpm: optionalNumber(vitals.heart_rate_bpm),
+        respiratory_rate_rpm: optionalNumber(vitals.respiratory_rate_rpm),
+        mucous_membranes: vitals.mucous_membranes.trim() || null,
+        capillary_refill_seconds: optionalNumber(vitals.capillary_refill_seconds),
+      },
+    });
+
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os dados informados no prontuário.',
+      );
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/clinical-records', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          appointment_id: appointmentId,
-          ...fields,
-          vitals: {
-            weight_kg: optionalNumber(vitals.weight_kg),
-            temperature_c: optionalNumber(vitals.temperature_c),
-            heart_rate_bpm: optionalNumber(vitals.heart_rate_bpm),
-            respiratory_rate_rpm: optionalNumber(vitals.respiratory_rate_rpm),
-            mucous_membranes: vitals.mucous_membranes.trim() || null,
-            capillary_refill_seconds: optionalNumber(
-              vitals.capillary_refill_seconds,
-            ),
-          },
-          status,
-        }),
+      const result = await salvarProntuario({
+        ...parsed.data,
+        status,
       });
-      const result: {
-        clinicalRecord?: ClinicalRecord;
-        error?: string;
-      } = await response.json();
-      if (!response.ok || !result.clinicalRecord) {
-        throw new Error(result.error ?? 'Não foi possível salvar o prontuário.');
-      }
 
       setRecord(result.clinicalRecord);
       setCanEdit(result.clinicalRecord.status === 'draft');
@@ -198,9 +263,9 @@ export function ClinicalRecordForm({
         action={
           <Link
             className="inline-flex min-h-10 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-[#153b50]"
-            href="/agendamento"
+            href="/prontuarios"
           >
-            Voltar aos agendamentos
+            Voltar aos prontuários
           </Link>
         }
       />
@@ -208,7 +273,8 @@ export function ClinicalRecordForm({
       {record?.status === 'finalized' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
           <p className="text-sm font-semibold text-emerald-900">
-            Registro finalizado em {record.finalized_at ? formatDate(record.finalized_at) : '—'}
+            Registro finalizado em{' '}
+            {record.finalized_at ? formatDate(record.finalized_at) : '—'}
           </p>
           <Badge variant="success">Finalizado</Badge>
         </div>
@@ -227,9 +293,10 @@ export function ClinicalRecordForm({
 
       {loading ? (
         <Card>
-          <p className="py-8 text-center text-sm text-slate-500">
-            Carregando prontuário...
-          </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
         </Card>
       ) : (
         <>
@@ -322,6 +389,74 @@ export function ClinicalRecordForm({
                       value={vitals.mucous_membranes}
                     />
                   </label>
+                </div>
+              </Card>
+
+              <Card
+                title="Anexos clínicos"
+                description="Documentos, imagens ou atestados vinculados ao atendimento (PDF, JPG, PNG ou WEBP até 10 MB)."
+              >
+                <div className="grid gap-3">
+                  {!readOnly && petId && (
+                    <div className="flex justify-end">
+                      <label className="inline-flex min-h-10 cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-[#153b50] hover:bg-[#ebf5ff]">
+                        {uploadingAttachment ? 'Enviando...' : 'Anexar documento'}
+                        <input
+                          accept="application/pdf,image/jpeg,image/png,image/webp"
+                          className="sr-only"
+                          disabled={uploadingAttachment || saving}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0] ?? null;
+                            event.target.value = '';
+                            void handleUploadAttachment(file);
+                          }}
+                          type="file"
+                        />
+                      </label>
+                    </div>
+                  )}
+                  {attachments.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      Nenhum anexo clínico enviado para este atendimento.
+                    </p>
+                  ) : (
+                    <ul className="grid gap-2">
+                      {attachments.map((file) => (
+                        <li
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#f6faff] px-3 py-2.5 text-sm"
+                          key={file.fullPath}
+                        >
+                          <span className="min-w-0 truncate font-medium text-[#153b50]">
+                            {file.name}
+                          </span>
+                          <div className="flex items-center gap-3 text-xs">
+                            {file.signedUrl && (
+                              <a
+                                className="font-semibold text-[#087a68] underline"
+                                href={file.signedUrl}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                Abrir arquivo
+                              </a>
+                            )}
+                            {!readOnly && (
+                              <button
+                                className="font-semibold text-red-700 hover:underline disabled:opacity-50"
+                                disabled={uploadingAttachment || saving}
+                                onClick={() =>
+                                  void handleDeleteAttachment(file.fullPath)
+                                }
+                                type="button"
+                              >
+                                Excluir
+                              </button>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </Card>
 

@@ -1,22 +1,40 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { Skeleton } from '@/components/ui';
+import { createBookingSchema, createPetSchema } from '@/lib/validations';
+import { criarAgendamento } from '@/services/appointments.service';
+import { listarDisponibilidade } from '@/services/availability.service';
+import { listarVeterinariosAprovados } from '@/services/organizations.service';
+import { buscarAtribuicaoAtiva } from '@/services/partners.service';
+import { criarPet, listarPets } from '@/services/pets.service';
+import {
+  gerarCaminhoSeguroStorage,
+  listarArquivosStorage,
+  obterUrlAssinadaStorage,
+  uploadArquivoStorage,
+} from '@/services/storage.service';
+import type {
+  AppointmentKind,
+  AvailabilitySlot,
+  Pet,
+  VeterinarianProfile,
+} from '@/types/entities';
 
-type Pet = { id: string; name: string; species: string };
-type Availability = {
-  id: string;
-  starts_at: string;
-  ends_at: string;
-  veterinarian_id: string;
-};
+const brl = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
+
 type BookingResult = {
   id: string;
   starts_at: string;
   ends_at: string;
   petName: string;
-  kind: 'teleconsultation' | 'in_person';
+  kind: AppointmentKind;
 };
 
 function dayKey(value: string) {
@@ -46,11 +64,12 @@ function formatDayCard(value: string) {
   const dayDifference = Math.round(
     (target.getTime() - today.getTime()) / 86_400_000,
   );
-  const label = dayDifference === 0
-    ? 'Hoje'
-    : dayDifference === 1
-      ? 'Amanhã'
-      : new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(date);
+  const label =
+    dayDifference === 0
+      ? 'Hoje'
+      : dayDifference === 1
+        ? 'Amanhã'
+        : new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(date);
   return {
     label,
     day: new Intl.DateTimeFormat('pt-BR', { day: '2-digit' }).format(date),
@@ -60,60 +79,134 @@ function formatDayCard(value: string) {
 
 export function BookingFlow() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [availability, setAvailability] = useState<Availability[]>([]);
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [veterinarians, setVeterinarians] = useState<VeterinarianProfile[]>([]);
+  const [vetFilterId, setVetFilterId] = useState('');
+  const [couponCode, setCouponCode] = useState('');
   const [petId, setPetId] = useState('');
   const [newPet, setNewPet] = useState(false);
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedSlotId, setSelectedSlotId] = useState('');
-  const [kind, setKind] = useState<'teleconsultation' | 'in_person'>(
-    'teleconsultation',
-  );
+  const [kind, setKind] = useState<AppointmentKind>('teleconsultation');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [petAvatarUrl, setPetAvatarUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState<BookingResult | null>(null);
+  const [triageSummary, setTriageSummary] = useState<{
+    speciesLabel: string;
+    needLabel: string;
+    timingLabel: string;
+    defaultSpecies: string;
+    defaultReason: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const sp = params.get('species');
+    const need = params.get('need');
+    const timing = params.get('timing');
+    const vetParam = params.get('vet');
+    const cupomParam = params.get('cupom');
+    if (vetParam) setVetFilterId(vetParam.trim());
+    if (cupomParam) setCouponCode(cupomParam.trim().toUpperCase().slice(0, 24));
+    if (!sp && !need && !timing) return;
+
+    const speciesMap: Record<string, string> = {
+      dog: 'Cachorro',
+      cat: 'Gato',
+      bird: 'Pássaro / Silvestre',
+      exotic: 'Coelho / Roedor',
+    };
+    const needMap: Record<string, string> = {
+      geral: 'Pronto Atendimento / Sintomas Gerais',
+      derma: 'Dermatologia & Coceira / Alergias',
+      nutri: 'Nutrologia & Dieta Personalizada',
+      comportamento: 'Ansiedade & Comportamento Pet',
+      cardio: 'Cardiologia & Exames',
+      receita: 'Renovação de Receita / Exames',
+    };
+    const timingMap: Record<string, string> = {
+      now: 'Plantão Imediato (Agora)',
+      today: 'Hoje no próximo horário',
+      tomorrow: 'Amanhã com especialista',
+      schedule: 'Escolher data na agenda',
+    };
+
+    const speciesLabel = (sp && speciesMap[sp]) || 'Pet';
+    const needLabel = (need && needMap[need]) || 'Teleconsulta veterinária';
+    const timingLabel = (timing && timingMap[timing]) || 'Próximo horário';
+    setTriageSummary({
+      speciesLabel,
+      needLabel,
+      timingLabel,
+      defaultSpecies: speciesLabel.toLowerCase(),
+      defaultReason: `Triagem rápida (${speciesLabel}): ${needLabel} — Preferência: ${timingLabel}.`,
+    });
+  }, []);
 
   const loadOptions = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [petsResponse, availabilityResponse] = await Promise.all([
-        fetch('/api/pets', { cache: 'no-store' }),
-        fetch('/api/availability', { cache: 'no-store' }),
-      ]);
-      const petResult: { pets?: Pet[]; error?: string } =
-        await petsResponse.json();
-      const availabilityResult: {
-        availability?: Availability[];
-        error?: string;
-      } = await availabilityResponse.json();
+      const [petResult, availabilityResult, vetsResult, attributionResult] =
+        await Promise.all([
+          listarPets(),
+          listarDisponibilidade(),
+          listarVeterinariosAprovados().catch(() => ({ professionals: [] })),
+          buscarAtribuicaoAtiva().catch(() => ({ attribution: null })),
+        ]);
 
-      if (!petsResponse.ok) {
-        throw new Error(petResult.error ?? 'Não foi possível carregar os pets.');
-      }
-      if (!availabilityResponse.ok) {
-        throw new Error(
-          availabilityResult.error ?? 'Não foi possível carregar os horários.',
-        );
-      }
-
-      const loadedPets = petResult.pets ?? [];
-      const loadedAvailability = availabilityResult.availability ?? [];
+      const loadedPets = petResult.pets;
+      const loadedAvailability = availabilityResult.availability;
       setPets(loadedPets);
       setAvailability(loadedAvailability);
+      setVeterinarians(vetsResult.professionals);
+      const urlParams =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search)
+          : null;
+      const cupomFromUrl = urlParams?.get('cupom')?.trim().toUpperCase() ?? '';
+      if (!cupomFromUrl && attributionResult.attribution?.coupon_code) {
+        setCouponCode((curr) => curr || attributionResult.attribution!.coupon_code);
+      }
+      const spParam = urlParams?.get('species') ?? null;
+      const vetParam = urlParams?.get('vet')?.trim() ?? '';
+      const speciesToken =
+        spParam === 'dog'
+          ? 'cachorro'
+          : spParam === 'cat'
+            ? 'gato'
+            : spParam === 'bird'
+              ? 'passaro'
+              : spParam === 'exotic'
+                ? 'coelho'
+                : '';
+      const matchedPet = speciesToken
+        ? loadedPets.find((pet) =>
+            pet.species.toLowerCase().includes(speciesToken.slice(0, 4)),
+          )
+        : undefined;
       setPetId((current) =>
         loadedPets.some((pet) => pet.id === current)
           ? current
-          : loadedPets[0]?.id ?? '',
+          : (matchedPet?.id ?? loadedPets[0]?.id ?? ''),
       );
+      const scopedAvailability = vetParam
+        ? loadedAvailability.filter((slot) => slot.veterinarian_id === vetParam)
+        : loadedAvailability;
+      const effectiveAvailability =
+        scopedAvailability.length > 0 ? scopedAvailability : loadedAvailability;
       const availableDays = Array.from(
-        new Set(loadedAvailability.map((slot) => dayKey(slot.starts_at))),
+        new Set(effectiveAvailability.map((slot) => dayKey(slot.starts_at))),
       );
       setSelectedDay((current) =>
         availableDays.includes(current) ? current : availableDays[0] ?? '',
       );
       setSelectedSlotId((current) =>
-        loadedAvailability.some((slot) => slot.id === current)
+        effectiveAvailability.some((slot) => slot.id === current)
           ? current
           : '',
       );
@@ -130,20 +223,97 @@ export function BookingFlow() {
     void loadOptions();
   }, [loadOptions]);
 
+  const filteredAvailability = useMemo(() => {
+    if (!vetFilterId) return availability;
+    const matches = availability.filter((slot) => slot.veterinarian_id === vetFilterId);
+    return matches.length > 0 ? matches : availability;
+  }, [availability, vetFilterId]);
+
   const availableDays = useMemo(() => {
     const days = new Map<string, string>();
-    availability.forEach((slot) => {
+    filteredAvailability.forEach((slot) => {
       const key = dayKey(slot.starts_at);
       if (!days.has(key)) days.set(key, slot.starts_at);
     });
     return Array.from(days.entries());
-  }, [availability]);
-  const daySlots = availability.filter(
+  }, [filteredAvailability]);
+  const daySlots = filteredAvailability.filter(
     (slot) => dayKey(slot.starts_at) === selectedDay,
   );
-  const selectedSlot = availability.find((slot) => slot.id === selectedSlotId);
+  const selectedSlot = filteredAvailability.find((slot) => slot.id === selectedSlotId);
   const selectedPet = pets.find((pet) => pet.id === petId);
+  const activeVeterinarian = useMemo(() => {
+    const targetVetId = selectedSlot?.veterinarian_id || vetFilterId;
+    if (targetVetId) {
+      return (
+        veterinarians.find((vet) => vet.user_id === targetVetId) ??
+        veterinarians[0] ??
+        null
+      );
+    }
+    return veterinarians[0] ?? null;
+  }, [selectedSlot, vetFilterId, veterinarians]);
   const hasSelection = Boolean((petId || newPet) && selectedSlot);
+
+  const loadPetAvatar = useCallback(async (pet: Pet | undefined) => {
+    if (!pet) {
+      setPetAvatarUrl('');
+      return;
+    }
+    try {
+      const files = await listarArquivosStorage(
+        'pet-avatars',
+        `${pet.owner_id}/${pet.id}`,
+      );
+      const latest = files[0];
+      if (!latest) {
+        setPetAvatarUrl('');
+        return;
+      }
+      const signedUrl = await obterUrlAssinadaStorage(
+        'pet-avatars',
+        latest.fullPath,
+        600,
+      );
+      setPetAvatarUrl(signedUrl);
+    } catch {
+      setPetAvatarUrl('');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (newPet || !selectedPet) {
+      setPetAvatarUrl('');
+      return;
+    }
+    void loadPetAvatar(selectedPet);
+  }, [newPet, selectedPet, loadPetAvatar]);
+
+  async function handleAvatarUpload(file: File | null) {
+    if (!file || !selectedPet) return;
+    setErrorMessage('');
+    setUploadingAvatar(true);
+    try {
+      const path = gerarCaminhoSeguroStorage(
+        `${selectedPet.owner_id}/${selectedPet.id}`,
+        file.name,
+      );
+      await uploadArquivoStorage({
+        bucket: 'pet-avatars',
+        path,
+        file,
+      });
+      await loadPetAvatar(selectedPet);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar a foto do pet.',
+      );
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -166,21 +336,18 @@ export function BookingFlow() {
       let selectedPetName = selectedPet?.name ?? '';
 
       if (newPet) {
-        const petResponse = await fetch('/api/pets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: formData.get('petName'),
-            species: formData.get('species'),
-            breed: formData.get('breed') || null,
-            birth_date: formData.get('birthDate') || null,
-          }),
+        const parsedPet = createPetSchema.safeParse({
+          name: String(formData.get('petName') ?? ''),
+          species: String(formData.get('species') ?? ''),
+          breed: String(formData.get('breed') ?? '') || null,
+          birth_date: String(formData.get('birthDate') ?? '') || null,
         });
-        const petResult: { pet?: Pet; error?: string } = await petResponse.json();
-        const createdPet = petResult.pet;
-        if (!petResponse.ok || !createdPet) {
-          throw new Error(petResult.error ?? 'Não foi possível cadastrar o pet.');
+        if (!parsedPet.success) {
+          throw new Error(
+            parsedPet.error.issues[0]?.message ?? 'Preencha corretamente os dados do pet.',
+          );
         }
+        const { pet: createdPet } = await criarPet(parsedPet.data);
         selectedPetId = createdPet.id;
         selectedPetName = createdPet.name;
         setPets((current) => [...current, createdPet]);
@@ -188,26 +355,21 @@ export function BookingFlow() {
         setNewPet(false);
       }
 
-      const response = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          availability_id: selectedSlot.id,
-          pet_id: selectedPetId,
-          kind,
-          reason: String(formData.get('reason') ?? '').trim() || null,
-        }),
+      const parsedBooking = createBookingSchema.safeParse({
+        availability_id: selectedSlot.id,
+        pet_id: selectedPetId,
+        kind,
+        reason: String(formData.get('reason') ?? '').trim() || null,
       });
-      const result: { appointment?: { id: string }; error?: string } =
-        await response.json();
-      if (!response.ok || !result.appointment) {
+      if (!parsedBooking.success) {
         throw new Error(
-          result.error ?? 'Não foi possível solicitar o horário.',
+          parsedBooking.error.issues[0]?.message ?? 'Confira os dados da solicitação.',
         );
       }
 
+      const { appointment } = await criarAgendamento(parsedBooking.data);
       setSuccess({
-        id: result.appointment.id,
+        id: appointment.id,
         starts_at: selectedSlot.starts_at,
         ends_at: selectedSlot.ends_at,
         petName: selectedPetName,
@@ -253,12 +415,22 @@ export function BookingFlow() {
             Protocolo: {success.id}
           </p>
         </div>
-        <Link
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#087a68] px-5 font-bold text-white"
-          href="/agendamento"
-        >
-          Ver meus agendamentos
-        </Link>
+        <div className="mt-5 grid gap-2.5">
+          <Link
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#087a68] px-5 font-bold text-white"
+            href={`/pagamentos?appointmentId=${encodeURIComponent(success.id)}${couponCode ? `&cupom=${encodeURIComponent(couponCode)}` : ''}`}
+          >
+            {couponCode
+              ? `Pagar consulta com cupom ${couponCode}`
+              : 'Ir para checkout e pagamento'}
+          </Link>
+          <Link
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 font-bold text-[#153b50] hover:bg-slate-50"
+            href="/agendamento"
+          >
+            Ver meus agendamentos
+          </Link>
+        </div>
       </section>
     );
   }
@@ -297,9 +469,25 @@ export function BookingFlow() {
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#dff0ff] px-3 py-1 text-xs font-semibold text-[#006b57]">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[#13a88a]" />
-            Online
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+              activeVeterinarian?.is_online_now || filteredAvailability.length > 0
+                ? 'bg-[#dff0ff] text-[#006b57]'
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                activeVeterinarian?.is_online_now || filteredAvailability.length > 0
+                  ? 'animate-pulse bg-[#13a88a]'
+                  : 'bg-slate-400'
+              }`}
+            />
+            {activeVeterinarian?.is_online_now
+              ? 'Online agora'
+              : filteredAvailability.length > 0
+                ? `${filteredAvailability.length} horário(s) publicado(s)`
+                : 'Sem horários publicados'}
           </span>
         </div>
 
@@ -337,19 +525,43 @@ export function BookingFlow() {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Nome do pet
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={100} name="petName" form="booking-form" required />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={100}
+                  name="petName"
+                  form="booking-form"
+                  required
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Espécie
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={60} name="species" form="booking-form" placeholder="Ex.: cachorro" required />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  defaultValue={triageSummary?.defaultSpecies ?? ''}
+                  maxLength={60}
+                  name="species"
+                  form="booking-form"
+                  placeholder="Ex.: cachorro"
+                  required
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Raça (opcional)
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={100} name="breed" form="booking-form" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={100}
+                  name="breed"
+                  form="booking-form"
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Nascimento (opcional)
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" name="birthDate" form="booking-form" type="date" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  name="birthDate"
+                  form="booking-form"
+                  type="date"
+                />
               </label>
               <button
                 className="text-left text-sm font-semibold text-[#087a68] sm:col-span-2"
@@ -366,15 +578,44 @@ export function BookingFlow() {
             </p>
           )}
           {!newPet && selectedPet && (
-            <div className="mt-4 flex items-center gap-3 rounded-xl bg-[#ebf5ff] p-3">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#d4ebff] text-xl text-[#006b57]">
-                ♧
-              </span>
-              <div className="min-w-0">
+            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl bg-[#ebf5ff] p-3">
+              {petAvatarUrl ? (
+                <Image
+                  alt={selectedPet.name}
+                  className="h-12 w-12 shrink-0 rounded-full object-cover"
+                  height={48}
+                  referrerPolicy="no-referrer"
+                  src={petAvatarUrl}
+                  width={48}
+                />
+              ) : (
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#d4ebff] text-xl text-[#006b57]">
+                  ♧
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
                 <p className="truncate font-bold text-[#153b50]">{selectedPet.name}</p>
                 <p className="text-sm text-slate-600">{selectedPet.species}</p>
               </div>
-              <span className="ml-auto rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-800">
+              <label className="inline-flex min-h-8 cursor-pointer items-center rounded-full border border-[#087a68]/30 bg-white px-3 text-[11px] font-semibold text-[#087a68] hover:bg-[#dff0ff]">
+                {uploadingAvatar
+                  ? 'Enviando...'
+                  : petAvatarUrl
+                    ? 'Alterar foto'
+                    : 'Enviar foto'}
+                <input
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={uploadingAvatar || submitting}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    event.target.value = '';
+                    void handleAvatarUpload(file);
+                  }}
+                  type="file"
+                />
+              </label>
+              <span className="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-800">
                 Ativo
               </span>
             </div>
@@ -430,9 +671,23 @@ export function BookingFlow() {
         <div className="grid gap-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-bold text-[#153b50]">Profissional disponível</h2>
-            <span className="text-xs font-semibold text-[#087a68]">
-              Agenda publicada
-            </span>
+            <div className="flex items-center gap-2">
+              {vetFilterId && (
+                <button
+                  className="text-xs font-semibold text-slate-500 underline"
+                  onClick={() => {
+                    setVetFilterId('');
+                    setSelectedSlotId('');
+                  }}
+                  type="button"
+                >
+                  Ver todos
+                </button>
+              )}
+              <span className="text-xs font-semibold text-[#087a68]">
+                Agenda publicada
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
             <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-[#dff0ff] text-2xl text-[#006b57]">
@@ -440,14 +695,18 @@ export function BookingFlow() {
             </span>
             <div className="min-w-0">
               <p className="truncate font-bold text-[#153b50]">
-                Profissional veterinário credenciado
+                {activeVeterinarian
+                  ? `${activeVeterinarian.display_name ?? 'Médico Veterinário'} · CRMV-${activeVeterinarian.registration_region} ${activeVeterinarian.registration_number}`
+                  : 'Especialista Credenciado DrVet'}
               </p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                O profissional responsável será identificado na confirmação do
-                atendimento.
+                {activeVeterinarian?.specialty || 'Clínica Geral e Telemedicina'} · Atendimento sujeito à confirmação.
               </p>
             </div>
-            <span aria-label="Credenciamento validado pelo sistema" className="ml-auto text-lg text-[#087a68]">
+            <span
+              aria-label="Credenciamento validado pelo sistema"
+              className="ml-auto text-lg text-[#087a68]"
+            >
               ✓
             </span>
           </div>
@@ -459,9 +718,13 @@ export function BookingFlow() {
             <span className="text-xs text-slate-500">Seu horário local</span>
           </div>
           {loading ? (
-            <p className="py-5 text-center text-sm text-slate-500">
-              Carregando disponibilidade…
-            </p>
+            <div className="grid gap-2" aria-busy="true">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <div className="grid grid-cols-2 gap-2">
+                <Skeleton className="h-16 w-full rounded-xl" />
+                <Skeleton className="h-16 w-full rounded-xl" />
+              </div>
+            </div>
           ) : availableDays.length === 0 ? (
             <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
               Não há horários publicados. Tente novamente mais tarde ou consulte
@@ -522,8 +785,12 @@ export function BookingFlow() {
                       <span className="mt-1 block text-xs text-slate-600">
                         {formatTime(slot.starts_at)} – {formatTime(slot.ends_at)}
                       </span>
-                      <span className={`mt-2 inline-flex items-center gap-1 text-[11px] font-semibold ${active ? 'text-[#006b57]' : 'text-slate-500'}`}>
-                        <span className={`h-2 w-2 rounded-full ${active ? 'bg-[#13a88a]' : 'bg-slate-300'}`} />
+                      <span
+                        className={`mt-2 inline-flex items-center gap-1 text-[11px] font-semibold ${active ? 'text-[#006b57]' : 'text-slate-500'}`}
+                      >
+                        <span
+                          className={`h-2 w-2 rounded-full ${active ? 'bg-[#13a88a]' : 'bg-slate-300'}`}
+                        />
                         {active ? 'Selecionado' : 'Disponível'}
                       </span>
                     </button>
@@ -537,18 +804,26 @@ export function BookingFlow() {
         <div className="rounded-xl bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-2 border-b border-[#dff0ff] pb-2">
             <h2 className="font-bold text-[#153b50]">Resumo de valores e benefícios</h2>
-            <span className="text-[11px] font-semibold text-slate-500">Não configurado</span>
+            <span className="rounded-full bg-[#dff0ff] px-2.5 py-0.5 text-[11px] font-semibold text-[#006b57]">
+              {couponCode ? `Cupom ${couponCode}` : 'Checkout pós-solicitação'}
+            </span>
           </div>
           <p className="text-sm leading-6 text-slate-600">
-            Preço, descontos, vouchers e formas de pagamento ainda não foram
-            configurados para esta consulta. Nenhuma cobrança será feita ao
-            enviar a solicitação.
+            Honorário da consulta:{' '}
+            <strong className="text-[#153b50]">
+              {brl.format(
+                (activeVeterinarian?.consultation_fee_cents ?? 18000) / 100,
+              )}
+            </strong>{' '}
+            com aplicação automática de descontos do Clube DrVet ou cupom de parceiro em Pagamentos. Nenhuma cobrança é feita ao enviar a solicitação.
           </p>
         </div>
 
         <div className="rounded-xl bg-[#ebf5ff] p-4">
           <div className="flex items-start gap-3">
-            <span aria-hidden="true" className="text-xl text-[#006b57]">ⓘ</span>
+            <span aria-hidden="true" className="text-xl text-[#006b57]">
+              ⓘ
+            </span>
             <div>
               <h2 className="font-bold text-[#153b50]">Sobre o atendimento</h2>
               <p className="mt-1 text-sm leading-5 text-slate-600">
@@ -565,10 +840,21 @@ export function BookingFlow() {
           id="booking-form"
           onSubmit={(event) => void handleSubmit(event)}
         >
+          {triageSummary && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-900">
+              <p className="font-bold">Triagem rápida pré-carregada</p>
+              <p className="mt-0.5">
+                {triageSummary.speciesLabel} · {triageSummary.needLabel} · {triageSummary.timingLabel}
+              </p>
+            </div>
+          )}
+
           <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
             Motivo ou sintomas (opcional)
             <textarea
               className="min-h-24 rounded-xl border border-slate-300 bg-white p-3"
+              defaultValue={triageSummary?.defaultReason ?? ''}
+              key={triageSummary?.defaultReason ?? 'empty-reason'}
               maxLength={1000}
               name="reason"
               placeholder="Conte brevemente o motivo da consulta."
@@ -581,15 +867,13 @@ export function BookingFlow() {
               role="alert"
             >
               <p>{errorMessage}</p>
-              {errorMessage.includes('horário') && (
-                <button
-                  className="font-semibold underline"
-                  onClick={() => void loadOptions()}
-                  type="button"
-                >
-                  Atualizar disponibilidade
-                </button>
-              )}
+              <button
+                className="font-semibold underline"
+                onClick={() => void loadOptions()}
+                type="button"
+              >
+                Atualizar disponibilidade
+              </button>
             </div>
           )}
 
@@ -610,10 +894,10 @@ export function BookingFlow() {
             disabled={loading || submitting || !hasSelection}
             type="submit"
           >
-            <span className={`mx-auto flex min-h-12 w-full max-w-xl items-center justify-center gap-2 rounded-full px-5 font-bold text-white shadow-md transition ${loading || submitting || !hasSelection ? 'bg-slate-400' : 'bg-[#006b57] hover:bg-[#005141]'}`}>
-              {submitting
-                ? 'Enviando solicitação…'
-                : 'Solicitar atendimento'}
+            <span
+              className={`mx-auto flex min-h-12 w-full max-w-xl items-center justify-center gap-2 rounded-full px-5 font-bold text-white shadow-md transition ${loading || submitting || !hasSelection ? 'bg-slate-400' : 'bg-[#006b57] hover:bg-[#005141]'}`}
+            >
+              {submitting ? 'Enviando solicitação…' : 'Solicitar atendimento'}
               <span aria-hidden="true">→</span>
             </span>
             <span className="mx-auto mt-2 block max-w-xl text-center text-[11px] text-slate-500">
@@ -621,17 +905,6 @@ export function BookingFlow() {
             </span>
           </button>
         </form>
-
-        {errorMessage && (
-          <button
-            className="text-sm font-semibold text-[#087a68] underline"
-            disabled={loading}
-            onClick={() => void loadOptions()}
-            type="button"
-          >
-            Tentar carregar os dados novamente
-          </button>
-        )}
       </div>
     </section>
   );

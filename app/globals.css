@@ -1,16 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "../src/styles/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --color-brand-navy: #153b50;
-  --color-brand-green: #13a88a;
-  --color-brand-turquoise: #35c6b0;
-  --color-brand-ice: #eaf5f8;
-  --color-floor: #f5f8fa;
-  --color-ink: #183344;
-  --color-muted: #718096;
+  --font-plus-jakarta: 'Plus Jakarta Sans';
+  --font-caveat: 'Caveat';
 }
 
 html {
@@ -22,7 +19,7 @@ body {
   min-height: 100vh;
   background: var(--color-floor);
   color: var(--color-ink);
-  font-family: 'Plus Jakarta Sans', Inter, Arial, sans-serif;
+  font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', Inter, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

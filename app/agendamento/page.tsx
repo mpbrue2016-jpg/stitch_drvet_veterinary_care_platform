@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { AppointmentsList } from '@/components/appointments-list';
 
-export default function Agendamento() {
+export default function Agendamento({
+  searchParams,
+}: {
+  searchParams?: { denied?: string };
+}) {
+  const denied = searchParams?.denied;
+
   return (
     <div className="mx-auto grid max-w-7xl gap-5">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -23,6 +29,18 @@ export default function Agendamento() {
           + Novo agendamento
         </Link>
       </header>
+      {denied && (
+        <div
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          role="status"
+        >
+          {denied === 'admin'
+            ? 'Acesso restrito a administradores master da plataforma.'
+            : denied === 'schema'
+              ? 'As tabelas do banco de dados Supabase ainda não foram inicializadas.'
+              : 'Acesso restrito a perfis profissionais (veterinário, parceiro ou equipe credenciada).'}
+        </div>
+      )}
       <AppointmentsList />
     </div>
   );

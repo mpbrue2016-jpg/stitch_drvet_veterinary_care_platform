@@ -1,31 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, PageHeader } from '@/components/ui';
+import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/ui';
+import { createVaccinationSchema } from '@/lib/validations';
+import { listarAgendamentos } from '@/services/appointments.service';
+import { criarRegistroVacina, listarVacinas } from '@/services/vaccinations.service';
+import type { Appointment, VaccinationRecord } from '@/types/entities';
 
-type Pet = { id: string; name: string; species: string };
-type Appointment = {
-  id: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  starts_at: string;
-  ends_at: string;
-  pet_id: string;
-  veterinarian_id: string;
-  pet: Pet | null;
-};
-type Vaccination = {
-  id: string;
-  appointment_id: string;
-  pet_id: string;
-  veterinarian_id: string;
-  vaccine_name: string;
-  administered_on: string;
-  batch_number: string | null;
-  manufacturer: string | null;
-  next_due_on: string | null;
-  notes: string | null;
-  pet: Pet | null;
-};
 type FormFields = {
   appointment_id: string;
   vaccine_name: string;
@@ -62,7 +43,7 @@ function localToday() {
 
 export function VaccinationWallet() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
+  const [vaccinations, setVaccinations] = useState<VaccinationRecord[]>([]);
   const [currentUserId, setCurrentUserId] = useState('');
   const [fields, setFields] = useState<FormFields>(initialForm);
   const [loading, setLoading] = useState(true);
@@ -74,34 +55,14 @@ export function VaccinationWallet() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [appointmentsResponse, vaccinationsResponse] = await Promise.all([
-        fetch('/api/appointments'),
-        fetch('/api/vaccinations'),
+      const [appointmentsResult, vaccinationsResult] = await Promise.all([
+        listarAgendamentos(),
+        listarVacinas(),
       ]);
-      const appointmentsResult: {
-        appointments?: Appointment[];
-        currentUserId?: string;
-        error?: string;
-      } = await appointmentsResponse.json();
-      const vaccinationsResult: {
-        vaccinations?: Vaccination[];
-        error?: string;
-      } = await vaccinationsResponse.json();
 
-      if (!appointmentsResponse.ok) {
-        throw new Error(
-          appointmentsResult.error ?? 'Não foi possível carregar os atendimentos.',
-        );
-      }
-      if (!vaccinationsResponse.ok) {
-        throw new Error(
-          vaccinationsResult.error ?? 'Não foi possível carregar as vacinas.',
-        );
-      }
-
-      setAppointments(appointmentsResult.appointments ?? []);
-      setCurrentUserId(appointmentsResult.currentUserId ?? '');
-      setVaccinations(vaccinationsResult.vaccinations ?? []);
+      setAppointments(appointmentsResult.appointments);
+      setCurrentUserId(appointmentsResult.currentUserId);
+      setVaccinations(vaccinationsResult.vaccinations);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar a carteira.',
@@ -129,28 +90,28 @@ export function VaccinationWallet() {
 
   async function saveVaccination(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSaving(true);
     setErrorMessage('');
     setNotice('');
-    try {
-      const response = await fetch('/api/vaccinations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          appointment_id: fields.appointment_id,
-          vaccine_name: fields.vaccine_name,
-          administered_on: fields.administered_on,
-          batch_number: fields.batch_number.trim() || null,
-          manufacturer: fields.manufacturer.trim() || null,
-          next_due_on: fields.next_due_on || null,
-          notes: fields.notes.trim() || null,
-        }),
-      });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível registrar a vacinação.');
-      }
 
+    const parsed = createVaccinationSchema.safeParse({
+      appointment_id: fields.appointment_id,
+      vaccine_name: fields.vaccine_name,
+      administered_on: fields.administered_on,
+      batch_number: fields.batch_number.trim() || null,
+      manufacturer: fields.manufacturer.trim() || null,
+      next_due_on: fields.next_due_on || null,
+      notes: fields.notes.trim() || null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Preencha corretamente os dados da vacinação.',
+      );
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await criarRegistroVacina(parsed.data);
       setFields(initialForm);
       setNotice('Vacinação registrada na carteira do paciente.');
       await loadData();
@@ -171,9 +132,15 @@ export function VaccinationWallet() {
       />
 
       {errorMessage && (
-        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {errorMessage}
-        </p>
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          role="alert"
+        >
+          <p>{errorMessage}</p>
+          <Button type="button" variant="outline" onClick={() => void loadData()}>
+            Tentar novamente
+          </Button>
+        </div>
       )}
       {notice && (
         <p
@@ -328,25 +295,19 @@ export function VaccinationWallet() {
         description="Registros disponíveis de acordo com sua relação com o paciente."
       >
         {loading ? (
-          <p className="py-8 text-center text-sm text-slate-500">
-            Carregando carteira...
-          </p>
-        ) : vaccinations.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
-            <p className="font-semibold text-[#153b50]">
-              Nenhuma vacinação registrada
-            </p>
-            <p className="mt-2 text-sm text-slate-600">
-              Os registros serão exibidos após serem salvos pelo veterinário responsável.
-            </p>
+          <div className="grid gap-3" aria-busy="true">
+            <Skeleton className="h-24 w-full rounded-2xl" />
+            <Skeleton className="h-24 w-full rounded-2xl" />
           </div>
+        ) : vaccinations.length === 0 ? (
+          <EmptyState
+            title="Nenhuma vacinação registrada"
+            description="Os registros serão exibidos após serem salvos pelo veterinário responsável."
+          />
         ) : (
           <ul className="grid gap-3">
             {vaccinations.map((vaccination) => (
-              <li
-                className="rounded-2xl bg-[#f6faff] p-4"
-                key={vaccination.id}
-              >
+              <li className="rounded-2xl bg-[#f6faff] p-4" key={vaccination.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="font-bold text-[#153b50]">
@@ -368,7 +329,10 @@ export function VaccinationWallet() {
                 </div>
                 {(vaccination.manufacturer || vaccination.batch_number) && (
                   <p className="mt-2 text-xs text-slate-600">
-                    {[vaccination.manufacturer, vaccination.batch_number && `Lote ${vaccination.batch_number}`]
+                    {[
+                      vaccination.manufacturer,
+                      vaccination.batch_number && `Lote ${vaccination.batch_number}`,
+                    ]
                       .filter(Boolean)
                       .join(' · ')}
                   </p>

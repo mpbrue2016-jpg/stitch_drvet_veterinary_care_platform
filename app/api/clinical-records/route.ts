@@ -2,17 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-
-const vitalsSchema = z
-  .object({
-    weight_kg: z.number().positive().max(500).nullable(),
-    temperature_c: z.number().min(20).max(50).nullable(),
-    heart_rate_bpm: z.number().int().positive().max(1000).nullable(),
-    respiratory_rate_rpm: z.number().int().positive().max(500).nullable(),
-    mucous_membranes: z.string().trim().max(100).nullable(),
-    capillary_refill_seconds: z.number().min(0).max(30).nullable(),
-  })
-  .strict();
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
+import { clinicalVitalsSchema } from '@/lib/validations';
 
 const saveClinicalRecordSchema = z
   .object({
@@ -21,7 +12,7 @@ const saveClinicalRecordSchema = z
     objective: z.string().max(10000),
     assessment: z.string().max(10000),
     plan: z.string().max(10000),
-    vitals: vitalsSchema,
+    vitals: clinicalVitalsSchema,
     status: z.enum(['draft', 'finalized']),
   })
   .strict();
@@ -61,9 +52,10 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (appointmentError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar o agendamento.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      appointmentError,
+      'Não foi possível carregar o agendamento.',
+      500,
     );
   }
   if (!appointment) {
@@ -79,9 +71,10 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (recordError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar o prontuário.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      recordError,
+      'Não foi possível carregar o prontuário.',
+      500,
     );
   }
 
@@ -142,16 +135,14 @@ export async function POST(request: NextRequest) {
             : error.code === '55000'
               ? 409
               : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '55000'
-            ? 'Este prontuário já foi finalizado e não pode ser alterado.'
-            : error.code === '22023'
-              ? 'Revise os campos SOAP obrigatórios e os valores dos sinais vitais.'
-              : 'Não foi possível salvar o prontuário.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '55000'
+        ? 'Este prontuário já foi finalizado e não pode ser alterado.'
+        : error.code === '22023'
+          ? 'Revise os campos SOAP obrigatórios e os valores dos sinais vitais.'
+          : 'Não foi possível salvar o prontuário.',
+      status,
     );
   }
 

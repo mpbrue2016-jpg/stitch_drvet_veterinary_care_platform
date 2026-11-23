@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import Link from 'next/link';
@@ -161,3 +162,10 @@ export default function NovoPetPage() {
     </main>
   );
 }
+=======
+import { PetsManager } from '@/components/pets-manager';
+
+export default function NewPetPage() {
+  return <PetsManager initialCreateMode />;
+}
+>>>>>>> origin/main

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const dateSchema = z
   .string()
@@ -61,9 +62,10 @@ export async function GET() {
     .limit(200);
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar a carteira de vacinação.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível carregar a carteira de vacinação.',
+      500,
     );
   }
 
@@ -74,9 +76,10 @@ export async function GET() {
       : { data: [], error: null };
 
   if (petsError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os pacientes das vacinas.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      petsError,
+      'Não foi possível carregar os pacientes das vacinas.',
+      500,
     );
   }
 
@@ -135,14 +138,12 @@ export async function POST(request: NextRequest) {
           : error.code === '22023'
             ? 400
             : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '22023'
-            ? 'Confira o nome da vacina e as datas informadas.'
-            : 'Não foi possível registrar a vacinação.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '22023'
+        ? 'Confira o nome da vacina e as datas informadas.'
+        : 'Não foi possível registrar a vacinação.',
+      status,
     );
   }
 

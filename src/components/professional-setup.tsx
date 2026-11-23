@@ -1,36 +1,29 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui';
+import {
+  createAvailabilitySchema,
+  createOrganizationSchema,
+  registerVeterinarianSchema,
+} from '@/lib/validations';
+import {
+  alternarBloqueioHorario,
+  criarHorarioDisponivel,
+  listarDisponibilidade,
+} from '@/services/availability.service';
+import {
+  aprovarVeterinario,
+  criarOrganizacao,
+  listarOrganizacoesEVeterinarios,
+  registrarVeterinario,
+} from '@/services/organizations.service';
+import type {
+  AvailabilitySlot,
+  Organization,
+  VeterinarianProfile,
+} from '@/types/entities';
 
-type OrganizationRole =
-  | 'owner'
-  | 'admin'
-  | 'veterinarian'
-  | 'staff'
-  | 'billing';
-type Organization = {
-  id: string;
-  name: string;
-  role: OrganizationRole;
-};
-type Professional = {
-  organization_id: string;
-  user_id: string;
-  registration_number: string;
-  registration_region: string;
-  specialty: string | null;
-  status: 'pending' | 'approved' | 'suspended';
-};
-type AvailabilitySlot = {
-  id: string;
-  organization_id: string;
-  veterinarian_id: string;
-  starts_at: string;
-  ends_at: string;
-  is_available: boolean;
-  is_blocked: boolean;
-  block_reason: string | null;
-};
 const localDateTimeMin = new Date(
   Date.now() - new Date().getTimezoneOffset() * 60_000,
 )
@@ -39,7 +32,7 @@ const localDateTimeMin = new Date(
 
 export function ProfessionalSetup() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [professionals, setProfessionals] = useState<VeterinarianProfile[]>([]);
   const [currentUserId, setCurrentUserId] = useState('');
   const [organizationId, setOrganizationId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -54,27 +47,16 @@ export function ProfessionalSetup() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const response = await fetch('/api/organizations');
-      const result: {
-        organizations?: Organization[];
-        professionals?: Professional[];
-        currentUserId?: string;
-        error?: string;
-      } = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar as organizações.');
-      }
-
-      const nextOrganizations = result.organizations ?? [];
+      const result = await listarOrganizacoesEVeterinarios();
+      const nextOrganizations = result.organizations;
       setOrganizations(nextOrganizations);
-      setProfessionals(result.professionals ?? []);
-      setCurrentUserId(result.currentUserId ?? '');
-      if (
-        !nextOrganizations.some((organization) => organization.id === organizationId)
-      ) {
-        setOrganizationId(nextOrganizations[0]?.id ?? '');
-      }
+      setProfessionals(result.professionals);
+      setCurrentUserId(result.currentUserId);
+      setOrganizationId((current) =>
+        nextOrganizations.some((organization) => organization.id === current)
+          ? current
+          : nextOrganizations[0]?.id ?? '',
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar as organizações.',
@@ -82,7 +64,7 @@ export function ProfessionalSetup() {
     } finally {
       setLoading(false);
     }
-  }, [organizationId]);
+  }, []);
 
   useEffect(() => {
     void loadOrganizations();
@@ -91,17 +73,11 @@ export function ProfessionalSetup() {
   const loadAvailability = useCallback(async (targetOrganizationId: string) => {
     setAvailabilityLoading(true);
     try {
-      const params = new URLSearchParams({
-        mine: 'true',
+      const result = await listarDisponibilidade({
+        mine: true,
         organization_id: targetOrganizationId,
       });
-      const response = await fetch(`/api/availability?${params.toString()}`);
-      const result: { availability?: AvailabilitySlot[]; error?: string } =
-        await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível carregar os horários.');
-      }
-      setAvailabilitySlots(result.availability ?? []);
+      setAvailabilitySlots(result.availability);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar os horários.',
@@ -110,22 +86,6 @@ export function ProfessionalSetup() {
       setAvailabilityLoading(false);
     }
   }, []);
-
-  async function submitJson(
-    url: string,
-    method: 'POST' | 'PATCH',
-    body: Record<string, string>,
-  ) {
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const result: { error?: string } = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error ?? 'Não foi possível salvar as alterações.');
-    }
-  }
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -145,19 +105,21 @@ export function ProfessionalSetup() {
       form.reset();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : 'Não foi possível salvar as alterações.',
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível salvar as alterações.',
       );
     } finally {
       setBusy(false);
     }
   }
 
-  async function approveProfessional(professional: Professional) {
+  async function approveProfessional(professional: VeterinarianProfile) {
     setBusy(true);
     setErrorMessage('');
     setSuccessMessage('');
     try {
-      await submitJson('/api/organizations/veterinarians', 'PATCH', {
+      await aprovarVeterinario({
         organization_id: professional.organization_id,
         user_id: professional.user_id,
       });
@@ -165,7 +127,9 @@ export function ProfessionalSetup() {
       setSuccessMessage('Profissional aprovado.');
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : 'Não foi possível aprovar o profissional.',
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível aprovar o profissional.',
       );
     } finally {
       setBusy(false);
@@ -202,19 +166,11 @@ export function ProfessionalSetup() {
     setErrorMessage('');
     setSuccessMessage('');
     try {
-      const response = await fetch('/api/availability', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: slot.id,
-          is_blocked: isBlocked,
-          block_reason: isBlocked ? blockReason.trim() || null : null,
-        }),
+      await alternarBloqueioHorario({
+        id: slot.id,
+        is_blocked: isBlocked,
+        block_reason: isBlocked ? blockReason.trim() || null : null,
       });
-      const result: { error?: string } = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Não foi possível atualizar o horário.');
-      }
       setSuccessMessage(
         isBlocked ? 'Horário bloqueado.' : 'Horário liberado para agendamento.',
       );
@@ -232,7 +188,7 @@ export function ProfessionalSetup() {
     <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#087a68]">
-          Configuração do backend
+          Gestão clínica
         </p>
         <h2 className="mt-2 text-xl font-bold text-[#153b50]">
           Organização e disponibilidade profissional
@@ -255,7 +211,10 @@ export function ProfessionalSetup() {
       )}
 
       {loading ? (
-        <p className="py-6 text-sm text-slate-500">Carregando configurações...</p>
+        <div className="mt-5 grid gap-3" aria-busy="true">
+          <Skeleton className="h-12 max-w-xl" />
+          <Skeleton className="h-32 w-full rounded-2xl" />
+        </div>
       ) : (
         <div className="mt-5 grid gap-5">
           {organizations.length > 0 && (
@@ -280,18 +239,32 @@ export function ProfessionalSetup() {
               className="grid max-w-xl gap-3 rounded-2xl bg-[#f6faff] p-4"
               onSubmit={(event) =>
                 void handleSubmit(event, async (formData) => {
-                  await submitJson('/api/organizations', 'POST', {
+                  const parsed = createOrganizationSchema.safeParse({
                     name: String(formData.get('name') ?? ''),
                   });
+                  if (!parsed.success) {
+                    throw new Error(parsed.error.issues[0]?.message ?? 'Nome inválido.');
+                  }
+                  await criarOrganizacao(parsed.data.name);
                 })
               }
             >
               <h3 className="font-bold text-[#153b50]">Criar organização veterinária</h3>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Nome da organização
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={120} minLength={2} name="name" required />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  maxLength={120}
+                  minLength={2}
+                  name="name"
+                  required
+                />
               </label>
-              <button className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60" disabled={busy} type="submit">
+              <button
+                className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60"
+                disabled={busy}
+                type="submit"
+              >
                 Criar organização
               </button>
             </form>
@@ -311,7 +284,7 @@ export function ProfessionalSetup() {
                 className="grid gap-3 rounded-2xl border border-slate-200 p-4 sm:grid-cols-2"
                 onSubmit={(event) =>
                   void handleSubmit(event, async (formData) => {
-                    await submitJson('/api/organizations/veterinarians', 'POST', {
+                    const parsed = registerVeterinarianSchema.safeParse({
                       organization_id: organizationId,
                       user_id: String(formData.get('userId') ?? ''),
                       registration_number: String(
@@ -319,9 +292,15 @@ export function ProfessionalSetup() {
                       ),
                       registration_region: String(
                         formData.get('registrationRegion') ?? '',
-                      ).toUpperCase(),
+                      ),
                       specialty: String(formData.get('specialty') ?? ''),
                     });
+                    if (!parsed.success) {
+                      throw new Error(
+                        parsed.error.issues[0]?.message ?? 'Dados do profissional inválidos.',
+                      );
+                    }
+                    await registrarVeterinario(parsed.data);
                   })
                 }
               >
@@ -334,17 +313,36 @@ export function ProfessionalSetup() {
                 </label>
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   Registro profissional
-                  <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={32} name="registrationNumber" required />
+                  <input
+                    className="min-h-11 rounded-xl border border-slate-300 px-3"
+                    maxLength={32}
+                    name="registrationNumber"
+                    required
+                  />
                 </label>
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   UF do registro
-                  <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={2} minLength={2} name="registrationRegion" required />
+                  <input
+                    className="min-h-11 rounded-xl border border-slate-300 px-3"
+                    maxLength={2}
+                    minLength={2}
+                    name="registrationRegion"
+                    required
+                  />
                 </label>
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   Especialidade (opcional)
-                  <input className="min-h-11 rounded-xl border border-slate-300 px-3" maxLength={120} name="specialty" />
+                  <input
+                    className="min-h-11 rounded-xl border border-slate-300 px-3"
+                    maxLength={120}
+                    name="specialty"
+                  />
                 </label>
-                <button className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60 sm:col-span-2" disabled={busy} type="submit">
+                <button
+                  className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60 sm:col-span-2"
+                  disabled={busy}
+                  type="submit"
+                >
                   Registrar veterinário
                 </button>
               </form>
@@ -381,13 +379,19 @@ export function ProfessionalSetup() {
               className="grid gap-3 rounded-2xl border border-slate-200 p-4 sm:grid-cols-2"
               onSubmit={(event) =>
                 void handleSubmit(event, async (formData) => {
-                  const startsAt = new Date(String(formData.get('startsAt'))).toISOString();
-                  const endsAt = new Date(String(formData.get('endsAt'))).toISOString();
-                  await submitJson('/api/availability', 'POST', {
+                  const startsAtRaw = String(formData.get('startsAt') ?? '');
+                  const endsAtRaw = String(formData.get('endsAt') ?? '');
+                  const parsed = createAvailabilitySchema.safeParse({
                     organization_id: organizationId,
-                    starts_at: startsAt,
-                    ends_at: endsAt,
+                    starts_at: startsAtRaw ? new Date(startsAtRaw).toISOString() : '',
+                    ends_at: endsAtRaw ? new Date(endsAtRaw).toISOString() : '',
                   });
+                  if (!parsed.success) {
+                    throw new Error(
+                      parsed.error.issues[0]?.message ?? 'Informe um intervalo válido.',
+                    );
+                  }
+                  await criarHorarioDisponivel(parsed.data);
                   await loadAvailability(organizationId);
                 })
               }
@@ -397,13 +401,29 @@ export function ProfessionalSetup() {
               </h3>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Início
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" min={localDateTimeMin} name="startsAt" required type="datetime-local" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  min={localDateTimeMin}
+                  name="startsAt"
+                  required
+                  type="datetime-local"
+                />
               </label>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Fim
-                <input className="min-h-11 rounded-xl border border-slate-300 px-3" min={localDateTimeMin} name="endsAt" required type="datetime-local" />
+                <input
+                  className="min-h-11 rounded-xl border border-slate-300 px-3"
+                  min={localDateTimeMin}
+                  name="endsAt"
+                  required
+                  type="datetime-local"
+                />
               </label>
-              <button className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60 sm:col-span-2" disabled={busy} type="submit">
+              <button
+                className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60 sm:col-span-2"
+                disabled={busy}
+                type="submit"
+              >
                 Publicar disponibilidade
               </button>
             </form>
@@ -415,10 +435,7 @@ export function ProfessionalSetup() {
               className="grid gap-3 rounded-2xl border border-slate-200 p-4"
             >
               <div>
-                <h3
-                  className="font-bold text-[#153b50]"
-                  id="availability-heading"
-                >
+                <h3 className="font-bold text-[#153b50]" id="availability-heading">
                   Horários publicados
                 </h3>
                 <p className="mt-1 text-xs text-slate-600">
@@ -437,7 +454,7 @@ export function ProfessionalSetup() {
               </label>
 
               {availabilityLoading ? (
-                <p className="py-4 text-sm text-slate-500">Carregando horários...</p>
+                <Skeleton className="h-24 w-full rounded-xl" />
               ) : availabilitySlots.length === 0 ? (
                 <p className="rounded-xl bg-[#f6faff] p-4 text-sm text-slate-600">
                   Não há horários futuros publicados para esta organização.

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const createExamOrderSchema = z
   .object({
@@ -65,9 +66,10 @@ export async function GET(request: NextRequest) {
 
   const { data: orders, error } = await query;
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar as solicitações de exames.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível carregar as solicitações de exames.',
+      500,
     );
   }
 
@@ -77,9 +79,10 @@ export async function GET(request: NextRequest) {
       ? await supabase.from('pets').select('id, name, species').in('id', petIds)
       : { data: [], error: null };
   if (petsError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os pacientes dos exames.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      petsError,
+      'Não foi possível carregar os pacientes dos exames.',
+      500,
     );
   }
 
@@ -136,14 +139,12 @@ export async function POST(request: NextRequest) {
           : error.code === '22023'
             ? 400
             : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '22023'
-            ? 'Revise o exame e a indicação clínica informados.'
-            : 'Não foi possível solicitar o exame.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '22023'
+        ? 'Revise o exame e a indicação clínica informados.'
+        : 'Não foi possível solicitar o exame.',
+      status,
     );
   }
 
@@ -194,16 +195,14 @@ export async function PATCH(request: NextRequest) {
             : error.code === '55000'
               ? 409
               : 500;
-    return NextResponse.json(
-      {
-        error:
-          error.code === '55000'
-            ? 'Este resultado já foi registrado e não pode ser alterado.'
-            : error.code === '22023'
-              ? 'Revise o resultado e a data informados.'
-              : 'Não foi possível registrar o resultado.',
-      },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      error.code === '55000'
+        ? 'Este resultado já foi registrado e não pode ser alterado.'
+        : error.code === '22023'
+          ? 'Revise o resultado e a data informados.'
+          : 'Não foi possível registrar o resultado.',
+      status,
     );
   }
 

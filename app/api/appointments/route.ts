@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
+import { dispatchBackgroundPushWithServiceRole } from '@/lib/push/server-dispatch';
 
 const createAppointmentSchema = z
   .object({
@@ -79,9 +81,10 @@ export async function GET(request: NextRequest) {
   const { data, error } = await appointmentsQuery;
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os agendamentos.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      error,
+      'Não foi possível carregar os agendamentos.',
+      500,
     );
   }
 
@@ -95,9 +98,10 @@ export async function GET(request: NextRequest) {
       : { data: [], error: null };
 
   if (petsError) {
-    return NextResponse.json(
-      { error: 'Não foi possível carregar os pacientes dos agendamentos.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      petsError,
+      'Não foi possível carregar os pacientes dos agendamentos.',
+      500,
     );
   }
 
@@ -143,9 +147,10 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   if (availabilityError) {
-    return NextResponse.json(
-      { error: 'Não foi possível verificar a disponibilidade.' },
-      { status: 500 },
+    return supabaseErrorResponse(
+      availabilityError,
+      'Não foi possível verificar a disponibilidade.',
+      500,
     );
   }
   if (!availability) {
@@ -173,15 +178,30 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     const isConflict = error.code === '23P01' || error.code === '23505';
-    return NextResponse.json(
-      {
-        error: isConflict
-          ? 'Este horário acabou de ser reservado. Escolha outro horário.'
-          : 'Não foi possível solicitar o agendamento. Confira o pet e tente novamente.',
-      },
-      { status: isConflict ? 409 : error.code === '42501' ? 403 : 500 },
+    return supabaseErrorResponse(
+      error,
+      isConflict
+        ? 'Este horário acabou de ser reservado. Escolha outro horário.'
+        : 'Não foi possível solicitar o agendamento. Confira o pet e tente novamente.',
+      isConflict ? 409 : error.code === '42501' ? 403 : 500,
     );
   }
+
+  const whenFormatted = new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(data.starts_at));
+
+  await dispatchBackgroundPushWithServiceRole(
+    availability.veterinarian_id,
+    {
+      title: 'Nova solicitação na fila DrVet',
+      body: `${data.kind === 'teleconsultation' ? 'Teleconsulta' : 'Consulta presencial'} solicitada para ${whenFormatted}.`,
+      url: '/painel/veterinario',
+      tag: `queue-${data.id}`,
+    },
+    'queue',
+  ).catch(() => null);
 
   return NextResponse.json({ appointment: data }, { status: 201 });
 }
@@ -216,10 +236,35 @@ export async function PATCH(request: NextRequest) {
 
   if (error) {
     const status = error.code === 'P0002' ? 404 : error.code === '42501' ? 403 : 409;
-    return NextResponse.json(
-      { error: 'A mudança de status não foi autorizada ou não é válida.' },
-      { status },
+    return supabaseErrorResponse(
+      error,
+      'A mudança de status não foi autorizada ou não é válida.',
+      status,
     );
+  }
+
+  if (data && (parsed.data.status === 'confirmed' || parsed.data.status === 'cancelled')) {
+    const whenFormatted = new Intl.DateTimeFormat('pt-BR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date(data.starts_at));
+
+    await dispatchBackgroundPushWithServiceRole(
+      data.tutor_id,
+      {
+        title:
+          parsed.data.status === 'confirmed'
+            ? 'Consulta veterinária confirmada'
+            : 'Consulta veterinária cancelada',
+        body:
+          parsed.data.status === 'confirmed'
+            ? `Seu atendimento foi confirmado para ${whenFormatted}.`
+            : `O atendimento de ${whenFormatted} foi cancelado.`,
+        url: '/agendamento',
+        tag: `status-${data.id}`,
+      },
+      'appointments',
+    ).catch(() => null);
   }
 
   return NextResponse.json({ appointment: data });

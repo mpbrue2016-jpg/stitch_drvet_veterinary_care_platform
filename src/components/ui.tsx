@@ -5,8 +5,10 @@ import type {
   SelectHTMLAttributes,
   TableHTMLAttributes,
   TdHTMLAttributes,
+  TextareaHTMLAttributes,
   ThHTMLAttributes,
 } from 'react';
+export { Modal, Tabs } from '@/components/interactive-ui';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 
@@ -86,6 +88,38 @@ export function Select({
       >
         {children}
       </select>
+    </div>
+  );
+}
+
+export function Textarea({
+  label,
+  error,
+  className = '',
+  id,
+  ...props
+}: TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }) {
+  const textareaId = id ?? props.name;
+
+  return (
+    <div className="grid gap-1.5">
+      {label && textareaId && (
+        <label className="text-sm font-semibold text-brand-ink" htmlFor={textareaId}>
+          {label}
+        </label>
+      )}
+      <textarea
+        id={textareaId}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error && textareaId ? `${textareaId}-error` : undefined}
+        className={`min-h-24 w-full rounded-lg border bg-white px-3 py-2 text-sm text-brand-ink placeholder:text-brand-muted ${error ? 'border-red-500' : 'border-slate-300'} ${className}`}
+        {...props}
+      />
+      {error && (
+        <span className="text-sm text-red-700" id={textareaId ? `${textareaId}-error` : undefined}>
+          {error}
+        </span>
+      )}
     </div>
   );
 }

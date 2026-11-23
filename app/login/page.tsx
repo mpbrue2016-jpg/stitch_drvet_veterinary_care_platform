@@ -4,8 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { loginSchema, resetRequestSchema, signUpSchema } from '@/lib/validations';
+import {
+  cadastrarUsuario,
+  entrarComEmailSenha,
+  enviarRecuperacaoSenha,
+} from '@/services/auth.service';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,7 +24,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    setNeedsSetup(searchParams.get('setup') === 'required');
+    const configured = isSupabaseConfigured();
+    setNeedsSetup(searchParams.get('setup') === 'required' || !configured);
     const requestedPath = searchParams.get('next');
     if (requestedPath) {
       const target = new URL(requestedPath, window.location.origin);
@@ -28,7 +34,9 @@ export default function LoginPage() {
       }
     }
     if (searchParams.get('error') === 'callback') {
-      setErrorMessage('Não foi possível confirmar o acesso. Solicite um novo link de confirmação.');
+      setErrorMessage(
+        'Não foi possível confirmar o acesso. Solicite um novo link de confirmação.',
+      );
     }
     if (searchParams.get('confirm_email') === 'required') {
       setErrorMessage(
@@ -42,42 +50,55 @@ export default function LoginPage() {
     setMessage('');
     setErrorMessage('');
 
-    if (!isSupabaseConfigured()) {
-      setErrorMessage(
-        'O Supabase ainda não está configurado. Preencha o .env.local e reinicie o servidor.',
-      );
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get('email') ?? '').trim();
-    const supabase = createSupabaseBrowserClient();
+    const password = String(formData.get('password') ?? '');
+    const displayName = String(formData.get('displayName') ?? '').trim();
+
+    if (isResetRequest) {
+      const parsed = resetRequestSchema.safeParse({ email });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'Informe um e-mail válido.');
+        return;
+      }
+    } else if (isSignUp) {
+      const parsed = signUpSchema.safeParse({ email, password, displayName });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'Confira os dados do cadastro.');
+        return;
+      }
+    } else {
+      const parsed = loginSchema.safeParse({ email, password });
+      if (!parsed.success) {
+        setErrorMessage(parsed.error.issues[0]?.message ?? 'E-mail ou senha inválidos.');
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
       if (isResetRequest) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/senha/nova`,
-        });
-        if (error) throw error;
+        await enviarRecuperacaoSenha(
+          email,
+          `${window.location.origin}/auth/callback?next=/senha/nova`,
+        );
         setMessage(
           'Se houver uma conta com esse e-mail, enviaremos um link para redefinir a senha.',
         );
         return;
       }
 
-      const password = String(formData.get('password') ?? '');
       if (isSignUp) {
-        const displayName = String(formData.get('displayName') ?? '').trim();
-        const { data, error } = await supabase.auth.signUp({
+        const data = await cadastrarUsuario({
           email,
           password,
-          options: { data: { display_name: displayName } },
+          displayName,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
         });
 
-        if (error) throw error;
         if (data.session) {
-          router.replace('/agendamento');
+          router.replace(nextPath);
           router.refresh();
           return;
         }
@@ -87,12 +108,7 @@ export default function LoginPage() {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-
+      await entrarComEmailSenha({ email, password });
       router.replace(nextPath);
       router.refresh();
     } catch (error) {
@@ -130,11 +146,27 @@ export default function LoginPage() {
 
         {needsSetup && (
           <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
-            Configure o Supabase no arquivo local <code>.env.local</code> para ativar a autenticação.
+            Supabase ainda não configurado neste ambiente (falta definir{' '}
+            <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_URL</code> e{' '}
+            <code className="font-mono text-xs">NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> no{' '}
+            <code className="font-mono text-xs">.env.local</code>). Enquanto isso, acesse as
+            rotas públicas{' '}
+            <Link className="font-bold underline" href="/">
+              Home
+            </Link>
+            ,{' '}
+            <Link className="font-bold underline" href="/cadastro">
+              Cadastro QR
+            </Link>{' '}
+            ou{' '}
+            <Link className="font-bold underline" href="/apresentacao">
+              Apresentação
+            </Link>
+            .
           </div>
         )}
 
-        <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
+        <form className="mt-6 grid gap-4" noValidate onSubmit={handleSubmit}>
           {isSignUp && !isResetRequest && (
             <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
               Nome completo
