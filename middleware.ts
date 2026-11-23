@@ -26,16 +26,28 @@ const protectedPaths = [
   '/senha/nova',
 ];
 
+const publicBypassPaths = ['/receitas/verificar'];
+
 const professionalOnlyPaths = [
   '/agenda',
   '/receitas',
   '/comissoes',
+  '/parceiros',
+  '/anuncios',
   '/painel/veterinario',
   '/painel/parceiro',
 ];
 const adminOnlyPaths = ['/admin'];
 
 export async function middleware(request: NextRequest) {
+  const isPublicBypass = publicBypassPaths.some(
+    (path) =>
+      request.nextUrl.pathname === path ||
+      request.nextUrl.pathname.startsWith(`${path}/`),
+  );
+
+  if (isPublicBypass) return NextResponse.next({ request });
+
   const isProtectedPath = protectedPaths.some(
     (path) =>
       request.nextUrl.pathname === path ||
@@ -111,10 +123,10 @@ export async function middleware(request: NextRequest) {
     ]);
 
     if (isSchemaMissingError(profileError) || isSchemaMissingError(membershipError)) {
-      const setupUrl = request.nextUrl.clone();
-      setupUrl.pathname = '/setup-supabase';
-      setupUrl.search = '';
-      const redirect = NextResponse.redirect(setupUrl);
+      const restrictedUrl = request.nextUrl.clone();
+      restrictedUrl.pathname = '/agendamento';
+      restrictedUrl.search = '?denied=schema';
+      const redirect = NextResponse.redirect(restrictedUrl);
       response.cookies.getAll().forEach((cookie) =>
         redirect.cookies.set(cookie),
       );
@@ -155,10 +167,10 @@ export async function middleware(request: NextRequest) {
       .maybeSingle();
 
     if (isSchemaMissingError(profileError)) {
-      const setupUrl = request.nextUrl.clone();
-      setupUrl.pathname = '/setup-supabase';
-      setupUrl.search = '';
-      const redirect = NextResponse.redirect(setupUrl);
+      const restrictedUrl = request.nextUrl.clone();
+      restrictedUrl.pathname = '/agendamento';
+      restrictedUrl.search = '?denied=schema';
+      const redirect = NextResponse.redirect(restrictedUrl);
       response.cookies.getAll().forEach((cookie) =>
         redirect.cookies.set(cookie),
       );

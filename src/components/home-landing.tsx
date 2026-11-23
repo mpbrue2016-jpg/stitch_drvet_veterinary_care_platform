@@ -3,8 +3,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import {
+  CalendarDays,
+  Home,
+  PawPrint,
+  Search,
+  UserRound,
+  Video,
+} from 'lucide-react';
+import cockpitTheoPet from '@/assets/images/cockpit_theo_pet_1795425127707.jpg';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { buscarCatalogoPublicoVeterinarios } from '@/services/organizations.service';
+import { listarPlanosClube } from '@/services/subscriptions.service';
+import type { PublicVeterinarian, SubscriptionPlan } from '@/types/entities';
 
 interface Specialist {
   name: string;
@@ -170,23 +183,19 @@ const testimonials = [
   },
 ];
 
-function VideoCamIcon({ className = 'h-5 w-5' }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.9"
-      viewBox="0 0 24 24"
-    >
-      <rect height="12" rx="2" width="14" x="2" y="6" />
-      <path d="M16 10l6-3v10l-6-3z" />
-    </svg>
-  );
-}
+const brl = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
+
+const avatarPool = [
+  '/home/vet-juliana.webp',
+  '/home/vet-ricardo.webp',
+  '/home/vet-leticia.webp',
+  '/home/vet-marcos.webp',
+  '/home/vet-beatriz.webp',
+  '/home/vet-fernando.webp',
+];
 
 export function HomeLanding() {
   const router = useRouter();
@@ -194,10 +203,78 @@ export function HomeLanding() {
   const [need, setNeed] = useState('geral');
   const [timing, setTiming] = useState('now');
   const [filterOnlineOnly, setFilterOnlineOnly] = useState(false);
+  const [liveVets, setLiveVets] = useState<PublicVeterinarian[]>([]);
+  const [livePlans, setLivePlans] = useState<SubscriptionPlan[]>([]);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setCatalogLoaded(true);
+      return;
+    }
+    let active = true;
+    Promise.all([
+      buscarCatalogoPublicoVeterinarios().catch(() => ({ veterinarians: [] })),
+      listarPlanosClube().catch(() => ({ plans: [] })),
+    ])
+      .then(([vetsRes, plansRes]) => {
+        if (!active) return;
+        setLiveVets(vetsRes.veterinarians);
+        setLivePlans(plansRes.plans);
+      })
+      .finally(() => {
+        if (active) setCatalogLoaded(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const mappedLiveSpecialists: Array<Specialist & { userId?: string; openSlots?: number }> =
+    liveVets.map((vet, index) => ({
+      userId: vet.user_id,
+      openSlots: vet.open_slots_count,
+      name: vet.display_name || 'Médico Veterinário',
+      crmv: `CRMV-${vet.registration_region} ${vet.registration_number} • ${vet.specialty || 'Clínica Geral'}`,
+      statusLabel: vet.is_online_now
+        ? 'Plantão Online Agora'
+        : vet.open_slots_count > 0
+          ? `${vet.open_slots_count} horário(s) publicado(s)`
+          : 'Sob agendamento',
+      isOnline: Boolean(vet.is_online_now),
+      rating: '5.0',
+      reviews: Math.max(vet.open_slots_count, 1),
+      tags: [
+        {
+          label: vet.specialty || 'Clínica Geral',
+          tone: 'bg-blue-50 text-blue-700',
+        },
+        {
+          label: vet.organization_name,
+          tone: 'bg-slate-100 text-slate-700',
+        },
+      ],
+      bio:
+        vet.bio ||
+        'Médico-veterinário credenciado na plataforma DrVets com prontuário SOAP e prescrição digital.',
+      priceLabel: 'Consulta Online',
+      price: brl.format((vet.consultation_fee_cents || 18000) / 100),
+      ctaLabel: vet.is_online_now ? 'Consultar Agora' : 'Ver Agenda',
+      ctaPrimary: Boolean(vet.is_online_now),
+      avatarSrc: avatarPool[index % avatarPool.length],
+      borderTone: vet.is_online_now ? 'border-emerald-400' : 'border-blue-400',
+    }));
+
+  const activeCatalog: Array<Specialist & { userId?: string; openSlots?: number }> =
+    mappedLiveSpecialists.length > 0 ? mappedLiveSpecialists : specialists;
 
   const visibleSpecialists = filterOnlineOnly
-    ? specialists.filter((doc) => doc.isOnline)
-    : specialists;
+    ? activeCatalog.filter((doc) => doc.isOnline || (doc.openSlots ?? 0) > 0)
+    : activeCatalog;
+
+  const totalOpenSlots = liveVets.reduce((acc, v) => acc + (v.open_slots_count || 0), 0);
+  const onlineVetsCount = liveVets.filter((v) => v.is_online_now).length;
 
   function handleTriageSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -257,7 +334,7 @@ export function HomeLanding() {
                     href="#triage-box"
                   >
                     <span className="flex items-center justify-center rounded-lg bg-white/20 p-1.5">
-                      <VideoCamIcon className="h-5 w-5 text-white" />
+                      <Video className="h-5 w-5 text-white" />
                     </span>
                     <span>Encontrar veterinário agora</span>
                     <span
@@ -273,8 +350,16 @@ export function HomeLanding() {
                       <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
                     </span>
                     <div className="text-xs">
-                      <p className="font-bold text-slate-800">Tempo de espera atual</p>
-                      <p className="font-semibold text-emerald-700">Médio de ~8 min hoje</p>
+                      <p className="font-bold text-slate-800">
+                        {catalogLoaded && liveVets.length > 0
+                          ? `${onlineVetsCount > 0 ? onlineVetsCount : liveVets.length} profissional(is) credenciado(s)`
+                          : 'Plantão veterinário ativo'}
+                      </p>
+                      <p className="font-semibold text-emerald-700">
+                        {catalogLoaded && totalOpenSlots > 0
+                          ? `${totalOpenSlots} horário(s) aberto(s) na agenda`
+                          : 'Triagem e agendamento online'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -288,14 +373,7 @@ export function HomeLanding() {
                       className="flex flex-col items-center justify-center rounded-xl border border-emerald-100 bg-white px-1 py-2 shadow-sm transition"
                       href="#inicio"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="h-5 w-5 text-[#0B68C2]"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5L12 3z" />
-                      </svg>
+                      <Home className="h-5 w-5 text-[#0B68C2]" />
                       <span className="mt-0.5 text-[11px] font-bold text-[#0C2D48]">Início</span>
                       <div className="mt-0.5 h-0.5 w-4 rounded-full bg-emerald-500" />
                     </a>
@@ -303,60 +381,21 @@ export function HomeLanding() {
                       className="flex flex-col items-center justify-center rounded-xl px-1 py-2 text-slate-600 transition hover:bg-white/80 hover:text-[#0B68C2]"
                       href="/agendamento"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.8"
-                        viewBox="0 0 24 24"
-                      >
-                        <rect height="16" rx="2" width="18" x="3" y="4" />
-                        <path d="M16 2v4M8 2v4M3 10h18" />
-                      </svg>
+                      <CalendarDays className="h-5 w-5" />
                       <span className="mt-0.5 text-[11px] font-semibold">Consultas</span>
                     </Link>
                     <Link
                       className="flex flex-col items-center justify-center rounded-xl px-1 py-2 text-slate-600 transition hover:bg-white/80 hover:text-[#0B68C2]"
                       href="/pets"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.8"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx="5" cy="9" r="1.8" />
-                        <circle cx="10" cy="5.5" r="1.8" />
-                        <circle cx="15" cy="5.5" r="1.8" />
-                        <circle cx="19" cy="9" r="1.8" />
-                        <path d="M12 11c-3 0-5.5 2-5.5 5 0 2 1.5 3 3 3 1.2 0 2-.7 2.5-.7s1.3.7 2.5.7c1.5 0 3-1 3-3 0-3-2.5-5-5.5-5z" />
-                      </svg>
+                      <PawPrint className="h-5 w-5" />
                       <span className="mt-0.5 text-[11px] font-semibold">Meus Pets</span>
                     </Link>
                     <Link
                       className="flex flex-col items-center justify-center rounded-xl px-1 py-2 text-slate-600 transition hover:bg-white/80 hover:text-[#0B68C2]"
                       href="/perfil"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.8"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M20 21a8 8 0 10-16 0" />
-                        <circle cx="12" cy="8" r="4" />
-                      </svg>
+                      <UserRound className="h-5 w-5" />
                       <span className="mt-0.5 text-[11px] font-semibold">Perfil</span>
                     </Link>
                   </div>
@@ -396,17 +435,7 @@ export function HomeLanding() {
                 </div>
 
                 <div className="absolute -right-3 -top-5 max-w-[170px] rotate-3 transform rounded-2xl border-2 border-white bg-gradient-to-br from-[#0EA57A] to-[#047E59] p-3.5 text-center text-white shadow-xl transition duration-300 hover:rotate-0 sm:-right-5">
-                  <svg
-                    aria-hidden="true"
-                    className="mx-auto mb-0.5 h-6 w-6 fill-white"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle cx="5" cy="9" r="2.1" />
-                    <circle cx="10" cy="5.5" r="2.1" />
-                    <circle cx="15" cy="5.5" r="2.1" />
-                    <circle cx="19" cy="9" r="2.1" />
-                    <path d="M12 11c-3.1 0-5.5 2-5.5 5 0 2 1.5 3.2 3 3.2 1.2 0 2-.7 2.5-.7s1.3.7 2.5.7c1.5 0 3-1.2 3-3.2 0-3-2.4-5-5.5-5z" />
-                  </svg>
+                  <PawPrint className="mx-auto mb-0.5 h-6 w-6 text-white" />
                   <p
                     className="text-lg font-bold leading-tight"
                     style={{ fontFamily: 'var(--font-caveat), cursive' }}
@@ -518,19 +547,7 @@ export function HomeLanding() {
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(92deg,#0A63BA_0%,#0690B4_45%,#0EB485_100%)] px-4 py-3 text-sm font-bold text-white shadow-md transition duration-200 hover:opacity-95 sm:text-base"
                 type="submit"
               >
-                <svg
-                  aria-hidden="true"
-                  className="h-[18px] w-[18px]"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="M21 21l-4.35-4.35" />
-                </svg>
+                <Search className="h-[18px] w-[18px]" />
                 <span>Conectar Agora</span>
               </button>
             </div>
@@ -544,32 +561,50 @@ export function HomeLanding() {
           <div className="grid grid-cols-2 gap-8 divide-y divide-white/10 text-center lg:grid-cols-4 lg:divide-x lg:divide-y-0">
             <div className="pt-4 lg:pt-0">
               <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                +18.500
+                {liveVets.length > 0 ? String(liveVets.length) : 'CRMV'}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-300">Teleconsultas Realizadas</p>
-              <span className="text-xs font-semibold text-[#00B298]">Em todo o Brasil</span>
-            </div>
-            <div className="pt-4 lg:pt-0">
-              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                99.4%
+              <p className="mt-1 text-sm font-medium text-slate-300">
+                {liveVets.length > 0
+                  ? 'Veterinários Credenciados Ativos'
+                  : 'Médicos Auditados'}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-300">Satisfação dos Tutores</p>
-              <span className="text-xs font-semibold text-[#00B298]">Índice NPS de Excelência</span>
-            </div>
-            <div className="pt-4 lg:pt-0">
-              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                24 / 7
-              </p>
-              <p className="mt-1 text-sm font-medium text-slate-300">Plantão Clínico Ativo</p>
-              <span className="text-xs font-semibold text-[#00B298]">Sempre que seu pet precisar</span>
-            </div>
-            <div className="pt-4 lg:pt-0">
-              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                100%
-              </p>
-              <p className="mt-1 text-sm font-medium text-slate-300">Médicos com CRMV Ativo</p>
               <span className="text-xs font-semibold text-[#00B298]">
-                Auditoria contínua de registros
+                Aprovação verificada no sistema
+              </span>
+            </div>
+            <div className="pt-4 lg:pt-0">
+              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
+                {liveVets.length > 0 ? String(totalOpenSlots) : '24 / 7'}
+              </p>
+              <p className="mt-1 text-sm font-medium text-slate-300">
+                {liveVets.length > 0
+                  ? 'Horários Abertos na Agenda'
+                  : 'Plantão Clínico Digital'}
+              </p>
+              <span className="text-xs font-semibold text-[#00B298]">
+                Reserva direta por vídeo ou presencial
+              </span>
+            </div>
+            <div className="pt-4 lg:pt-0">
+              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
+                {livePlans.length > 0 ? `${livePlans.length} Planos` : 'Clube DrVet'}
+              </p>
+              <p className="mt-1 text-sm font-medium text-slate-300">
+                Assinaturas Preventivas Ativas
+              </p>
+              <span className="text-xs font-semibold text-[#00B298]">
+                Descontos automáticos no checkout
+              </span>
+            </div>
+            <div className="pt-4 lg:pt-0">
+              <p className="bg-gradient-to-r from-[#25C5DC] to-[#32D77D] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
+                QR Code
+              </p>
+              <p className="mt-1 text-sm font-medium text-slate-300">
+                Receituário com Validação Pública
+              </p>
+              <span className="text-xs font-semibold text-[#00B298]">
+                Auditoria instantânea de prescrições
               </span>
             </div>
           </div>
@@ -744,7 +779,11 @@ export function HomeLanding() {
                         ? 'rounded-xl bg-[linear-gradient(92deg,#0A63BA_0%,#0690B4_45%,#0EB485_100%)] px-4 py-2.5 text-xs font-bold text-white shadow transition hover:opacity-95'
                         : 'rounded-xl bg-[#F0F8FB] px-4 py-2.5 text-xs font-bold text-[#0B68C2] transition hover:bg-[#0B68C2] hover:text-white'
                     }
-                    href="/agendamento/edit"
+                    href={
+                      doc.userId
+                        ? `/agendamento/edit?vet=${encodeURIComponent(doc.userId)}`
+                        : '/agendamento/edit'
+                    }
                   >
                     {doc.ctaLabel}
                   </Link>
@@ -1070,12 +1109,10 @@ export function HomeLanding() {
                     <Image
                       alt="Vídeo chamada com paciente Theo"
                       className="h-full w-full object-cover"
-                      height={768}
                       quality={95}
                       referrerPolicy="no-referrer"
                       sizes="(max-width: 768px) 100vw, 480px"
-                      src="/home/cockpit-theo.webp"
-                      width={1408}
+                      src={cockpitTheoPet}
                     />
                     <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-lg bg-[#153B50]/80 px-2.5 py-1 text-[10px] font-bold backdrop-blur-md">
                       <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
@@ -1250,7 +1287,7 @@ export function HomeLanding() {
                   className="flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-base font-bold text-[#153B50] shadow-lg transition duration-200 hover:bg-slate-50"
                   href="/agendamento/edit"
                 >
-                  <VideoCamIcon className="h-5 w-5 text-[#0B68C2]" />
+                  <Video className="h-5 w-5 text-[#0B68C2]" />
                   <span>Chamar Plantonista Agora</span>
                 </Link>
                 <div className="flex items-center gap-2 text-xs text-white/90">
@@ -1286,7 +1323,6 @@ export function HomeLanding() {
               </p>
               <div className="space-y-1 text-xs text-[#00B298]">
                 <p>✓ Conforme a Resolução CFMV nº 1.465/2022</p>
-                <p>✓ Responsável Técnico Médico Veterinário: Dr. A. Silveira - CRMV-SP 38.412</p>
               </div>
             </div>
 
@@ -1384,7 +1420,7 @@ export function HomeLanding() {
 
           <div className="flex flex-col items-center justify-between gap-4 pt-8 text-xs text-slate-500 sm:flex-row">
             <p>
-              © 2026 DrVets Tele Veterinária Ltda. CNPJ: 45.892.120/0001-90. Todos os direitos reservados.
+              © 2026 DrVets Tele Veterinária Ltda. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-4">
               <span>Seu pet sempre por perto</span>

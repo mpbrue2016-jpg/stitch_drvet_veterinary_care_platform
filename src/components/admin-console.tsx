@@ -15,9 +15,12 @@ import {
 } from '@/components/ui';
 import {
   atualizarRoleUsuarioAdmin,
+  avaliarSolicitacaoPerfil,
   listarIntegracoes,
+  listarSolicitacoesPerfil,
   listarUsuariosAdmin,
   salvarIntegracao,
+  testarIntegracao,
 } from '@/services/admin.service';
 import {
   aprovarVeterinario,
@@ -28,6 +31,7 @@ import type {
   IntegrationConfig,
   IntegrationEnvironment,
   IntegrationProvider,
+  RoleApplication,
   UserProfile,
   VeterinarianProfile,
 } from '@/types/entities';
@@ -51,6 +55,8 @@ export function AdminConsole() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [professionals, setProfessionals] = useState<VeterinarianProfile[]>([]);
   const [integrations, setIntegrations] = useState<IntegrationConfig[]>([]);
+  const [applications, setApplications] = useState<RoleApplication[]>([]);
+  const [testingId, setTestingId] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,16 +73,20 @@ export function AdminConsole() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [usersRes, orgsRes, intRes] = await Promise.all([
+      const [usersRes, orgsRes, intRes, appsRes] = await Promise.all([
         listarUsuariosAdmin(),
         listarOrganizacoesEVeterinarios().catch(() => ({
           professionals: [] as VeterinarianProfile[],
         })),
         listarIntegracoes(),
+        listarSolicitacoesPerfil().catch(() => ({
+          applications: [] as RoleApplication[],
+        })),
       ]);
       setUsers(usersRes.users);
       setProfessionals(orgsRes.professionals);
       setIntegrations(intRes.integrations);
+      setApplications(appsRes.applications);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -129,15 +139,44 @@ export function AdminConsole() {
     }
   }
 
+  async function handleReviewApplication(applicationId: string, approve: boolean) {
+    setBusy(true);
+    setErrorMessage('');
+    setNotice('');
+    try {
+      await avaliarSolicitacaoPerfil({
+        applicationId,
+        approve,
+        notes: approve ? 'Credenciamento aprovado pelo Admin Master' : 'Documentação recusada',
+      });
+      setNotice(
+        approve
+          ? 'Solicitação aprovada! Perfil RBAC e organização vinculados.'
+          : 'Solicitação marcada como recusada.',
+      );
+      await loadData();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao avaliar solicitação de credenciamento.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleSaveIntegration(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setErrorMessage('');
     setNotice('');
     try {
-      await salvarIntegracao(integrationForm);
+      const { integration } = await salvarIntegracao(integrationForm);
       setIntegrationForm((curr) => ({ ...curr, webhook_endpoint: '' }));
-      setNotice('Configuração de integração salva com status 200 OK.');
+      setNotice(
+        `Configuração salva (${integration.last_status}). Use "Testar HTTP" abaixo para validar conectividade real.`,
+      );
       await loadData();
     } catch (error) {
       setErrorMessage(
@@ -145,6 +184,29 @@ export function AdminConsole() {
       );
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleProbeIntegration(integrationId: string) {
+    setTestingId(integrationId);
+    setErrorMessage('');
+    setNotice('');
+    try {
+      const { integration, reachable } = await testarIntegracao(integrationId);
+      setIntegrations((current) =>
+        current.map((item) => (item.id === integration.id ? integration : item)),
+      );
+      setNotice(
+        reachable
+          ? `Endpoint respondeu: ${integration.last_status}.`
+          : `Teste concluído sem alcance: ${integration.last_status}.`,
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Falha ao testar endpoint HTTP.',
+      );
+    } finally {
+      setTestingId('');
     }
   }
 
@@ -309,13 +371,93 @@ export function AdminConsole() {
               ),
             },
             {
+              id: 'credenciamentos',
+              label: `Solicitações (${applications.filter((a) => a.status === 'pending').length})`,
+              content: (
+                <Card
+                  title="Fila de credenciamento (Veterinários & Parceiros B2B)"
+                  description="Analise solicitações enviadas em Meu Perfil. Ao aprovar, o perfil RBAC e a organização são criados transacionalmente."
+                >
+                  {applications.length === 0 ? (
+                    <EmptyState
+                      title="Nenhuma solicitação registrada"
+                      description="Pedidos de credenciamento CRMV ou Pet Shop aparecerão aqui."
+                    />
+                  ) : (
+                    <ul className="grid gap-3">
+                      {applications.map((app) => (
+                        <li
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f6faff] p-4"
+                          key={app.id}
+                        >
+                          <div>
+                            <p className="font-bold text-[#153b50]">
+                              {app.organization_name} ·{' '}
+                              {app.requested_role === 'veterinarian'
+                                ? 'Médico-Veterinário'
+                                : 'Parceiro B2B'}
+                            </p>
+                            <p className="mt-1 text-xs text-slate-600">
+                              Doc: {app.document_id}
+                              {app.registration_region ? `-${app.registration_region}` : ''}
+                              {app.specialty ? ` · ${app.specialty}` : ''}
+                              {app.city ? ` · ${app.city}/${app.state ?? ''}` : ''}
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              variant={
+                                app.status === 'approved'
+                                  ? 'success'
+                                  : app.status === 'pending'
+                                    ? 'warning'
+                                    : 'danger'
+                              }
+                            >
+                              {app.status === 'approved'
+                                ? 'Aprovado'
+                                : app.status === 'pending'
+                                  ? 'Pendente'
+                                  : 'Recusado'}
+                            </Badge>
+                            {app.status === 'pending' && (
+                              <>
+                                <Button
+                                  className="min-h-9 px-3 text-xs"
+                                  disabled={busy}
+                                  onClick={() => void handleReviewApplication(app.id, true)}
+                                  type="button"
+                                  variant="secondary"
+                                >
+                                  Aprovar
+                                </Button>
+                                <Button
+                                  className="min-h-9 px-3 text-xs"
+                                  disabled={busy}
+                                  onClick={() => void handleReviewApplication(app.id, false)}
+                                  type="button"
+                                  variant="danger"
+                                >
+                                  Recusar
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Card>
+              ),
+            },
+            {
               id: 'integracoes',
               label: `Integrações (${integrations.length})`,
               content: (
                 <div className="grid gap-5">
                   <Card
                     title="Provedores conectados"
-                    description="Metadados de webhooks e ambiente. Tokens secretos permanecem exclusivamente nos Secrets das Edge Functions."
+                    description="Metadados de webhooks e ambiente. Teste endpoints reais com bloqueio SSRF no servidor."
                   >
                     {integrations.length === 0 ? (
                       <EmptyState
@@ -337,13 +479,30 @@ export function AdminConsole() {
                                 {cfg.webhook_endpoint}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                               <Badge variant="info">{cfg.environment}</Badge>
                               <Badge
-                                variant={cfg.active ? 'success' : 'warning'}
+                                variant={
+                                  !cfg.active
+                                    ? 'warning'
+                                    : cfg.last_status.startsWith('2') ||
+                                        cfg.last_status.startsWith('3') ||
+                                        cfg.last_status === '200 OK'
+                                      ? 'success'
+                                      : 'neutral'
+                                }
                               >
                                 {cfg.active ? cfg.last_status : 'Inativo'}
                               </Badge>
+                              <Button
+                                className="min-h-8 px-3 text-xs"
+                                disabled={testingId === cfg.id}
+                                onClick={() => void handleProbeIntegration(cfg.id)}
+                                type="button"
+                                variant="outline"
+                              >
+                                {testingId === cfg.id ? 'Testando...' : 'Testar HTTP'}
+                              </Button>
                             </div>
                           </li>
                         ))}

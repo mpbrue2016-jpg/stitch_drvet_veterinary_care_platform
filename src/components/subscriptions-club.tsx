@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { Printer } from 'lucide-react';
+import { QrCodeBox } from '@/components/qr-code-box';
 import {
   Badge,
   Button,
@@ -125,7 +127,7 @@ export function SubscriptionsClub() {
         petId: selectedPetId,
         method: paymentMethod,
       });
-      setNotice('Assinatura ativada no Clube DrVet e comprovante registrado.');
+      setNotice('Assinatura registrada no Clube DrVet.');
       await loadData();
     } catch (error) {
       setErrorMessage(
@@ -169,7 +171,7 @@ export function SubscriptionsClub() {
 
       {errorMessage && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800 print:hidden"
           role="alert"
         >
           <p>{errorMessage}</p>
@@ -180,7 +182,7 @@ export function SubscriptionsClub() {
       )}
       {notice && (
         <p
-          className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900"
+          className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 print:hidden"
           role="status"
         >
           {notice}
@@ -377,39 +379,69 @@ export function SubscriptionsClub() {
                       description="Seus comprovantes de assinatura e consultas aparecerão aqui."
                     />
                   ) : (
-                    <ul className="grid gap-3">
-                      {payments.map((payment) => (
-                        <li
-                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f6faff] p-4"
-                          key={payment.id}
+                    <div className="grid gap-4">
+                      <div className="flex justify-end print:hidden">
+                        <Button
+                          onClick={() => window.print()}
+                          type="button"
+                          variant="outline"
                         >
-                          <div>
-                            <p className="font-bold text-[#153b50]">
-                              {payment.description}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-600">
-                              Ref.: {payment.external_reference ?? payment.id.slice(0, 8)} ·{' '}
-                              {payment.method.toUpperCase()} ·{' '}
-                              {formatDate(payment.paid_at ?? payment.created_at)}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-bold text-[#006b57]">
-                              {brl.format(payment.net_amount_cents / 100)}
-                            </span>
-                            <Badge variant={paymentStatusVariant[payment.status]}>
-                              {payment.status === 'paid'
-                                ? 'Pago'
-                                : payment.status === 'pending'
-                                  ? 'Pendente'
-                                  : payment.status === 'refunded'
-                                    ? 'Estornado'
-                                    : 'Cancelado'}
-                            </Badge>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                          <Printer className="mr-1.5 h-4 w-4" />
+                          Imprimir comprovantes
+                        </Button>
+                      </div>
+                      <ul className="grid gap-3">
+                        {payments.map((payment) => (
+                          <li
+                            className="grid gap-3 rounded-xl bg-[#f6faff] p-4"
+                            key={payment.id}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div>
+                                <p className="font-bold text-[#153b50]">
+                                  {payment.description}
+                                </p>
+                                <p className="mt-1 text-xs text-slate-600">
+                                  Ref.: {payment.external_reference ?? payment.id.slice(0, 8)} ·{' '}
+                                  {payment.method.toUpperCase()} ·{' '}
+                                  {formatDate(payment.paid_at ?? payment.created_at)}
+                                </p>
+                                {payment.discount_cents > 0 && (
+                                  <p className="mt-1 text-xs font-semibold text-[#006b57]">
+                                    Economia aplicada: {brl.format(payment.discount_cents / 100)}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="font-bold text-[#006b57]">
+                                  {brl.format(payment.net_amount_cents / 100)}
+                                </span>
+                                <Badge variant={paymentStatusVariant[payment.status]}>
+                                  {payment.status === 'paid'
+                                    ? 'Pago'
+                                    : payment.status === 'pending'
+                                      ? 'Pendente'
+                                      : payment.status === 'refunded'
+                                        ? 'Estornado'
+                                        : 'Cancelado'}
+                                </Badge>
+                              </div>
+                            </div>
+                            {payment.status === 'pending' && payment.pix_payload && (
+                              <div className="flex justify-start print:hidden">
+                                <QrCodeBox
+                                  compact
+                                  downloadName={`pix-${payment.external_reference ?? payment.id.slice(0, 8)}.png`}
+                                  size={140}
+                                  subtitle="PIX pendente de liquidação"
+                                  value={payment.pix_payload}
+                                />
+                              </div>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </Card>
               ),

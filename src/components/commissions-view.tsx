@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Building2, FileText, Printer, Wallet } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -20,17 +21,26 @@ import {
   Toast,
 } from '@/components/ui';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { anticipationRequestSchema } from '@/lib/validations';
 import {
+  anticipationRequestSchema,
+  fiscalInvoiceSchema,
+  payoutAccountSchema,
+} from '@/lib/validations';
+import {
+  atualizarStatusNotaFiscal,
   buscarResumoFinanceiro,
   listarComissoes,
+  listarNotasFiscais,
+  salvarContaRepasse,
   solicitarAntecipacao,
+  solicitarNotaFiscal,
 } from '@/services/commissions.service';
 import type {
   CommissionEntry,
   CommissionOrigin,
   CommissionStatus,
   CommissionSummary,
+  FiscalInvoice,
 } from '@/types/entities';
 
 function formatCurrency(cents: number) {
@@ -59,17 +69,44 @@ const statusVariant: Record<CommissionStatus, 'success' | 'warning' | 'info'> = 
   paid: 'info',
 };
 
+const nfseStatusLabels: Record<FiscalInvoice['status'], string> = {
+  requested: 'Solicitada (RPS)',
+  issued: 'Emitida',
+  cancelled: 'Cancelada',
+};
+
+const nfseStatusVariant: Record<FiscalInvoice['status'], 'warning' | 'success' | 'neutral'> = {
+  requested: 'warning',
+  issued: 'success',
+  cancelled: 'neutral',
+};
+
 export function CommissionsView() {
   const [summary, setSummary] = useState<CommissionSummary | null>(null);
   const [entries, setEntries] = useState<CommissionEntry[]>([]);
+  const [invoices, setInvoices] = useState<FiscalInvoice[]>([]);
   const [search, setSearch] = useState('');
   const [origin, setOrigin] = useState<CommissionOrigin | ''>('');
   const [status, setStatus] = useState<CommissionStatus | ''>('');
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false);
+  const [nfseModalOpen, setNfseModalOpen] = useState(false);
+
   const [anticipationValue, setAnticipationValue] = useState('1000,00');
   const [anticipationNotes, setAnticipationNotes] = useState('');
+
+  const [payoutProvider, setPayoutProvider] = useState<'asaas' | 'mercadopago'>('asaas');
+  const [payoutLabel, setPayoutLabel] = useState('');
+  const [payoutPixKey, setPayoutPixKey] = useState('');
+
+  const [nfsePeriod, setNfsePeriod] = useState('');
+  const [nfseAmount, setNfseAmount] = useState('');
+  const [nfseTaxId, setNfseTaxId] = useState('');
+  const [nfseProvider, setNfseProvider] = useState<'drvet_fiscal' | 'bling' | 'omie'>('drvet_fiscal');
+  const [nfseNotes, setNfseNotes] = useState('');
+
   const [submitting, setSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -77,12 +114,27 @@ export function CommissionsView() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [summaryData, entriesData] = await Promise.all([
+      const [summaryData, entriesData, invoicesData] = await Promise.all([
         buscarResumoFinanceiro(),
         listarComissoes({ search, origin, status }),
+        listarNotasFiscais().catch(() => ({ invoices: [] as FiscalInvoice[] })),
       ]);
       setSummary(summaryData);
       setEntries(entriesData.entries);
+      setInvoices(invoicesData.invoices);
+      setPayoutLabel((curr) =>
+        curr ||
+        (summaryData.payout_account_label !== 'Conta de repasse não configurada'
+          ? summaryData.payout_account_label
+          : ''),
+      );
+      setNfsePeriod((curr) => curr || summaryData.period_label);
+      setNfseAmount((curr) =>
+        curr ||
+        (summaryData.period_total_cents > 0
+          ? (summaryData.period_total_cents / 100).toFixed(2).replace('.', ',')
+          : '180,00'),
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -127,11 +179,112 @@ export function CommissionsView() {
       setToastMessage(
         `Solicitação registrada (${result.protocol}) para ${formatCurrency(result.requested_cents)}.`,
       );
+      await loadFinance();
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
           : 'Não foi possível registrar a solicitação.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleSavePayoutAccount(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage('');
+    const parsed = payoutAccountSchema.safeParse({
+      provider: payoutProvider,
+      payout_account_label: payoutLabel,
+      pix_key: payoutPixKey,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os dados bancários e PIX.',
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await salvarContaRepasse({
+        provider: payoutProvider,
+        payout_account_label: parsed.data.payout_account_label,
+        pix_key: parsed.data.pix_key,
+      });
+      setPayoutModalOpen(false);
+      setPayoutPixKey('');
+      setToastMessage('Conta de repasse e chave PIX atualizadas com sucesso.');
+      await loadFinance();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível salvar a conta de repasse.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleRequestNfse(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage('');
+    const normalized = Number(nfseAmount.replace(/\./g, '').replace(',', '.'));
+    const totalCents = Number.isFinite(normalized) ? Math.round(normalized * 100) : 0;
+
+    const parsed = fiscalInvoiceSchema.safeParse({
+      period_label: nfsePeriod,
+      total_cents: totalCents,
+      tax_id: nfseTaxId,
+      provider: nfseProvider,
+      notes: nfseNotes || null,
+    });
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? 'Verifique os dados fiscais informados.',
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { invoice } = await solicitarNotaFiscal({
+        period_label: parsed.data.period_label,
+        total_cents: parsed.data.total_cents,
+        tax_id: parsed.data.tax_id,
+        provider: parsed.data.provider,
+        notes: parsed.data.notes ?? undefined,
+      });
+      setNfseModalOpen(false);
+      setNfseNotes('');
+      setToastMessage(
+        `NFSe ${invoice.invoice_number} registrada (${formatCurrency(invoice.total_cents)}).`,
+      );
+      await loadFinance();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao solicitar nota fiscal.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleMarkNfseIssued(invoiceId: string) {
+    setSubmitting(true);
+    setErrorMessage('');
+    try {
+      const { invoice } = await atualizarStatusNotaFiscal({
+        invoiceId,
+        status: 'issued',
+      });
+      setToastMessage(`Nota fiscal ${invoice.invoice_number} marcada como emitida.`);
+      await loadFinance();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao atualizar nota fiscal.',
       );
     } finally {
       setSubmitting(false);
@@ -177,15 +330,26 @@ export function CommissionsView() {
     <div className="mx-auto max-w-[1600px]">
       <PageHeader
         title="Extrato financeiro e repasses"
-        description="Acompanhe lançamentos, comissões, conta de repasse e solicitações de antecipação."
+        description="Acompanhe lançamentos, comissões, conta PIX de repasse, solicitações de antecipação e notas fiscais (NFSe)."
         action={
-          <Button
-            className="rounded-full"
-            onClick={() => setModalOpen(true)}
-            type="button"
-          >
-            + Solicitar antecipação
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              className="rounded-full"
+              onClick={() => setPayoutModalOpen(true)}
+              type="button"
+              variant="outline"
+            >
+              <Wallet className="mr-1.5 h-4 w-4" />
+              Configurar PIX
+            </Button>
+            <Button
+              className="rounded-full"
+              onClick={() => setModalOpen(true)}
+              type="button"
+            >
+              + Solicitar antecipação
+            </Button>
+          </div>
         }
       />
 
@@ -217,8 +381,8 @@ export function CommissionsView() {
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={summary?.provider_connected ? 'success' : 'info'}>
             {summary?.provider_connected
-              ? 'Gateway conectado'
-              : 'Repasse via conta cadastrada'}
+              ? 'Conta de repasse ativa'
+              : 'Configure sua conta PIX'}
           </Badge>
           <span className="text-sm text-slate-600">
             Período: {summary?.period_label ?? 'Carregando...'}
@@ -263,7 +427,7 @@ export function CommissionsView() {
         />
       </section>
 
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.7fr)]">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -277,7 +441,7 @@ export function CommissionsView() {
             </Badge>
           </div>
           <div className="mt-5 grid gap-4 rounded-2xl bg-[#ebf5ff] p-4 sm:grid-cols-2 sm:p-5">
-            <div className="sm:col-span-2">
+            <div>
               <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
                 Conta de repasse
               </p>
@@ -285,13 +449,23 @@ export function CommissionsView() {
                 {summary?.payout_account_label ?? 'Carregando...'}
               </p>
             </div>
-            <div className="sm:col-span-2">
+            <div>
               <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                Chave de pagamento
+                Chave PIX cadastrada
               </p>
               <p className="mt-1 text-sm text-slate-600">
                 {summary?.pix_key_masked ?? 'Não cadastrada'}
               </p>
+            </div>
+            <div className="sm:col-span-2">
+              <Button
+                onClick={() => setPayoutModalOpen(true)}
+                type="button"
+                variant="outline"
+              >
+                <Building2 className="mr-1.5 h-4 w-4" />
+                {summary?.provider_connected ? 'Alterar conta e PIX' : 'Cadastrar conta e chave PIX'}
+              </Button>
             </div>
           </div>
           <div className="mt-4 rounded-2xl bg-[#d9f9f0] p-4 sm:p-5">
@@ -315,26 +489,89 @@ export function CommissionsView() {
 
         <Card
           title="Documentos e conciliação"
-          description="Resumo de arquivos e comprovantes disponíveis."
+          description="Conciliação CSV e emissão de NFSe do período."
         >
           <Tabs
             label="Documentos financeiros"
             tabs={[
+              {
+                id: 'notas',
+                label: `Notas fiscais (${invoices.length})`,
+                content: (
+                  <div className="grid gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs text-slate-600">
+                        Solicite sua NFSe por competência com protocolo e código fiscal.
+                      </p>
+                      <Button
+                        className="min-h-9 px-3 text-xs"
+                        onClick={() => setNfseModalOpen(true)}
+                        type="button"
+                        variant="secondary"
+                      >
+                        <FileText className="mr-1.5 h-3.5 w-3.5" />
+                        + Solicitar NFSe
+                      </Button>
+                    </div>
+                    {invoices.length === 0 ? (
+                      <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600">
+                        Nenhuma solicitação fiscal registrada até o momento.
+                      </p>
+                    ) : (
+                      <ul className="grid gap-2">
+                        {invoices.map((inv) => (
+                          <li
+                            className="rounded-xl border border-slate-200 bg-white p-3 text-xs"
+                            key={inv.id}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div>
+                                <p className="font-bold text-[#153b50]">
+                                  {inv.invoice_number} · {inv.period_label}
+                                </p>
+                                <p className="text-slate-600">
+                                  {formatCurrency(inv.total_cents)} · Doc: {inv.tax_id} · Cód: {inv.verification_code}
+                                </p>
+                              </div>
+                              <Badge variant={nfseStatusVariant[inv.status]}>
+                                {nfseStatusLabels[inv.status]}
+                              </Badge>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2 print:hidden">
+                              {inv.status === 'requested' && (
+                                <Button
+                                  className="min-h-8 px-2.5 text-xs"
+                                  disabled={submitting}
+                                  onClick={() => void handleMarkNfseIssued(inv.id)}
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  Confirmar emissão
+                                </Button>
+                              )}
+                              <Button
+                                className="min-h-8 px-2.5 text-xs"
+                                onClick={() => window.print()}
+                                type="button"
+                                variant="ghost"
+                              >
+                                <Printer className="mr-1 h-3 w-3" />
+                                Imprimir protocolo
+                              </Button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ),
+              },
               {
                 id: 'conciliacao',
                 label: 'Conciliação',
                 content: (
                   <p className="text-sm text-slate-600">
                     Utilize o botão Exportar CSV acima para baixar os lançamentos filtrados ou integre o webhook do provedor em Admin &amp; Integrações.
-                  </p>
-                ),
-              },
-              {
-                id: 'notas',
-                label: 'Notas fiscais',
-                content: (
-                  <p className="text-sm text-slate-600">
-                    Nenhuma nota fiscal emitida para os lançamentos deste período.
                   </p>
                 ),
               },
@@ -455,6 +692,106 @@ export function CommissionsView() {
             </Button>
             <Button disabled={submitting} type="submit" variant="secondary">
               {submitting ? 'Registrando...' : 'Confirmar solicitação'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        onClose={() => setPayoutModalOpen(false)}
+        open={payoutModalOpen}
+        title="Configurar conta e chave PIX de repasse"
+      >
+        <form className="grid gap-4" onSubmit={(event) => void handleSavePayoutAccount(event)}>
+          <Select
+            label="Provedor de split"
+            onChange={(event) =>
+              setPayoutProvider(event.target.value as 'asaas' | 'mercadopago')
+            }
+            value={payoutProvider}
+          >
+            <option value="asaas">Asaas</option>
+            <option value="mercadopago">Mercado Pago</option>
+          </Select>
+          <Input
+            label="Identificação da conta / Banco e titular"
+            name="payoutLabel"
+            onChange={(event) => setPayoutLabel(event.target.value)}
+            placeholder="Ex.: Banco Inter · Dra. Camila Mendes"
+            required
+            value={payoutLabel}
+          />
+          <Input
+            label="Chave PIX (será mascarada ao salvar)"
+            name="payoutPixKey"
+            onChange={(event) => setPayoutPixKey(event.target.value)}
+            placeholder="CPF, CNPJ, e-mail ou chave aleatória"
+            required
+            value={payoutPixKey}
+          />
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setPayoutModalOpen(false)} type="button" variant="outline">
+              Cancelar
+            </Button>
+            <Button disabled={submitting} type="submit" variant="secondary">
+              {submitting ? 'Salvando...' : 'Salvar conta'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        onClose={() => setNfseModalOpen(false)}
+        open={nfseModalOpen}
+        title="Solicitar Nota Fiscal de Serviço (NFSe)"
+      >
+        <form className="grid gap-4" onSubmit={(event) => void handleRequestNfse(event)}>
+          <Input
+            label="Competência / Período"
+            name="nfsePeriod"
+            onChange={(event) => setNfsePeriod(event.target.value)}
+            required
+            value={nfsePeriod}
+          />
+          <Input
+            label="Valor total da nota (R$)"
+            name="nfseAmount"
+            onChange={(event) => setNfseAmount(event.target.value)}
+            required
+            value={nfseAmount}
+          />
+          <Input
+            label="CPF ou CNPJ do prestador/tomador"
+            name="nfseTaxId"
+            onChange={(event) => setNfseTaxId(event.target.value)}
+            placeholder="Somente números ou formatado"
+            required
+            value={nfseTaxId}
+          />
+          <Select
+            label="Emissor fiscal"
+            onChange={(event) =>
+              setNfseProvider(event.target.value as 'drvet_fiscal' | 'bling' | 'omie')
+            }
+            value={nfseProvider}
+          >
+            <option value="drvet_fiscal">DrVet Fiscal (RPS)</option>
+            <option value="bling">Bling ERP</option>
+            <option value="omie">Omie ERP</option>
+          </Select>
+          <Input
+            label="Observações fiscais (opcional)"
+            name="nfseNotes"
+            onChange={(event) => setNfseNotes(event.target.value)}
+            placeholder="Serviços médico-veterinários"
+            value={nfseNotes}
+          />
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setNfseModalOpen(false)} type="button" variant="outline">
+              Cancelar
+            </Button>
+            <Button disabled={submitting} type="submit" variant="secondary">
+              {submitting ? 'Solicitando...' : 'Gerar RPS / Solicitar NFSe'}
             </Button>
           </div>
         </form>

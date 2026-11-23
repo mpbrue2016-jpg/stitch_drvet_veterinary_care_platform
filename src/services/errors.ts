@@ -40,12 +40,12 @@ export function toFriendlyError(error: unknown, fallback: string): Error {
 
   if (code === 'PGRST205' || code === '42P01' || lower.includes('could not find the table')) {
     return new Error(
-      'As tabelas do DrVet ainda não foram criadas neste projeto Supabase. Abra /setup-supabase para localizar o schema e aplicar as 12 migrations SQL.',
+      'As tabelas do DrVet ainda não foram inicializadas neste projeto Supabase.',
     );
   }
   if (code === 'PGRST202' || code === '42883' || lower.includes('could not find the function')) {
     return new Error(
-      'Função SQL (RPC) ausente no Supabase. Verifique se todas as 12 migrations SQL foram aplicadas em /setup-supabase.',
+      'Função SQL (RPC) ausente no Supabase. Verifique se todas as 13 migrations SQL foram aplicadas no banco.',
     );
   }
   if (lower.includes('invalid api key') || lower.includes('no api key found') || lower.includes('secret api key required')) {

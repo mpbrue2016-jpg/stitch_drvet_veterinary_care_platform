@@ -1,7 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Mic,
+  MicOff,
+  PhoneCall,
+  PhoneOff,
+  Radio,
+  Video,
+  VideoOff,
+} from 'lucide-react';
 import {
   Badge,
   Button,
@@ -11,6 +20,7 @@ import {
   PageHeader,
   Skeleton,
 } from '@/components/ui';
+import { getSupabaseClient } from '@/lib/supabase';
 import { listarAgendamentos } from '@/services/appointments.service';
 import {
   abrirSalaTeleconsulta,
@@ -42,6 +52,15 @@ const statusVariants: Record<
   ended: 'neutral',
 };
 
+type CallState = 'idle' | 'connecting' | 'connected' | 'error';
+
+const ICE_SERVERS: RTCConfiguration = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+  ],
+};
+
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
@@ -60,6 +79,22 @@ export function TeleconsultaRoom() {
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+
+  // WebRTC state
+  const [callState, setCallState] = useState<CallState>('idle');
+  const [callError, setCallError] = useState('');
+  const [micEnabled, setMicEnabled] = useState(true);
+  const [camEnabled, setCamEnabled] = useState(true);
+  const [remoteConnected, setRemoteConnected] = useState(false);
+
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const peerRef = useRef<RTCPeerConnection | null>(null);
+  const signalChannelRef = useRef<ReturnType<
+    ReturnType<typeof getSupabaseClient>['channel']
+  > | null>(null);
+  const makingOfferRef = useRef(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -111,6 +146,55 @@ export function TeleconsultaRoom() {
     [sessions, selectedSessionId],
   );
 
+  const stopCall = useCallback((notifyPeer = true) => {
+    if (notifyPeer && signalChannelRef.current) {
+      void signalChannelRef.current.send({
+        type: 'broadcast',
+        event: 'signal',
+        payload: { kind: 'bye', senderId: currentUserId },
+      });
+    }
+
+    if (peerRef.current) {
+      peerRef.current.close();
+      peerRef.current = null;
+    }
+
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    if (signalChannelRef.current) {
+      const supabase = getSupabaseClient();
+      void supabase.removeChannel(signalChannelRef.current);
+      signalChannelRef.current = null;
+    }
+
+    makingOfferRef.current = false;
+    setRemoteConnected(false);
+    setCallState('idle');
+    setMicEnabled(true);
+    setCamEnabled(true);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    return () => {
+      stopCall(false);
+    };
+  }, [stopCall]);
+
+  useEffect(() => {
+    stopCall(false);
+  }, [selectedSessionId, stopCall]);
+
   useEffect(() => {
     if (!selectedSessionId) {
       setMessages([]);
@@ -142,6 +226,208 @@ export function TeleconsultaRoom() {
       unsubscribe();
     };
   }, [selectedSessionId]);
+
+  const startCall = useCallback(async () => {
+    if (!selectedSession || !currentUserId) return;
+    if (
+      typeof navigator === 'undefined' ||
+      !navigator.mediaDevices?.getUserMedia ||
+      typeof RTCPeerConnection === 'undefined'
+    ) {
+      setCallError(
+        'Seu navegador atual não suporta captura de câmera/áudio WebRTC nesta janela.',
+      );
+      setCallState('error');
+      return;
+    }
+
+    stopCall(false);
+    setCallError('');
+    setCallState('connecting');
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      const pc = new RTCPeerConnection(ICE_SERVERS);
+      peerRef.current = pc;
+
+      stream.getTracks().forEach((track) => {
+        pc.addTrack(track, stream);
+      });
+
+      const remoteStream = new MediaStream();
+      pc.ontrack = (event) => {
+        event.streams[0]?.getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remoteStream;
+        }
+        setRemoteConnected(true);
+        setCallState('connected');
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === 'connected') {
+          setRemoteConnected(true);
+          setCallState('connected');
+        } else if (
+          pc.connectionState === 'disconnected' ||
+          pc.connectionState === 'failed'
+        ) {
+          setRemoteConnected(false);
+        }
+      };
+
+      const isPolite = selectedSession.tutor_id === currentUserId;
+      const supabase = getSupabaseClient();
+      const channel = supabase.channel(`webrtc-${selectedSession.room_code}`, {
+        config: { broadcast: { self: false } },
+      });
+      signalChannelRef.current = channel;
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          void channel.send({
+            type: 'broadcast',
+            event: 'signal',
+            payload: {
+              kind: 'ice',
+              senderId: currentUserId,
+              candidate: event.candidate.toJSON(),
+            },
+          });
+        }
+      };
+
+      const sendOffer = async () => {
+        try {
+          makingOfferRef.current = true;
+          const offer = await pc.createOffer();
+          if (pc.signalingState !== 'stable') return;
+          await pc.setLocalDescription(offer);
+          await channel.send({
+            type: 'broadcast',
+            event: 'signal',
+            payload: {
+              kind: 'offer',
+              senderId: currentUserId,
+              sdp: pc.localDescription,
+            },
+          });
+        } finally {
+          makingOfferRef.current = false;
+        }
+      };
+
+      pc.onnegotiationneeded = () => {
+        void sendOffer();
+      };
+
+      channel.on('broadcast', { event: 'signal' }, async ({ payload }) => {
+        const msg = payload as {
+          kind?: string;
+          senderId?: string;
+          sdp?: RTCSessionDescriptionInit;
+          candidate?: RTCIceCandidateInit;
+        };
+        if (!msg || msg.senderId === currentUserId) return;
+
+        try {
+          if (msg.kind === 'ready') {
+            await sendOffer();
+            return;
+          }
+
+          if (msg.kind === 'bye') {
+            setRemoteConnected(false);
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = null;
+            }
+            return;
+          }
+
+          if (msg.kind === 'offer' && msg.sdp) {
+            const offerCollision =
+              makingOfferRef.current || pc.signalingState !== 'stable';
+            if (offerCollision && !isPolite) {
+              return;
+            }
+            if (offerCollision) {
+              await Promise.all([
+                pc.setLocalDescription({ type: 'rollback' }),
+                pc.setRemoteDescription(msg.sdp),
+              ]);
+            } else {
+              await pc.setRemoteDescription(msg.sdp);
+            }
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await channel.send({
+              type: 'broadcast',
+              event: 'signal',
+              payload: {
+                kind: 'answer',
+                senderId: currentUserId,
+                sdp: pc.localDescription,
+              },
+            });
+          } else if (msg.kind === 'answer' && msg.sdp) {
+            if (pc.signalingState === 'have-local-offer') {
+              await pc.setRemoteDescription(msg.sdp);
+            }
+          } else if (msg.kind === 'ice' && msg.candidate) {
+            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+          }
+        } catch {
+          // Ignora pacotes de sinalização fora de ordem durante reconexão.
+        }
+      });
+
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          void channel.send({
+            type: 'broadcast',
+            event: 'signal',
+            payload: { kind: 'ready', senderId: currentUserId },
+          });
+        }
+      });
+    } catch (err) {
+      stopCall(false);
+      setCallError(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível acessar câmera ou microfone. Verifique as permissões do navegador.',
+      );
+      setCallState('error');
+    }
+  }, [currentUserId, selectedSession, stopCall]);
+
+  function toggleMic() {
+    if (!localStreamRef.current) return;
+    const next = !micEnabled;
+    localStreamRef.current.getAudioTracks().forEach((track) => {
+      track.enabled = next;
+    });
+    setMicEnabled(next);
+  }
+
+  function toggleCam() {
+    if (!localStreamRef.current) return;
+    const next = !camEnabled;
+    localStreamRef.current.getVideoTracks().forEach((track) => {
+      track.enabled = next;
+    });
+    setCamEnabled(next);
+  }
 
   const appointmentById = useMemo(
     () => new Map(appointments.map((apt) => [apt.id, apt])),
@@ -179,6 +465,9 @@ export function TeleconsultaRoom() {
       setSessions((current) =>
         current.map((item) => (item.id === session.id ? session : item)),
       );
+      if (patch.status === 'ended') {
+        stopCall(true);
+      }
       setNotice('Estado da sala atualizado.');
     } catch (error) {
       setErrorMessage(
@@ -218,7 +507,7 @@ export function TeleconsultaRoom() {
     <div className="grid gap-5">
       <PageHeader
         title="Sala de teleconsulta"
-        description="Atendimento remoto com chat em tempo real, registro de consentimento e acesso direto ao prontuário SOAP."
+        description="Atendimento remoto com vídeo/áudio WebRTC em tempo real, chat clínico, registro de consentimento e acesso direto ao prontuário SOAP."
         action={
           <Link
             className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-[#153b50] hover:bg-[#ebf5ff]"
@@ -416,9 +705,132 @@ export function TeleconsultaRoom() {
                         className="inline-flex min-h-10 items-center rounded-lg border border-white/40 bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"
                         href={`/receitas?appointmentId=${selectedSession.appointment_id}`}
                       >
-                        Rascunho de receita
+                        Prescrição &amp; QR
                       </Link>
                     )}
+                  </div>
+                </div>
+
+                {/* Vídeo e Áudio WebRTC P2P com sinalização via Supabase Realtime */}
+                <div className="rounded-2xl border border-slate-200 bg-slate-950 p-4 text-white">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold">
+                      <Radio
+                        className={`h-4 w-4 ${
+                          remoteConnected
+                            ? 'text-emerald-400'
+                            : callState === 'connecting'
+                              ? 'animate-pulse text-amber-400'
+                              : 'text-slate-400'
+                        }`}
+                      />
+                      <span>
+                        {remoteConnected
+                          ? 'Vídeo e áudio conectados (P2P WebRTC)'
+                          : callState === 'connecting'
+                            ? 'Câmera ativa — aguardando participante remoto na sala...'
+                            : 'Chamada de vídeo desativada'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {callState === 'idle' || callState === 'error' ? (
+                        <Button
+                          className="min-h-9 px-3 text-xs"
+                          disabled={selectedSession.status === 'ended'}
+                          onClick={() => void startCall()}
+                          type="button"
+                          variant="secondary"
+                        >
+                          <PhoneCall className="mr-1.5 h-3.5 w-3.5" />
+                          Conectar vídeo/áudio
+                        </Button>
+                      ) : (
+                        <>
+                          <button
+                            aria-label={micEnabled ? 'Silenciar microfone' : 'Ativar microfone'}
+                            className={`inline-flex min-h-9 items-center gap-1 rounded-lg px-3 text-xs font-semibold ${
+                              micEnabled
+                                ? 'bg-slate-800 text-white hover:bg-slate-700'
+                                : 'bg-rose-600 text-white'
+                            }`}
+                            onClick={toggleMic}
+                            type="button"
+                          >
+                            {micEnabled ? (
+                              <Mic className="h-3.5 w-3.5" />
+                            ) : (
+                              <MicOff className="h-3.5 w-3.5" />
+                            )}
+                            <span>{micEnabled ? 'Microfone' : 'Mudo'}</span>
+                          </button>
+                          <button
+                            aria-label={camEnabled ? 'Desligar câmera' : 'Ligar câmera'}
+                            className={`inline-flex min-h-9 items-center gap-1 rounded-lg px-3 text-xs font-semibold ${
+                              camEnabled
+                                ? 'bg-slate-800 text-white hover:bg-slate-700'
+                                : 'bg-rose-600 text-white'
+                            }`}
+                            onClick={toggleCam}
+                            type="button"
+                          >
+                            {camEnabled ? (
+                              <Video className="h-3.5 w-3.5" />
+                            ) : (
+                              <VideoOff className="h-3.5 w-3.5" />
+                            )}
+                            <span>{camEnabled ? 'Câmera' : 'Sem vídeo'}</span>
+                          </button>
+                          <button
+                            className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-rose-600 px-3 text-xs font-semibold text-white hover:bg-rose-700"
+                            onClick={() => stopCall(true)}
+                            type="button"
+                          >
+                            <PhoneOff className="h-3.5 w-3.5" />
+                            <span>Desconectar</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {callError && (
+                    <p className="mb-3 rounded-xl bg-rose-950/80 p-3 text-xs text-rose-200">
+                      {callError}
+                    </p>
+                  )}
+
+                  <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_200px]">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-900">
+                      <video
+                        autoPlay
+                        className="h-full w-full object-cover"
+                        playsInline
+                        ref={remoteVideoRef}
+                      />
+                      {!remoteConnected && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-xs text-slate-400">
+                          <Video className="mb-2 h-7 w-7 text-slate-600" />
+                          <p>
+                            {callState === 'connecting'
+                              ? 'Aguardando o outro participante clicar em "Conectar vídeo/áudio" nesta mesma sala.'
+                              : 'Clique em "Conectar vídeo/áudio" para iniciar a chamada de vídeo ao vivo com o tutor/veterinário.'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900 sm:aspect-auto sm:h-full">
+                      <video
+                        autoPlay
+                        className="h-full w-full object-cover"
+                        muted
+                        playsInline
+                        ref={localVideoRef}
+                      />
+                      <span className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                        Sua câmera
+                      </span>
+                    </div>
                   </div>
                 </div>
 

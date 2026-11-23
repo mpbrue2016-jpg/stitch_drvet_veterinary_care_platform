@@ -191,22 +191,13 @@ export function NotificationCenter() {
       {schemaMissing && (
         <Card
           description="As tabelas push_subscriptions e notifications pertencem à Migration 12 do DrVet."
-          title="Aplicar Migration 12 no SQL Editor do Supabase"
+          title="Estrutura de notificações pendente no banco"
         >
-          <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-700">
-            <div className="flex items-start gap-3">
-              <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
-              <p>
-                A conexão com o Supabase está ativa, porém as tabelas de Push Notifications ainda não existem no schema remoto. Execute o script consolidado em{' '}
-                <code className="font-mono text-xs">/setup-supabase</code>.
-              </p>
-            </div>
-            <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#087a68] px-4 text-sm font-bold text-white hover:bg-[#066355]"
-              href="/setup-supabase"
-            >
-              Abrir Setup Supabase →
-            </Link>
+          <div className="flex items-start gap-3 text-sm text-slate-700">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <p>
+              A conexão com o Supabase está ativa, porém as tabelas de Push Notifications ainda não foram inicializadas no schema remoto.
+            </p>
           </div>
         </Card>
       )}

@@ -39,7 +39,21 @@ export const createPetSchema = z.object({
     .min(1, 'Informe a espécie do pet.')
     .max(60, 'Espécie deve ter até 60 caracteres.'),
   breed: z.string().trim().max(100, 'Raça deve ter até 100 caracteres.').nullable().optional(),
-  birth_date: z.string().trim().nullable().optional(),
+  birth_date: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Informe a data no formato YYYY-MM-DD.')
+    .refine((value) => {
+      const parsedDate = new Date(`${value}T00:00:00Z`);
+      return (
+        !Number.isNaN(parsedDate.valueOf()) &&
+        parsedDate.toISOString().slice(0, 10) === value
+      );
+    }, 'Data de nascimento inválida.')
+    .nullable()
+    .optional(),
+  sex: z.enum(['female', 'male', 'unknown']).nullable().optional(),
+  notes: z.string().trim().max(2000, 'Observações devem ter até 2000 caracteres.').nullable().optional(),
 });
 
 export const createBookingSchema = z.object({
@@ -87,20 +101,25 @@ export const createAvailabilitySchema = z
     },
   );
 
+export const clinicalVitalsSchema = z
+  .object({
+    weight_kg: z.number().min(0, 'Peso não pode ser negativo.').max(500, 'Peso inválido.').nullable(),
+    temperature_c: z.number().min(20, 'Temperatura muito baixa.').max(50, 'Temperatura muito alta.').nullable(),
+    heart_rate_bpm: z.number().int().min(10, 'FC inválida.').max(1000, 'FC inválida.').nullable(),
+    respiratory_rate_rpm: z.number().int().min(4, 'FR inválida.').max(500, 'FR inválida.').nullable(),
+    mucous_membranes: z.string().trim().max(100, 'Limite de 100 caracteres.').nullable(),
+    capillary_refill_seconds: z.number().min(0, 'TPC inválido.').max(30, 'TPC inválido.').nullable(),
+  })
+  .strict();
+
 export const clinicalRecordSchema = z.object({
-  appointment_id: z.string().min(1, 'Atendimento inválido.'),
+  appointment_id: z.string().uuid('Atendimento inválido.'),
   subjective: z.string().max(10000, 'Limite de 10.000 caracteres.'),
   objective: z.string().max(10000, 'Limite de 10.000 caracteres.'),
   assessment: z.string().max(10000, 'Limite de 10.000 caracteres.'),
   plan: z.string().max(10000, 'Limite de 10.000 caracteres.'),
-  vitals: z.object({
-    weight_kg: z.number().min(0, 'Peso não pode ser negativo.').max(500, 'Peso inválido.').nullable(),
-    temperature_c: z.number().min(25, 'Temperatura muito baixa.').max(45, 'Temperatura muito alta.').nullable(),
-    heart_rate_bpm: z.number().min(10, 'FC inválida.').max(400, 'FC inválida.').nullable(),
-    respiratory_rate_rpm: z.number().min(4, 'FR inválida.').max(200, 'FR inválida.').nullable(),
-    mucous_membranes: z.string().max(100).nullable(),
-    capillary_refill_seconds: z.number().min(0).max(20).nullable(),
-  }),
+  vitals: clinicalVitalsSchema,
+  status: z.enum(['draft', 'finalized']).optional(),
 });
 
 export const createVaccinationSchema = z
@@ -190,4 +209,54 @@ export const updateProfileSchema = z.object({
     .max(32, 'Telefone deve ter até 32 caracteres.')
     .nullable()
     .optional(),
+});
+
+export const vetProfileSettingsSchema = z.object({
+  consultation_fee_cents: z
+    .number()
+    .int('Informe um valor inteiro em centavos.')
+    .min(1000, 'Valor mínimo da consulta é R$ 10,00.')
+    .max(500000, 'Valor máximo da consulta é R$ 5.000,00.'),
+  bio: z.string().trim().max(600, 'Biografia deve ter até 600 caracteres.').nullable().optional(),
+  is_online_now: z.boolean().optional(),
+});
+
+export const payoutAccountSchema = z.object({
+  provider: z.string().trim().min(2, 'Informe o provedor de repasse.').max(40),
+  payout_account_label: z
+    .string()
+    .trim()
+    .min(3, 'Informe a descrição da conta ou banco.')
+    .max(120),
+  pix_key: z
+    .string()
+    .trim()
+    .min(5, 'Informe uma chave PIX válida (CPF, CNPJ, e-mail, telefone ou aleatória).')
+    .max(120),
+});
+
+export const fiscalInvoiceSchema = z.object({
+  period_label: z.string().trim().min(2, 'Informe a competência.').max(60),
+  total_cents: z.number().int().positive('Informe um valor positivo para a NFSe.'),
+  tax_id: z.string().trim().min(11, 'Informe CPF ou CNPJ válido.').max(24),
+  provider: z.enum(['drvet_fiscal', 'bling', 'omie']),
+  notes: z.string().trim().max(500).nullable().optional(),
+});
+
+export const roleApplicationSchema = z.object({
+  requested_role: z.enum(['veterinarian', 'partner']),
+  organization_name: z
+    .string()
+    .trim()
+    .min(2, 'Informe o nome da clínica, consultório ou empresa.')
+    .max(140),
+  document_id: z
+    .string()
+    .trim()
+    .min(2, 'Informe o CRMV (veterinário) ou CNPJ (parceiro).')
+    .max(32),
+  registration_region: z.string().trim().max(2).nullable().optional(),
+  specialty: z.string().trim().max(120).nullable().optional(),
+  city: z.string().trim().max(80).nullable().optional(),
+  state: z.string().trim().max(2).nullable().optional(),
 });

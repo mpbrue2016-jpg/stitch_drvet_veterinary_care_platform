@@ -1,6 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CheckCircle2, Printer, ShieldCheck } from 'lucide-react';
+import { QrCodeBox } from '@/components/qr-code-box';
 import {
   Badge,
   Button,
@@ -14,6 +17,7 @@ import {
 import { savePrescriptionDraftSchema } from '@/lib/validations';
 import { listarAgendamentos } from '@/services/appointments.service';
 import {
+  emitirReceitaOficial,
   listarRascunhosReceita,
   salvarRascunhoReceita,
 } from '@/services/prescriptions.service';
@@ -70,6 +74,7 @@ export function PrescriptionDrafts() {
   const [items, setItems] = useState<PrescriptionItem[]>([{ ...emptyItem }]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [issuing, setIssuing] = useState(false);
   const [pendingSwitchId, setPendingSwitchId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
@@ -155,11 +160,19 @@ export function PrescriptionDrafts() {
   const selectedAppointment = eligibleAppointments.find(
     (appointment) => appointment.id === appointmentId,
   );
+  const isIssued = selectedDraft?.status === 'issued';
   const savedItems = selectedDraft ? selectedDraft.items.map(normalizeItem) : [];
   const normalizedItems = items.map(normalizeItem);
   const hasUnsavedChanges = selectedDraft
     ? JSON.stringify(normalizedItems) !== JSON.stringify(savedItems)
     : normalizedItems.some((item) => Object.values(item).some(Boolean));
+
+  const verificationUrl = useMemo(() => {
+    if (!selectedDraft?.verification_code) return '';
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : '';
+    return `${origin}/receitas/verificar?code=${encodeURIComponent(selectedDraft.verification_code)}`;
+  }, [selectedDraft?.verification_code]);
 
   useEffect(() => {
     const draft = drafts.find((candidate) => candidate.appointment_id === appointmentId);
@@ -194,6 +207,7 @@ export function PrescriptionDrafts() {
 
   async function saveDraft(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isIssued) return;
     setErrorMessage('');
     setNotice('');
 
@@ -211,7 +225,7 @@ export function PrescriptionDrafts() {
     setSaving(true);
     try {
       await salvarRascunhoReceita(parsed.data);
-      setNotice('Rascunho salvo. Ele não foi assinado nem emitido.');
+      setNotice('Rascunho salvo. Você já pode emitir a receita oficial com QR Code.');
       await loadData();
     } catch (error) {
       setErrorMessage(
@@ -222,21 +236,38 @@ export function PrescriptionDrafts() {
     }
   }
 
+  async function handleIssueOfficial() {
+    if (!appointmentId || hasUnsavedChanges || !selectedDraft) return;
+    setErrorMessage('');
+    setNotice('');
+    setIssuing(true);
+    try {
+      const { prescriptionDraft } = await emitirReceitaOficial(appointmentId);
+      setNotice(
+        `Receita oficial emitida! Código de verificação ${prescriptionDraft.verification_code ?? ''} enviado ao tutor.`,
+      );
+      await loadData();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Erro ao emitir a receita oficial.',
+      );
+    } finally {
+      setIssuing(false);
+    }
+  }
+
   return (
     <div className="mx-auto grid max-w-[1500px] gap-5">
-      <PageHeader
-        title="Rascunhos de receita"
-        description="Registre os itens definidos pelo veterinário responsável, vinculados ao atendimento."
-      />
-
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-        Este módulo salva somente rascunhos clínicos. Não há catálogo ou sugestão
-        de medicamentos, assinatura digital, emissão oficial, PDF ou envio ao tutor.
+      <div className="print:hidden">
+        <PageHeader
+          title="Receitas e prescrição digital"
+          description="Elabore o rascunho clínico, emita a receita oficial com QR Code de autenticidade e gere a via impressa para farmácia ou tutor."
+        />
       </div>
 
       {errorMessage && (
         <div
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800 print:hidden"
           role="alert"
         >
           <p>{errorMessage}</p>
@@ -251,7 +282,7 @@ export function PrescriptionDrafts() {
         </div>
       )}
       {notice && (
-        <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
+        <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 print:hidden" role="status">
           {notice}
         </p>
       )}
@@ -266,13 +297,14 @@ export function PrescriptionDrafts() {
       ) : errorMessage && eligibleAppointments.length === 0 ? null : eligibleAppointments.length === 0 ? (
         <EmptyState
           title="Nenhum atendimento elegível"
-          description="Rascunhos só podem ser vinculados a atendimentos iniciados ou concluídos do veterinário responsável."
+          description="Receitas só podem ser vinculadas a atendimentos confirmados já iniciados ou concluídos do veterinário responsável."
         />
       ) : (
-        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.7fr)]">
+        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
           <Card
-            title="Prescrição em rascunho"
-            description="Preencha manualmente conforme a avaliação clínica. O sistema não calcula nem recomenda dose."
+            className="print:hidden"
+            title={isIssued ? 'Prescrição emitida (bloqueada para edição)' : 'Prescrição veterinária'}
+            description="Preencha os itens conforme a conduta clínica. Após salvar o rascunho, clique em Emitir receita oficial."
           >
             <form className="grid gap-5" onSubmit={(event) => void saveDraft(event)}>
               <Select
@@ -280,7 +312,7 @@ export function PrescriptionDrafts() {
                 label="Atendimento e paciente"
                 value={appointmentId}
                 onChange={(event) => changeAppointment(event.target.value)}
-                disabled={saving}
+                disabled={saving || issuing}
                 required
               >
                 <option value="">Selecione um atendimento</option>
@@ -318,7 +350,7 @@ export function PrescriptionDrafts() {
 
               <fieldset
                 className="grid gap-5 disabled:opacity-70"
-                disabled={saving || !appointmentId}
+                disabled={saving || issuing || !appointmentId || isIssued}
               >
                 <legend className="sr-only">Itens da receita</legend>
                 {items.map((item, index) => (
@@ -326,7 +358,7 @@ export function PrescriptionDrafts() {
                     <legend className="px-1 font-bold text-[#153b50]">
                       Item {index + 1}
                     </legend>
-                    {items.length > 1 && (
+                    {items.length > 1 && !isIssued && (
                       <div className="flex justify-end">
                         <Button
                           type="button"
@@ -417,42 +449,49 @@ export function PrescriptionDrafts() {
                   </fieldset>
                 ))}
 
-                <div className="flex flex-wrap justify-between gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={items.length >= 30}
-                    onClick={() => setItems((current) => [...current, { ...emptyItem }])}
-                  >
-                    Adicionar item
-                  </Button>
-                  <Button type="submit" variant="secondary" disabled={saving || !appointmentId}>
-                    {saving ? 'Salvando...' : selectedDraft ? 'Atualizar rascunho' : 'Salvar rascunho'}
-                  </Button>
-                </div>
+                {!isIssued && (
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={items.length >= 30}
+                      onClick={() => setItems((current) => [...current, { ...emptyItem }])}
+                    >
+                      Adicionar item
+                    </Button>
+                    <Button type="submit" variant="secondary" disabled={saving || !appointmentId}>
+                      {saving ? 'Salvando...' : selectedDraft ? 'Atualizar rascunho' : 'Salvar rascunho'}
+                    </Button>
+                  </div>
+                )}
               </fieldset>
             </form>
           </Card>
 
           <aside className="grid gap-5">
-            <Card className="border-[#d4ebff] bg-[#f7fbff]">
+            <Card className="border-[#d4ebff] bg-[#f7fbff] print:border-0 print:bg-white print:shadow-none">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="font-bold text-[#153b50]">Prévia do rascunho</h2>
+                  <h2 className="font-bold text-[#153b50]">
+                    {isIssued ? 'Receituário Médico-Veterinário Oficial' : 'Prévia do rascunho'}
+                  </h2>
                   <p className="mt-1 text-xs text-slate-600">
                     {selectedAppointment
                       ? `${selectedAppointment.pet?.name ?? 'Paciente'} · ${selectedAppointment.pet?.species ?? 'Espécie não informada'}`
                       : 'Selecione um atendimento'}
                   </p>
                 </div>
-                <Badge variant={hasUnsavedChanges ? 'warning' : 'info'}>
-                  {hasUnsavedChanges
-                    ? 'Alterações não salvas'
-                    : selectedDraft
-                      ? 'Rascunho salvo · não assinado'
-                      : 'Novo rascunho'}
+                <Badge variant={isIssued ? 'success' : hasUnsavedChanges ? 'warning' : 'info'}>
+                  {isIssued
+                    ? 'Emitida oficialmente'
+                    : hasUnsavedChanges
+                      ? 'Alterações não salvas'
+                      : selectedDraft
+                        ? 'Rascunho salvo'
+                        : 'Novo rascunho'}
                 </Badge>
               </div>
+
               <div className="mt-4 grid gap-3 rounded-xl border border-dashed border-slate-300 bg-white p-4">
                 {items.map((item, index) => (
                   <div
@@ -460,7 +499,7 @@ export function PrescriptionDrafts() {
                     className="border-b border-slate-100 pb-3 last:border-0 last:pb-0"
                   >
                     <p className="font-semibold text-[#153b50]">
-                      {item.name || 'Medicamento não informado'}
+                      {index + 1}. {item.name || 'Medicamento não informado'}
                     </p>
                     {[
                       item.presentation,
@@ -482,20 +521,73 @@ export function PrescriptionDrafts() {
                   </div>
                 ))}
               </div>
+
               {selectedDraft && (
                 <p className="mt-3 text-xs text-slate-600">
-                  Última atualização: {formatDate(selectedDraft.updated_at)}
+                  {isIssued && selectedDraft.issued_at
+                    ? `Emitida em: ${formatDate(selectedDraft.issued_at)}`
+                    : `Última atualização: ${formatDate(selectedDraft.updated_at)}`}
                 </p>
               )}
-              <p className="mt-4 text-xs leading-5 text-amber-900">
-                Esta visualização não é um documento emitido e não deve ser apresentada como receita válida.
-              </p>
+
+              {isIssued && selectedDraft?.verification_code && verificationUrl && (
+                <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl border border-emerald-200 bg-white p-4">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
+                    <ShieldCheck className="h-4 w-4" />
+                    <span>Código verificável: {selectedDraft.verification_code}</span>
+                  </div>
+                  <QrCodeBox
+                    compact
+                    downloadName={`receita-${selectedDraft.verification_code}.png`}
+                    size={150}
+                    subtitle="Aponte a câmera para validar autenticidade"
+                    value={verificationUrl}
+                  />
+                  <div className="flex flex-wrap gap-2 print:hidden">
+                    <Button
+                      onClick={() => window.print()}
+                      type="button"
+                      variant="secondary"
+                    >
+                      <Printer className="mr-1.5 h-4 w-4" />
+                      Imprimir / Salvar PDF
+                    </Button>
+                    <Link
+                      className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-[#153b50] hover:bg-[#ebf5ff]"
+                      href={`/receitas/verificar?code=${encodeURIComponent(selectedDraft.verification_code)}`}
+                    >
+                      Abrir link de verificação
+                    </Link>
+                  </div>
+                </div>
+              )}
             </Card>
-            <Card className="border-emerald-100 bg-emerald-50/60">
-              <h2 className="font-bold text-emerald-900">Assinatura e emissão</h2>
-              <p className="mt-2 text-sm leading-6 text-emerald-900/80">
-                Permanecem indisponíveis até integração e validação dos requisitos legais e de identidade profissional.
+
+            <Card className="border-emerald-200 bg-emerald-50/70 print:hidden">
+              <h2 className="flex items-center gap-2 font-bold text-emerald-950">
+                <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+                Emissão oficial e verificação pública
+              </h2>
+              <p className="mt-2 text-xs leading-5 text-emerald-900/80">
+                Ao emitir, a prescrição ganha código verificável via QR Code, é liberada para o tutor e bloqueada contra alterações. Para receituários controlados MAPA/CFMV, acople certificado ICP-Brasil no emissor externo.
               </p>
+              {!isIssued && (
+                <div className="mt-4">
+                  <Button
+                    disabled={!selectedDraft || hasUnsavedChanges || issuing || saving}
+                    onClick={() => void handleIssueOfficial()}
+                    type="button"
+                    variant="secondary"
+                  >
+                    {issuing ? 'Emitindo receita...' : 'Emitir receita oficial com QR Code'}
+                  </Button>
+                  {(!selectedDraft || hasUnsavedChanges) && (
+                    <p className="mt-2 text-xs text-slate-600">
+                      Salve as alterações do rascunho antes de emitir oficialmente.
+                    </p>
+                  )}
+                </div>
+              )}
             </Card>
           </aside>
         </div>

@@ -143,7 +143,7 @@ export async function listarPagamentosUsuario(): Promise<{
     const { data, error } = await supabase
       .from('payment_orders')
       .select(
-        'id, user_id, appointment_id, kind, description, amount_cents, discount_cents, net_amount_cents, method, status, external_reference, paid_at, created_at',
+        'id, user_id, organization_id, appointment_id, subscription_id, kind, description, amount_cents, discount_cents, net_amount_cents, method, status, external_reference, pix_payload, provider_payment_id, paid_at, created_at',
       )
       .order('created_at', { ascending: false })
       .limit(50);
@@ -158,27 +158,66 @@ export async function listarPagamentosUsuario(): Promise<{
   }
 }
 
+export async function gerarCheckoutConsulta(input: {
+  appointmentId: string;
+  method: PaymentMethod;
+  couponCode?: string | null;
+}): Promise<{ payment: PaymentOrder }> {
+  const response = await fetch('/api/payments/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      appointmentId: input.appointmentId,
+      method: input.method,
+      couponCode: input.couponCode?.trim() || null,
+    }),
+  });
+
+  const payload = (await response.json().catch(() => null)) as {
+    order?: PaymentOrder;
+    error?: string;
+  } | null;
+
+  if (!response.ok || !payload?.order) {
+    throw new Error(
+      payload?.error || 'Não foi possível gerar a cobrança da consulta.',
+    );
+  }
+
+  return { payment: payload.order };
+}
+
+export async function confirmarPagamentoBaixa(input: {
+  orderId: string;
+  externalReference?: string | null;
+}): Promise<{ payment: PaymentOrder }> {
+  const response = await fetch('/api/payments/confirm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      orderId: input.orderId,
+      externalReference: input.externalReference?.trim() || null,
+    }),
+  });
+
+  const payload = (await response.json().catch(() => null)) as {
+    order?: PaymentOrder;
+    error?: string;
+  } | null;
+
+  if (!response.ok || !payload?.order) {
+    throw new Error(
+      payload?.error || 'Não foi possível confirmar a baixa deste pagamento.',
+    );
+  }
+
+  return { payment: payload.order };
+}
+
 export async function pagarConsulta(input: {
   appointmentId: string;
   method: PaymentMethod;
   couponCode?: string | null;
 }): Promise<{ payment: PaymentOrder }> {
-  try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc(
-      'create_teleconsultation_payment',
-      {
-        target_appointment: input.appointmentId,
-        target_method: input.method,
-        target_coupon: input.couponCode?.trim() || null,
-      },
-    );
-    if (error) throw error;
-    return { payment: data };
-  } catch (error) {
-    throw toFriendlyError(
-      error,
-      'Não foi possível registrar o pagamento da consulta.',
-    );
-  }
+  return gerarCheckoutConsulta(input);
 }

@@ -3,17 +3,7 @@ import { z } from 'zod';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
-
-const vitalsSchema = z
-  .object({
-    weight_kg: z.number().positive().max(500).nullable(),
-    temperature_c: z.number().min(20).max(50).nullable(),
-    heart_rate_bpm: z.number().int().positive().max(1000).nullable(),
-    respiratory_rate_rpm: z.number().int().positive().max(500).nullable(),
-    mucous_membranes: z.string().trim().max(100).nullable(),
-    capillary_refill_seconds: z.number().min(0).max(30).nullable(),
-  })
-  .strict();
+import { clinicalVitalsSchema } from '@/lib/validations';
 
 const saveClinicalRecordSchema = z
   .object({
@@ -22,7 +12,7 @@ const saveClinicalRecordSchema = z
     objective: z.string().max(10000),
     assessment: z.string().max(10000),
     plan: z.string().max(10000),
-    vitals: vitalsSchema,
+    vitals: clinicalVitalsSchema,
     status: z.enum(['draft', 'finalized']),
   })
   .strict();

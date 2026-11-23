@@ -4,6 +4,7 @@ import type {
   IntegrationConfig,
   IntegrationEnvironment,
   IntegrationProvider,
+  RoleApplication,
   UserProfile,
 } from '@/types/entities';
 import { toFriendlyError } from './errors';
@@ -97,8 +98,8 @@ export async function salvarIntegracao(input: {
       environment: input.environment,
       webhook_endpoint: input.webhook_endpoint.trim(),
       active: input.active,
-      last_status: input.active ? '200 OK' : 'paused',
-      last_checked_at: new Date().toISOString(),
+      last_status: input.active ? 'pending_test' : 'paused',
+      last_checked_at: null,
     };
 
     const query = existing
@@ -120,6 +121,79 @@ export async function salvarIntegracao(input: {
     throw toFriendlyError(
       error,
       'Não foi possível salvar a configuração da integração.',
+    );
+  }
+}
+
+export async function testarIntegracao(
+  integrationId: string,
+): Promise<{ integration: IntegrationConfig; reachable: boolean }> {
+  const response = await fetch('/api/admin/integrations/test', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ integrationId }),
+  });
+
+  const payload = (await response.json().catch(() => null)) as {
+    integration?: IntegrationConfig;
+    reachable?: boolean;
+    error?: string;
+  } | null;
+
+  if (!response.ok || !payload?.integration) {
+    throw new Error(
+      payload?.error || 'Não foi possível validar o endpoint informado.',
+    );
+  }
+
+  return {
+    integration: payload.integration,
+    reachable: Boolean(payload.reachable),
+  };
+}
+
+export async function listarSolicitacoesPerfil(): Promise<{
+  applications: RoleApplication[];
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('role_applications')
+      .select(
+        'id, user_id, requested_role, organization_name, document_id, registration_region, specialty, city, state, status, reviewer_notes, reviewed_at, created_at',
+      )
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+    return { applications: data ?? [] };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível carregar as solicitações de credenciamento.',
+    );
+  }
+}
+
+export async function avaliarSolicitacaoPerfil(input: {
+  applicationId: string;
+  approve: boolean;
+  notes?: string;
+}): Promise<{ application: RoleApplication }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('review_role_application', {
+      target_application: input.applicationId,
+      approve: input.approve,
+      target_notes: input.notes?.trim() || null,
+    });
+
+    if (error) throw error;
+    return { application: data };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível registrar a avaliação deste credenciamento.',
     );
   }
 }

@@ -109,6 +109,21 @@ export const DRVET_MIGRATIONS_REGISTRY: MigrationSchemaEntry[] = [
     stitchScope: 'Alertas Push & Realtime (/notificacoes, /agendamento, /painel/veterinario)',
     tables: ['push_subscriptions', 'notifications'],
   },
+  {
+    order: 13,
+    filename: '20261123000100_production_repairs_and_features.sql',
+    title: 'Catálogo Público, QR Receitas, NFSe, Termos Persistidos, Credenciamento & Liquidação PIX',
+    stitchScope: 'Home (/), Receitas (/receitas/verificar), Comissões NFSe, Onboarding QR, Perfil & Admin',
+    tables: [
+      'veterinarian_profiles',
+      'legal_acknowledgements',
+      'fiscal_invoices',
+      'partner_attributions',
+      'role_applications',
+      'prescription_drafts',
+      'payment_orders',
+    ],
+  },
 ];
 
 export const DRVET_ALL_TABLES: string[] = Array.from(

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { QrCodeBox } from '@/components/qr-code-box';
 import {
   Badge,
   Button,
@@ -59,9 +60,16 @@ export function PartnerDashboard() {
   const [commissions, setCommissions] = useState<CommissionEntry[]>([]);
   const [summary, setSummary] = useState<CommissionSummary | null>(null);
   const [selectedPartnerId, setSelectedPartnerId] = useState('');
+  const [origin, setOrigin] = useState('');
   const [loading, setLoading] = useState(configured);
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const loadData = useCallback(async () => {
     if (!configured) {
@@ -101,9 +109,15 @@ export function PartnerDashboard() {
   const qrInvitePath = activePartner
     ? `/cadastro?cupom=${encodeURIComponent(activePartner.coupon_code)}&parceiro=${encodeURIComponent(activePartner.trade_name)}`
     : '/cadastro?cupom=DRVET15';
+  const qrAbsoluteUrl = origin ? `${origin}${qrInvitePath}` : qrInvitePath;
 
-  const totalClicks = campaigns.reduce((acc, item) => acc + item.clicks_count, 0);
-  const activeCampaigns = campaigns.filter((c) => c.status === 'active').length;
+  const orgCampaigns = activePartner
+    ? campaigns.filter((item) => item.organization_id === activePartner.organization_id)
+    : campaigns;
+  const scopedCampaigns = orgCampaigns.length > 0 ? orgCampaigns : campaigns;
+
+  const totalClicks = scopedCampaigns.reduce((acc, item) => acc + item.clicks_count, 0);
+  const activeCampaigns = scopedCampaigns.filter((c) => c.status === 'active').length;
   const pharmacySplitTotalCents = commissions.reduce(
     (acc, item) => acc + item.net_amount_cents,
     0,
@@ -184,7 +198,7 @@ export function PartnerDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card
-          description="Selecione o estabelecimento para gerar o link de balcão com cupom automático."
+          description="Selecione o estabelecimento para gerar o link de balcão e QR Code oficial."
           title="Kit Balcão & QR Code Promocional"
         >
           {loading ? (
@@ -220,7 +234,7 @@ export function PartnerDashboard() {
               </label>
 
               {activePartner && (
-                <div className="rounded-2xl border border-emerald-200 bg-[#F0F8FB] p-4">
+                <div className="grid gap-3 rounded-2xl border border-emerald-200 bg-[#F0F8FB] p-4">
                   <div className="flex items-center justify-between gap-2">
                     <Badge variant="success">
                       {activePartner.kind === 'pharmacy' ? 'Farmácia' : 'Pet Shop'}
@@ -229,15 +243,27 @@ export function PartnerDashboard() {
                       {activePartner.discount_percent}% OFF
                     </span>
                   </div>
-                  <p className="mt-2 font-bold text-brand-navy">{activePartner.trade_name}</p>
-                  <p className="text-xs text-slate-600">
-                    {activePartner.city}/{activePartner.state} · Cupom{' '}
-                    <strong>{activePartner.coupon_code}</strong>
-                  </p>
-                  <p className="mt-3 break-all rounded-lg bg-white p-2 font-mono text-[11px] text-slate-700">
+                  <div>
+                    <p className="font-bold text-brand-navy">{activePartner.trade_name}</p>
+                    <p className="text-xs text-slate-600">
+                      {activePartner.city}/{activePartner.state} · Cupom{' '}
+                      <strong>{activePartner.coupon_code}</strong>
+                    </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <QrCodeBox
+                      compact
+                      downloadName={`qr-balcao-${activePartner.coupon_code.toLowerCase()}.png`}
+                      size={156}
+                      subtitle={`Cupom ${activePartner.coupon_code} · ${activePartner.discount_percent}% OFF`}
+                      title={`QR Balcão · ${activePartner.trade_name}`}
+                      value={qrAbsoluteUrl}
+                    />
+                  </div>
+                  <p className="break-all rounded-lg bg-white p-2 font-mono text-[11px] text-slate-700">
                     {qrInvitePath}
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button onClick={() => void handleCopyQrLink()} type="button" variant="secondary">
                       Copiar link QR
                     </Button>
@@ -256,12 +282,12 @@ export function PartnerDashboard() {
 
         <div className="lg:col-span-2">
           <Card
-            description="Lançamentos recentes de dispensação e performance de anúncios B2B."
+            description="Lançamentos recentes de dispensação e performance de anúncios B2B da unidade."
             title="Dispensação & Campanhas Ativas"
           >
             {loading ? (
               <Skeleton className="h-44 w-full" />
-            ) : campaigns.length === 0 && commissions.length === 0 ? (
+            ) : scopedCampaigns.length === 0 && commissions.length === 0 ? (
               <EmptyState
                 action={
                   <Link
@@ -276,7 +302,7 @@ export function PartnerDashboard() {
               />
             ) : (
               <div className="grid gap-5">
-                {campaigns.length > 0 && (
+                {scopedCampaigns.length > 0 && (
                   <Table>
                     <thead>
                       <tr>
@@ -288,7 +314,7 @@ export function PartnerDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {campaigns.map((camp) => (
+                      {scopedCampaigns.map((camp) => (
                         <tr key={camp.id}>
                           <TableCell className="font-semibold">{camp.title}</TableCell>
                           <TableCell>{placementLabels[camp.placement]}</TableCell>

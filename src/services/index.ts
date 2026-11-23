@@ -5,6 +5,7 @@ export * from './availability.service';
 export * from './clinical-records.service';
 export * from './commissions.service';
 export * from './exam-orders.service';
+export * from './operations.service';
 export * from './organizations.service';
 export * from './partners.service';
 export * from './pets.service';

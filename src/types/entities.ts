@@ -73,7 +73,24 @@ export interface VeterinarianProfile {
   registration_region: string;
   specialty: string | null;
   status: ProfessionalStatus;
+  consultation_fee_cents?: number;
+  bio?: string | null;
+  is_online_now?: boolean;
   created_at?: string;
+}
+
+export interface PublicVeterinarian {
+  user_id: string;
+  organization_id: string;
+  organization_name: string;
+  display_name: string;
+  registration_number: string;
+  registration_region: string;
+  specialty: string | null;
+  consultation_fee_cents: number;
+  bio: string | null;
+  is_online_now: boolean;
+  open_slots_count: number;
 }
 
 export interface PetSummary {
@@ -200,9 +217,23 @@ export interface PrescriptionDraft {
   pet_id: string;
   veterinarian_id: string;
   items: PrescriptionItem[];
+  status: 'draft' | 'issued';
+  issued_at: string | null;
+  verification_code: string | null;
   updated_by: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface PrescriptionVerification {
+  verification_code: string;
+  status: string;
+  issued_at: string;
+  pet_name: string;
+  species: string;
+  veterinarian_name: string;
+  crmv: string;
+  items_count: number;
 }
 
 export type CommissionOrigin = 'teleconsultation' | 'in_person' | 'pharmacy_split' | 'partner_plan';
@@ -296,7 +327,9 @@ export interface PetSubscription {
 export interface PaymentOrder {
   id: string;
   user_id: string;
+  organization_id?: string | null;
   appointment_id?: string | null;
+  subscription_id?: string | null;
   kind: PaymentKind;
   description: string;
   amount_cents: number;
@@ -305,6 +338,8 @@ export interface PaymentOrder {
   method: PaymentMethod;
   status: PaymentOrderStatus;
   external_reference: string | null;
+  pix_payload?: string | null;
+  provider_payment_id?: string | null;
   paid_at: string | null;
   created_at: string;
 }
@@ -350,4 +385,56 @@ export interface IntegrationConfig {
   active: boolean;
   last_status: string;
   last_checked_at: string | null;
+}
+
+export interface LegalAcknowledgement {
+  id: string;
+  user_id: string;
+  document_key: string;
+  document_version: string;
+  acknowledged_at: string;
+}
+
+export interface FiscalInvoice {
+  id: string;
+  organization_id: string;
+  veterinarian_id: string;
+  invoice_number: string;
+  period_label: string;
+  total_cents: number;
+  tax_id: string;
+  verification_code: string;
+  status: 'requested' | 'issued' | 'cancelled';
+  provider: 'drvet_fiscal' | 'bling' | 'omie';
+  notes: string | null;
+  issued_at: string | null;
+  created_at: string;
+}
+
+export interface PartnerAttribution {
+  id: string;
+  tutor_id: string;
+  partner_listing_id: string | null;
+  organization_id: string | null;
+  coupon_code: string;
+  discount_percent: number;
+  source: string;
+  active: boolean;
+  updated_at: string;
+}
+
+export interface RoleApplication {
+  id: string;
+  user_id: string;
+  requested_role: 'veterinarian' | 'partner';
+  organization_name: string;
+  document_id: string;
+  registration_region: string | null;
+  specialty: string | null;
+  city: string | null;
+  state: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewer_notes: string | null;
+  reviewed_at: string | null;
+  created_at: string;
 }

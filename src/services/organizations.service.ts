@@ -1,5 +1,9 @@
 import { getSupabaseClient } from '@/lib/supabase';
-import type { Organization, VeterinarianProfile } from '@/types/entities';
+import type {
+  Organization,
+  PublicVeterinarian,
+  VeterinarianProfile,
+} from '@/types/entities';
 import { toFriendlyError } from './errors';
 
 export async function listarOrganizacoesEVeterinarios(): Promise<{
@@ -43,7 +47,7 @@ export async function listarOrganizacoesEVeterinarios(): Promise<{
       supabase
         .from('veterinarian_profiles')
         .select(
-          'organization_id, user_id, registration_number, registration_region, specialty, status, created_at',
+          'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, created_at',
         )
         .in('organization_id', organizationIds),
     ]);
@@ -180,7 +184,7 @@ export async function listarVeterinariosAprovados(): Promise<{
     const { data: professionals, error } = await supabase
       .from('veterinarian_profiles')
       .select(
-        'organization_id, user_id, registration_number, registration_region, specialty, status, created_at',
+        'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, created_at',
       )
       .eq('status', 'approved')
       .order('created_at', { ascending: false });
@@ -211,6 +215,45 @@ export async function listarVeterinariosAprovados(): Promise<{
     throw toFriendlyError(
       error,
       'Não foi possível carregar os médicos-veterinários credenciados.',
+    );
+  }
+}
+
+export async function buscarCatalogoPublicoVeterinarios(): Promise<{
+  veterinarians: PublicVeterinarian[];
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('get_public_veterinarians');
+    if (error) throw error;
+    return { veterinarians: data ?? [] };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível carregar o catálogo público de veterinários.',
+    );
+  }
+}
+
+export async function atualizarMeuPerfilVeterinario(input: {
+  consultation_fee_cents: number;
+  bio?: string | null;
+  is_online_now?: boolean;
+}): Promise<{ professional: VeterinarianProfile }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('update_my_vet_profile', {
+      target_consultation_fee_cents: input.consultation_fee_cents,
+      target_bio: input.bio?.trim() || null,
+      target_is_online_now:
+        typeof input.is_online_now === 'boolean' ? input.is_online_now : null,
+    });
+    if (error) throw error;
+    return { professional: data };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível atualizar seu perfil profissional.',
     );
   }
 }

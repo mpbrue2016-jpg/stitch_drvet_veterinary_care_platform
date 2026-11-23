@@ -15,9 +15,13 @@ import {
   Skeleton,
   Toast,
 } from '@/components/ui';
-import { SupabaseSchemaPanel } from '@/components/supabase-schema-panel';
 import { getSupabaseClient } from '@/lib/supabase';
-import { listarIntegracoes, salvarIntegracao } from '@/services/admin.service';
+import { DRVET_MIGRATIONS_REGISTRY } from '@/lib/supabase/schema-registry';
+import {
+  listarIntegracoes,
+  salvarIntegracao,
+  testarIntegracao,
+} from '@/services/admin.service';
 import { isSchemaMissingError } from '@/services/errors';
 import type {
   IntegrationConfig,
@@ -40,6 +44,7 @@ export function IntegrationsAssistant() {
   const [integrations, setIntegrations] = useState<IntegrationConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [testingId, setTestingId] = useState('');
   const [testingHealth, setTestingHealth] = useState(false);
   const [dbHealth, setDbHealth] = useState<{
     status: string;
@@ -72,7 +77,7 @@ export function IntegrationsAssistant() {
       if (isSchemaMissingError(error)) {
         setIntegrations([]);
         setNotice(
-          'Aguardando aplicação das 11 migrations SQL no Supabase para liberar integration_configs.',
+          `Aguardando aplicação das ${DRVET_MIGRATIONS_REGISTRY.length} migrations SQL no Supabase para liberar integration_configs.`,
         );
       } else {
         setErrorMessage(
@@ -98,7 +103,7 @@ export function IntegrationsAssistant() {
     try {
       const { integration } = await salvarIntegracao(form);
       setNotice(
-        `Integração ${providerDetails[integration.provider].name} salva (${integration.last_status}).`,
+        `Integração ${providerDetails[integration.provider].name} salva (${integration.last_status}). Clique em "Testar HTTP" para verificar conectividade.`,
       );
       setForm((prev) => ({ ...prev, webhook_endpoint: '' }));
       await loadData();
@@ -108,6 +113,29 @@ export function IntegrationsAssistant() {
       );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleProbeIntegration(integrationId: string) {
+    setTestingId(integrationId);
+    setErrorMessage('');
+    setNotice('');
+    try {
+      const { integration, reachable } = await testarIntegracao(integrationId);
+      setIntegrations((curr) =>
+        curr.map((item) => (item.id === integration.id ? integration : item)),
+      );
+      setNotice(
+        reachable
+          ? `Endpoint respondeu: ${integration.last_status}.`
+          : `Teste HTTP sem resposta válida: ${integration.last_status}.`,
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Falha ao testar endpoint.',
+      );
+    } finally {
+      setTestingId('');
     }
   }
 
@@ -157,7 +185,7 @@ export function IntegrationsAssistant() {
       setNotice(
         schema.schemaReady
           ? `Conexão validada em ${elapsed} ms (${schema.totalTables}/${schema.totalTables} tabelas)${realtimeOk ? ' com Realtime CDC ativo' : ''}.`
-          : `Auth conectado em ${elapsed} ms. Localizadas ${schema.locatedTablesCount} de ${schema.totalTables} tabelas — execute o SQL consolidado abaixo no SQL Editor.`,
+          : `Auth conectado em ${elapsed} ms. Localizadas ${schema.locatedTablesCount} de ${schema.totalTables} tabelas no schema remoto.`,
       );
     } catch (error) {
       setDbHealth({
@@ -305,7 +333,7 @@ export function IntegrationsAssistant() {
             }
             value={String(form.active)}
           >
-            <option value="true">Ativo (200 OK)</option>
+            <option value="true">Ativo (verificar via probe HTTP)</option>
             <option value="false">Pausado</option>
           </Select>
 
@@ -357,10 +385,21 @@ export function IntegrationsAssistant() {
                       Webhook: {item.webhook_endpoint}
                     </p>
                   </div>
-                  <div className="text-xs text-slate-500">
-                    {item.last_checked_at
-                      ? `Último check: ${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(item.last_checked_at))}`
-                      : 'Ainda não verificado'}
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <span>
+                      {item.last_checked_at
+                        ? `Último check: ${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(item.last_checked_at))}`
+                        : 'Ainda não verificado'}
+                    </span>
+                    <Button
+                      className="min-h-8 px-3 text-xs"
+                      disabled={testingId === item.id}
+                      onClick={() => void handleProbeIntegration(item.id)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {testingId === item.id ? 'Testando...' : 'Testar HTTP'}
+                    </Button>
                   </div>
                 </article>
               );
@@ -368,8 +407,6 @@ export function IntegrationsAssistant() {
           </div>
         )}
       </Card>
-
-      <SupabaseSchemaPanel />
     </div>
   );
 }

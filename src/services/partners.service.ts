@@ -3,6 +3,7 @@ import type {
   AdCampaign,
   AdCampaignStatus,
   AdPlacement,
+  PartnerAttribution,
   PartnerKind,
   PartnerListing,
 } from '@/types/entities';
@@ -143,6 +144,53 @@ export async function atualizarStatusCampanhaAds(input: {
     throw toFriendlyError(
       error,
       'Não foi possível alterar o status da campanha.',
+    );
+  }
+}
+
+export async function registrarAtribuicaoParceiro(
+  couponCode: string,
+): Promise<{ attribution: PartnerAttribution }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('record_partner_attribution', {
+      target_coupon: couponCode.trim().toUpperCase(),
+    });
+    if (error) throw error;
+    return { attribution: data };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível vincular o cupom do parceiro à sua conta.',
+    );
+  }
+}
+
+export async function buscarAtribuicaoAtiva(): Promise<{
+  attribution: PartnerAttribution | null;
+}> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return { attribution: null };
+
+    const { data, error } = await supabase
+      .from('partner_attributions')
+      .select(
+        'id, tutor_id, partner_listing_id, organization_id, coupon_code, discount_percent, source, active, updated_at',
+      )
+      .eq('tutor_id', authData.user.id)
+      .eq('active', true)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return { attribution: data ?? null };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível consultar o cupom vinculado.',
     );
   }
 }

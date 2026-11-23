@@ -18,6 +18,7 @@ export interface StorageFileEntry {
   fullPath: string;
   size: number | null;
   createdAt: string | null;
+  ownerId: string | null;
 }
 
 const BUCKET_RULES: Record<
@@ -124,13 +125,17 @@ export async function listarArquivosStorage(
     if (error) throw error;
     return (data ?? [])
       .filter((item) => item.name && !item.name.endsWith('/'))
-      .map((item) => ({
-        name: item.name,
-        fullPath: `${cleanFolder}/${item.name}`,
-        size:
-          typeof item.metadata?.size === 'number' ? item.metadata.size : null,
-        createdAt: item.created_at ?? null,
-      }));
+      .map((item) => {
+        const owner = (item as unknown as { owner?: unknown }).owner;
+        return {
+          name: item.name,
+          fullPath: `${cleanFolder}/${item.name}`,
+          size:
+            typeof item.metadata?.size === 'number' ? item.metadata.size : null,
+          createdAt: item.created_at ?? null,
+          ownerId: typeof owner === 'string' && owner.length > 0 ? owner : null,
+        };
+      });
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível listar os arquivos.');
   }

@@ -4,6 +4,7 @@ import type {
   CommissionOrigin,
   CommissionStatus,
   CommissionSummary,
+  FiscalInvoice,
 } from '@/types/entities';
 import { toFriendlyError } from './errors';
 
@@ -180,5 +181,96 @@ export async function solicitarAntecipacao(input: {
       error,
       'Não foi possível registrar a solicitação de antecipação.',
     );
+  }
+}
+
+function maskPixKeyForDisplay(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.length <= 6) return trimmed;
+  if (trimmed.includes('@')) {
+    const [local, domain] = trimmed.split('@');
+    const safeLocal =
+      local.length <= 2 ? `${local[0] ?? '*'}*` : `${local.slice(0, 2)}***`;
+    return `${safeLocal}@${domain}`;
+  }
+  return `${trimmed.slice(0, 3)}••••${trimmed.slice(-4)}`;
+}
+
+export async function salvarContaRepasse(input: {
+  provider: 'asaas' | 'mercadopago';
+  payout_account_label: string;
+  pix_key: string;
+}): Promise<void> {
+  try {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase.rpc('upsert_my_payout_account', {
+      target_provider: input.provider,
+      target_label: input.payout_account_label.trim(),
+      target_pix_key: maskPixKeyForDisplay(input.pix_key),
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível salvar os dados bancários e chave PIX de repasse.',
+    );
+  }
+}
+
+export async function listarNotasFiscais(): Promise<{ invoices: FiscalInvoice[] }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('fiscal_invoices')
+      .select(
+        'id, organization_id, veterinarian_id, invoice_number, period_label, total_cents, tax_id, verification_code, status, provider, notes, issued_at, created_at',
+      )
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return { invoices: data ?? [] };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível carregar as notas fiscais.');
+  }
+}
+
+export async function solicitarNotaFiscal(input: {
+  period_label: string;
+  total_cents: number;
+  tax_id: string;
+  provider: 'drvet_fiscal' | 'bling' | 'omie';
+  notes?: string;
+}): Promise<{ invoice: FiscalInvoice }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('request_fiscal_invoice', {
+      target_period_label: input.period_label.trim(),
+      target_total_cents: input.total_cents,
+      target_tax_id: input.tax_id.trim(),
+      target_provider: input.provider,
+      target_notes: input.notes?.trim() || null,
+    });
+    if (error) throw error;
+    return { invoice: data };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível solicitar a nota fiscal.');
+  }
+}
+
+export async function atualizarStatusNotaFiscal(input: {
+  invoiceId: string;
+  status: 'requested' | 'issued' | 'cancelled';
+}): Promise<{ invoice: FiscalInvoice }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('update_fiscal_invoice_status', {
+      target_invoice: input.invoiceId,
+      next_status: input.status,
+    });
+    if (error) throw error;
+    return { invoice: data };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível atualizar a nota fiscal.');
   }
 }

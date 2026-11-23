@@ -12,7 +12,6 @@ export function supabaseErrorResponse(
       {
         error: friendly.message,
         code: 'SCHEMA_MISSING',
-        setupUrl: '/setup-supabase',
       },
       { status: 503 },
     );

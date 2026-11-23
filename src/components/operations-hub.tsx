@@ -21,10 +21,15 @@ import {
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { listarDisponibilidade } from '@/services/availability.service';
 import { listarComissoes } from '@/services/commissions.service';
+import {
+  listarCientesLegais,
+  registrarCienciaLegal,
+} from '@/services/operations.service';
 import { listarVeterinariosAprovados } from '@/services/organizations.service';
 import type {
   AvailabilitySlot,
   CommissionEntry,
+  LegalAcknowledgement,
   VeterinarianProfile,
 } from '@/types/entities';
 
@@ -152,7 +157,8 @@ export function OperationsHub() {
   const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
   const [commissions, setCommissions] = useState<CommissionEntry[]>([]);
   const [selectedDocId, setSelectedDocId] = useState(legalDocuments[0].id);
-  const [acknowledgedDocs, setAcknowledgedDocs] = useState<string[]>([]);
+  const [acknowledgements, setAcknowledgements] = useState<LegalAcknowledgement[]>([]);
+  const [ackBusy, setAckBusy] = useState(false);
   const [loading, setLoading] = useState(configured);
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -165,16 +171,18 @@ export function OperationsHub() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [vetsRes, availRes, commRes] = await Promise.all([
+      const [vetsRes, availRes, commRes, legalRes] = await Promise.all([
         listarVeterinariosAprovados().catch(() => ({
           professionals: [],
         })),
         listarDisponibilidade().catch(() => ({ availability: [] })),
         listarComissoes().catch(() => ({ entries: [] })),
+        listarCientesLegais().catch(() => ({ acknowledgements: [] })),
       ]);
       setProfessionals(vetsRes.professionals);
       setSlots(availRes.availability);
       setCommissions(commRes.entries);
+      setAcknowledgements(legalRes.acknowledgements);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Não foi possível carregar a central.',
@@ -215,11 +223,35 @@ export function OperationsHub() {
     setNotice(`Arquivo OFX bancário exportado com ${commissions.length} lançamento(s).`);
   }
 
-  function handleAcknowledgeDoc(docId: string) {
-    setAcknowledgedDocs((current) =>
-      current.includes(docId) ? current : [...current, docId],
-    );
-    setNotice('Leitura e ciência registradas para esta sessão.');
+  const activeDocAck = acknowledgements.find(
+    (item) =>
+      item.document_key === activeDoc.id &&
+      item.document_version === activeDoc.version,
+  );
+
+  async function handleAcknowledgeDoc(doc: LegalDocument) {
+    setAckBusy(true);
+    setErrorMessage('');
+    setNotice('');
+    try {
+      const { acknowledgement } = await registrarCienciaLegal({
+        documentKey: doc.id,
+        documentVersion: doc.version,
+      });
+      setAcknowledgements((current) => [
+        acknowledgement,
+        ...current.filter((item) => item.id !== acknowledgement.id),
+      ]);
+      setNotice('Leitura e ciência registradas no banco de dados com sucesso.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível registrar a ciência deste termo.',
+      );
+    } finally {
+      setAckBusy(false);
+    }
   }
 
   return (
@@ -435,8 +467,13 @@ export function OperationsHub() {
                     <h3 className="text-base font-extrabold text-brand-navy">{activeDoc.title}</h3>
                     <div className="flex items-center gap-2">
                       <Badge variant="info">{activeDoc.version}</Badge>
-                      {acknowledgedDocs.includes(activeDoc.id) && (
-                        <Badge variant="success">Ciência registrada</Badge>
+                      {activeDocAck && (
+                        <Badge variant="success">
+                          Ciência registrada em{' '}
+                          {new Intl.DateTimeFormat('pt-BR', {
+                            dateStyle: 'short',
+                          }).format(new Date(activeDocAck.acknowledged_at))}
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -447,11 +484,16 @@ export function OperationsHub() {
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">{activeDoc.body}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Button
-                      onClick={() => handleAcknowledgeDoc(activeDoc.id)}
+                      disabled={!configured || ackBusy || Boolean(activeDocAck)}
+                      onClick={() => void handleAcknowledgeDoc(activeDoc)}
                       type="button"
                       variant="secondary"
                     >
-                      Registrar leitura e ciência
+                      {ackBusy
+                        ? 'Registrando...'
+                        : activeDocAck
+                          ? 'Ciência já registrada'
+                          : 'Registrar leitura e ciência'}
                     </Button>
                     <Button
                       onClick={() =>

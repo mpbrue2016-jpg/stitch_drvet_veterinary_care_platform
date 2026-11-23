@@ -1,10 +1,14 @@
 import { getSupabaseClient } from '@/lib/supabase';
 import type { Json } from '@/types/database';
-import type { PrescriptionDraft, PrescriptionItem } from '@/types/entities';
+import type {
+  PrescriptionDraft,
+  PrescriptionItem,
+  PrescriptionVerification,
+} from '@/types/entities';
 import { toFriendlyError } from './errors';
 
 const PRESCRIPTION_COLUMNS =
-  'id, appointment_id, organization_id, pet_id, veterinarian_id, items, updated_by, created_at, updated_at';
+  'id, appointment_id, organization_id, pet_id, veterinarian_id, items, status, issued_at, verification_code, updated_by, created_at, updated_at';
 
 function parseItems(raw: Json): PrescriptionItem[] {
   if (!Array.isArray(raw)) return [];
@@ -109,6 +113,45 @@ export async function excluirRascunhoReceita(id: string): Promise<void> {
     throw toFriendlyError(
       error,
       'Rascunhos clínicos não podem ser excluídos diretamente pela aplicação.',
+    );
+  }
+}
+
+export async function emitirReceitaOficial(
+  appointmentId: string,
+): Promise<{ prescriptionDraft: PrescriptionDraft }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('issue_prescription', {
+      target_appointment: appointmentId,
+    });
+    if (error) throw error;
+
+    return {
+      prescriptionDraft: {
+        ...data,
+        items: parseItems(data.items),
+      },
+    };
+  } catch (error) {
+    throw toFriendlyError(error, 'Não foi possível emitir a receita.');
+  }
+}
+
+export async function verificarCodigoReceita(
+  code: string,
+): Promise<PrescriptionVerification | null> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('verify_prescription_code', {
+      target_code: code.trim().toUpperCase(),
+    });
+    if (error) throw error;
+    return data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível validar o código desta receita.',
     );
   }
 }

@@ -517,16 +517,18 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                                 Abrir arquivo
                               </a>
                             )}
-                            <button
-                              className="font-semibold text-red-700 hover:underline disabled:opacity-50"
-                              disabled={uploadingOrderId === order.id}
-                              onClick={() =>
-                                void handleDeleteReport(order.id, file.fullPath)
-                              }
-                              type="button"
-                            >
-                              Excluir
-                            </button>
+                            {Boolean(currentUserId) && file.ownerId === currentUserId && (
+                              <button
+                                className="font-semibold text-red-700 hover:underline disabled:opacity-50"
+                                disabled={uploadingOrderId === order.id}
+                                onClick={() =>
+                                  void handleDeleteReport(order.id, file.fullPath)
+                                }
+                                type="button"
+                              >
+                                Excluir
+                              </button>
+                            )}
                           </div>
                         </li>
                       ))}

@@ -168,12 +168,38 @@ begin
     registration_number,
     registration_region,
     specialty,
-    status
+    status,
+    consultation_fee_cents,
+    bio,
+    is_online_now
   )
   values
-    (camila_id, org_id, '28491', 'SP', 'Clínica Geral e Dermatologia', 'approved'),
-    (rafael_id, org_id, '31904', 'SP', 'Cardiologia Veterinária', 'pending')
-  on conflict (organization_id, user_id) do nothing;
+    (
+      camila_id,
+      org_id,
+      '28491',
+      'SP',
+      'Clínica Geral e Dermatologia',
+      'approved',
+      14900,
+      'Clínica geral de cães e gatos, manejo dermatológico e triagem rápida em telemedicina.',
+      true
+    ),
+    (
+      rafael_id,
+      org_id,
+      '31904',
+      'SP',
+      'Cardiologia Veterinária',
+      'pending',
+      17900,
+      'Avaliação cardiológica preventiva, interpretação de ecocardiogramas e ajuste terapêutico.',
+      false
+    )
+  on conflict (organization_id, user_id) do update
+  set consultation_fee_cents = excluded.consultation_fee_cents,
+      bio = excluded.bio,
+      is_online_now = excluded.is_online_now;
 
   -- 3. Pets de exemplo
   insert into public.pets (id, owner_id, name, species, breed, birth_date, sex, notes)
@@ -190,6 +216,7 @@ begin
   values
     (slot_past_1, org_id, camila_id, date_trunc('hour', now() - interval '2 days') + interval '10 hours', date_trunc('hour', now() - interval '2 days') + interval '10 hours 45 minutes', false, false, null, null),
     (slot_past_2, org_id, camila_id, date_trunc('hour', now() - interval '1 day') + interval '14 hours', date_trunc('hour', now() - interval '1 day') + interval '14 hours 45 minutes', false, false, null, null),
+    ('40000000-0000-4000-8000-000000000009', org_id, camila_id, date_trunc('day', now() - interval '45 days') + interval '11 hours', date_trunc('day', now() - interval '45 days') + interval '11 hours 45 minutes', false, false, null, null),
     (slot_future_1, org_id, camila_id, date_trunc('day', now() + interval '1 day') + interval '16 hours', date_trunc('day', now() + interval '1 day') + interval '16 hours 45 minutes', false, false, null, null),
     (slot_future_2, org_id, camila_id, date_trunc('day', now() + interval '2 days') + interval '11 hours', date_trunc('day', now() + interval '2 days') + interval '11 hours 45 minutes', false, false, null, null),
     (slot_open_1, org_id, camila_id, date_trunc('day', now() + interval '1 day') + interval '9 hours', date_trunc('day', now() + interval '1 day') + interval '9 hours 45 minutes', true, false, null, null),
@@ -218,6 +245,13 @@ begin
       'Avaliação de exames renais e ajuste de quelante.',
       date_trunc('day', now() - interval '1 day') + interval '14 hours',
       date_trunc('day', now() - interval '1 day') + interval '14 hours 45 minutes'
+    ),
+    (
+      '50000000-0000-4000-8000-000000000005', '40000000-0000-4000-8000-000000000009', org_id, pet_thor_id, mariana_id, camila_id,
+      'in_person', 'completed',
+      'Reforço vacinal antirrábico anual e avaliação geral.',
+      date_trunc('day', now() - interval '45 days') + interval '11 hours',
+      date_trunc('day', now() - interval '45 days') + interval '11 hours 45 minutes'
     ),
     (
       apt_thor_pending, slot_future_1, org_id, pet_thor_id, mariana_id, camila_id,
@@ -283,7 +317,7 @@ begin
     ),
     (
       '70000000-0000-4000-8000-000000000002',
-      apt_pipoca_completed, org_id, pet_thor_id, camila_id,
+      '50000000-0000-4000-8000-000000000005', org_id, pet_thor_id, camila_id,
       'Antirrábica',
       (current_date - interval '45 days')::date,
       'RB-99402',
@@ -506,7 +540,7 @@ begin
   )
   on conflict (id) do nothing;
 
-  -- 14. Configurações de integrações e comprovante de consulta
+  -- 14. Configurações iniciais de integrações (status pending_test até validação HTTP real no /admin)
   insert into public.integration_configs (
     id, organization_id, provider, environment, webhook_endpoint, active, last_status, last_checked_at
   )
@@ -516,27 +550,27 @@ begin
       org_id,
       'asaas',
       'sandbox',
-      'https://drvet.app/functions/v1/payment-webhook',
-      true,
-      '200 OK',
-      now() - interval '2 hours'
+      'https://sandbox.asaas.com/api/v3/payments',
+      false,
+      'pending_test',
+      null
     ),
     (
       'b0000000-0000-4000-8000-000000000002',
       org_id,
       'livekit',
       'sandbox',
-      'https://drvet.app/teleconsulta',
-      true,
-      '200 OK',
-      now() - interval '1 hour'
+      'https://livekit.io/',
+      false,
+      'pending_test',
+      null
     ),
     (
       'b0000000-0000-4000-8000-000000000003',
       org_id,
       'bling',
       'sandbox',
-      'https://drvet.app/api/erp-sync',
+      'https://api.bling.com.br/Api/v3/nfse',
       false,
       'pending_test',
       null

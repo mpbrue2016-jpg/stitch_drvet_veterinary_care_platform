@@ -34,17 +34,9 @@ export function PushInlineBanner({
         <div className="flex items-center gap-2.5">
           <BellRing className="h-4 w-4 shrink-0 text-amber-700" />
           <p>
-            <strong>Alertas Push pendentes de schema:</strong> aplique a Migration 12 em{' '}
-            <code className="font-mono">/setup-supabase</code> para habilitar lembretes e avisos de fila.
+            <strong>Alertas Push pendentes de inicialização:</strong> as tabelas de notificações ainda não estão disponíveis no banco remoto.
           </p>
         </div>
-        <Link
-          className="inline-flex items-center gap-1 font-bold text-amber-950 hover:underline"
-          href="/setup-supabase"
-        >
-          Aplicar SQL
-          <ChevronRight className="h-3.5 w-3.5" />
-        </Link>
       </div>
     );
   }

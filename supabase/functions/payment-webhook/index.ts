@@ -5,6 +5,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret',
 };
 
+function timingSafeEqualString(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -18,8 +27,8 @@ Deno.serve(async (req) => {
   }
 
   const webhookSecret = Deno.env.get('PAYMENT_WEBHOOK_SECRET');
-  const providedSecret = req.headers.get('x-webhook-secret');
-  if (!webhookSecret || providedSecret !== webhookSecret) {
+  const providedSecret = req.headers.get('x-webhook-secret') ?? '';
+  if (!webhookSecret || !timingSafeEqualString(providedSecret, webhookSecret)) {
     return Response.json(
       { error: 'Assinatura do webhook inválida.' },
       { status: 401, headers: corsHeaders },
@@ -36,21 +45,42 @@ Deno.serve(async (req) => {
   }
 
   const payload = await req.json().catch(() => null);
+  const orderId = typeof payload?.orderId === 'string' ? payload.orderId.trim() : '';
   const reference = typeof payload?.reference === 'string' ? payload.reference.trim() : '';
   const nextStatus = payload?.status;
+
+  // service_role usado exclusivamente no servidor (Edge Function) para conciliação via webhook.
+  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+  if (orderId) {
+    const { data: settledOrder, error: settleError } = await adminClient.rpc(
+      'settle_payment_order',
+      {
+        target_order_id: orderId,
+        target_reference: reference || null,
+      },
+    );
+
+    if (settleError) {
+      return Response.json(
+        { error: settleError.message },
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
+    return Response.json({ settled: settledOrder }, { status: 200, headers: corsHeaders });
+  }
 
   if (
     !reference ||
     !['available', 'pending', 'paid'].includes(String(nextStatus))
   ) {
     return Response.json(
-      { error: 'Payload inválido: informe reference e status válido.' },
+      { error: 'Payload inválido: informe orderId ou reference e status válido.' },
       { status: 400, headers: corsHeaders },
     );
   }
 
-  // service_role usado exclusivamente no servidor (Edge Function) para conciliação via webhook.
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
   const { data, error } = await adminClient
     .from('commission_ledger')
     .update({ status: nextStatus })

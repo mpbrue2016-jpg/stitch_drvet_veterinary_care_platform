@@ -1,30 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
+import { createPetSchema } from '@/lib/validations';
 
-const createPetSchema = z
-  .object({
-    name: z.string().trim().min(1).max(100),
-    species: z.string().trim().min(1).max(60),
-    breed: z.string().trim().max(100).nullable().optional(),
-    birth_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .refine((value) => {
-        const parsedDate = new Date(`${value}T00:00:00Z`);
-        return (
-          !Number.isNaN(parsedDate.valueOf()) &&
-          parsedDate.toISOString().slice(0, 10) === value
-        );
-      })
-      .nullable()
-      .optional(),
-    sex: z.enum(['female', 'male', 'unknown']).nullable().optional(),
-    notes: z.string().trim().max(2000).nullable().optional(),
-  })
-  .strict();
+const PET_COLUMNS =
+  'id, owner_id, name, species, breed, birth_date, sex, notes, created_at, updated_at';
 
 export async function GET() {
   if (!isSupabaseConfigured()) {
@@ -42,7 +23,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('pets')
-    .select('id, name, species, breed, birth_date, sex')
+    .select(PET_COLUMNS)
     .order('name');
 
   if (error) {
@@ -81,8 +62,11 @@ export async function POST(request: NextRequest) {
       owner_id: authData.user.id,
       ...parsed.data,
       breed: parsed.data.breed || null,
+      birth_date: parsed.data.birth_date || null,
+      sex: parsed.data.sex ?? null,
+      notes: parsed.data.notes || null,
     })
-    .select('id, name, species, breed, birth_date, sex')
+    .select(PET_COLUMNS)
     .single();
 
   if (error) {

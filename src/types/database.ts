@@ -116,6 +116,9 @@ export interface Database {
           registration_region: string;
           specialty: string | null;
           status: ProfessionalStatus;
+          consultation_fee_cents: number;
+          bio: string | null;
+          is_online_now: boolean;
           created_at: string;
           updated_at: string;
         },
@@ -126,6 +129,9 @@ export interface Database {
           registration_region: string;
           specialty?: string | null;
           status?: ProfessionalStatus;
+          consultation_fee_cents?: number;
+          bio?: string | null;
+          is_online_now?: boolean;
           created_at?: string;
           updated_at?: string;
         }
@@ -330,6 +336,9 @@ export interface Database {
           pet_id: string;
           veterinarian_id: string;
           items: Json;
+          status: 'draft' | 'issued';
+          issued_at: string | null;
+          verification_code: string | null;
           updated_by: string;
           created_at: string;
           updated_at: string;
@@ -341,6 +350,9 @@ export interface Database {
           pet_id: string;
           veterinarian_id: string;
           items: Json;
+          status?: 'draft' | 'issued';
+          issued_at?: string | null;
+          verification_code?: string | null;
           updated_by: string;
           created_at?: string;
           updated_at?: string;
@@ -553,6 +565,8 @@ export interface Database {
           method: PaymentMethod;
           status: PaymentOrderStatus;
           external_reference: string | null;
+          pix_payload: string | null;
+          provider_payment_id: string | null;
           paid_at: string | null;
           created_at: string;
           updated_at: string;
@@ -571,6 +585,8 @@ export interface Database {
           method?: PaymentMethod;
           status?: PaymentOrderStatus;
           external_reference?: string | null;
+          pix_payload?: string | null;
+          provider_payment_id?: string | null;
           paid_at?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -720,6 +736,114 @@ export interface Database {
           created_at?: string;
         }
       >;
+      legal_acknowledgements: Table<
+        {
+          id: string;
+          user_id: string;
+          document_key: string;
+          document_version: string;
+          acknowledged_at: string;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          user_id: string;
+          document_key: string;
+          document_version: string;
+          acknowledged_at?: string;
+        }
+      >;
+      fiscal_invoices: Table<
+        {
+          id: string;
+          organization_id: string;
+          veterinarian_id: string;
+          invoice_number: string;
+          period_label: string;
+          total_cents: number;
+          tax_id: string;
+          verification_code: string;
+          status: 'requested' | 'issued' | 'cancelled';
+          provider: 'drvet_fiscal' | 'bling' | 'omie';
+          notes: string | null;
+          issued_at: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          organization_id: string;
+          veterinarian_id: string;
+          invoice_number: string;
+          period_label: string;
+          total_cents: number;
+          tax_id: string;
+          verification_code: string;
+          status?: 'requested' | 'issued' | 'cancelled';
+          provider?: 'drvet_fiscal' | 'bling' | 'omie';
+          notes?: string | null;
+          issued_at?: string | null;
+        }
+      >;
+      partner_attributions: Table<
+        {
+          id: string;
+          tutor_id: string;
+          partner_listing_id: string | null;
+          organization_id: string | null;
+          coupon_code: string;
+          discount_percent: number;
+          source: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          tutor_id: string;
+          partner_listing_id?: string | null;
+          organization_id?: string | null;
+          coupon_code: string;
+          discount_percent?: number;
+          source?: string;
+          active?: boolean;
+        }
+      >;
+      role_applications: Table<
+        {
+          id: string;
+          user_id: string;
+          requested_role: 'veterinarian' | 'partner';
+          organization_name: string;
+          document_id: string;
+          registration_region: string | null;
+          specialty: string | null;
+          city: string | null;
+          state: string | null;
+          status: 'pending' | 'approved' | 'rejected';
+          reviewer_notes: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          user_id: string;
+          requested_role: 'veterinarian' | 'partner';
+          organization_name: string;
+          document_id: string;
+          registration_region?: string | null;
+          specialty?: string | null;
+          city?: string | null;
+          state?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          reviewer_notes?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+        }
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -854,6 +978,113 @@ export interface Database {
       mark_all_notifications_read: {
         Args: Record<PropertyKey, never>;
         Returns: number;
+      };
+      get_public_veterinarians: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          user_id: string;
+          organization_id: string;
+          organization_name: string;
+          display_name: string;
+          registration_number: string;
+          registration_region: string;
+          specialty: string | null;
+          consultation_fee_cents: number;
+          bio: string | null;
+          is_online_now: boolean;
+          open_slots_count: number;
+        }[];
+      };
+      update_my_vet_profile: {
+        Args: {
+          target_consultation_fee_cents: number;
+          target_bio?: string | null;
+          target_is_online_now?: boolean | null;
+        };
+        Returns: Database['public']['Tables']['veterinarian_profiles']['Row'];
+      };
+      request_fiscal_invoice: {
+        Args: {
+          target_period_label: string;
+          target_total_cents: number;
+          target_tax_id: string;
+          target_provider?: 'drvet_fiscal' | 'bling' | 'omie';
+          target_notes?: string | null;
+        };
+        Returns: Database['public']['Tables']['fiscal_invoices']['Row'];
+      };
+      update_fiscal_invoice_status: {
+        Args: {
+          target_invoice: string;
+          next_status: 'requested' | 'issued' | 'cancelled';
+        };
+        Returns: Database['public']['Tables']['fiscal_invoices']['Row'];
+      };
+      record_partner_attribution: {
+        Args: { target_coupon: string };
+        Returns: Database['public']['Tables']['partner_attributions']['Row'];
+      };
+      submit_role_application: {
+        Args: {
+          target_requested_role: 'veterinarian' | 'partner';
+          target_organization_name: string;
+          target_document_id: string;
+          target_registration_region?: string | null;
+          target_specialty?: string | null;
+          target_city?: string | null;
+          target_state?: string | null;
+        };
+        Returns: Database['public']['Tables']['role_applications']['Row'];
+      };
+      review_role_application: {
+        Args: {
+          target_application: string;
+          approve: boolean;
+          target_notes?: string | null;
+        };
+        Returns: Database['public']['Tables']['role_applications']['Row'];
+      };
+      issue_prescription: {
+        Args: { target_appointment: string };
+        Returns: Database['public']['Tables']['prescription_drafts']['Row'];
+      };
+      verify_prescription_code: {
+        Args: { target_code: string };
+        Returns: {
+          verification_code: string;
+          status: string;
+          issued_at: string;
+          pet_name: string;
+          species: string;
+          veterinarian_name: string;
+          crmv: string;
+          items_count: number;
+        }[];
+      };
+      create_pending_appointment_order: {
+        Args: {
+          target_appointment: string;
+          target_method?: PaymentMethod;
+          target_coupon?: string | null;
+          target_pix_payload?: string | null;
+          target_provider_id?: string | null;
+        };
+        Returns: Database['public']['Tables']['payment_orders']['Row'];
+      };
+      settle_payment_order: {
+        Args: {
+          target_order_id: string;
+          target_reference?: string | null;
+        };
+        Returns: Database['public']['Tables']['payment_orders']['Row'];
+      };
+      upsert_my_payout_account: {
+        Args: {
+          target_provider: string;
+          target_label: string;
+          target_pix_key: string;
+        };
+        Returns: Database['public']['Tables']['payout_accounts']['Row'];
       };
     };
     Enums: {

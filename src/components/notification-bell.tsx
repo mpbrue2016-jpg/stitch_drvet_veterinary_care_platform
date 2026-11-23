@@ -159,18 +159,11 @@ export function NotificationBell() {
           {schemaMissing ? (
             <div className="p-4 text-xs text-amber-900">
               <p className="font-semibold">
-                Migration 12 (Push &amp; Alertas) pendente no Supabase.
+                Estrutura de Push &amp; Alertas ainda não inicializada no Supabase.
               </p>
               <p className="mt-1 text-slate-600">
-                Execute o script SQL em /setup-supabase para habilitar a persistência de alertas.
+                As tabelas de notificações ainda não estão disponíveis no banco remoto.
               </p>
-              <Link
-                className="mt-2 inline-flex font-bold text-[#0B68C2] hover:underline"
-                href="/setup-supabase"
-                onClick={() => setOpen(false)}
-              >
-                Abrir Setup Supabase →
-              </Link>
             </div>
           ) : notifications.length === 0 ? (
             <div className="px-4 py-8 text-center">

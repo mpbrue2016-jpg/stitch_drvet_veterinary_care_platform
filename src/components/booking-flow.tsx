@@ -9,6 +9,7 @@ import { createBookingSchema, createPetSchema } from '@/lib/validations';
 import { criarAgendamento } from '@/services/appointments.service';
 import { listarDisponibilidade } from '@/services/availability.service';
 import { listarVeterinariosAprovados } from '@/services/organizations.service';
+import { buscarAtribuicaoAtiva } from '@/services/partners.service';
 import { criarPet, listarPets } from '@/services/pets.service';
 import {
   gerarCaminhoSeguroStorage,
@@ -22,6 +23,11 @@ import type {
   Pet,
   VeterinarianProfile,
 } from '@/types/entities';
+
+const brl = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
 
 type BookingResult = {
   id: string;
@@ -145,11 +151,13 @@ export function BookingFlow() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [petResult, availabilityResult, vetsResult] = await Promise.all([
-        listarPets(),
-        listarDisponibilidade(),
-        listarVeterinariosAprovados().catch(() => ({ professionals: [] })),
-      ]);
+      const [petResult, availabilityResult, vetsResult, attributionResult] =
+        await Promise.all([
+          listarPets(),
+          listarDisponibilidade(),
+          listarVeterinariosAprovados().catch(() => ({ professionals: [] })),
+          buscarAtribuicaoAtiva().catch(() => ({ attribution: null })),
+        ]);
 
       const loadedPets = petResult.pets;
       const loadedAvailability = availabilityResult.availability;
@@ -160,6 +168,10 @@ export function BookingFlow() {
         typeof window !== 'undefined'
           ? new URLSearchParams(window.location.search)
           : null;
+      const cupomFromUrl = urlParams?.get('cupom')?.trim().toUpperCase() ?? '';
+      if (!cupomFromUrl && attributionResult.attribution?.coupon_code) {
+        setCouponCode((curr) => curr || attributionResult.attribution!.coupon_code);
+      }
       const spParam = urlParams?.get('species') ?? null;
       const vetParam = urlParams?.get('vet')?.trim() ?? '';
       const speciesToken =
@@ -457,9 +469,25 @@ export function BookingFlow() {
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#dff0ff] px-3 py-1 text-xs font-semibold text-[#006b57]">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[#13a88a]" />
-            Online
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+              activeVeterinarian?.is_online_now || filteredAvailability.length > 0
+                ? 'bg-[#dff0ff] text-[#006b57]'
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                activeVeterinarian?.is_online_now || filteredAvailability.length > 0
+                  ? 'animate-pulse bg-[#13a88a]'
+                  : 'bg-slate-400'
+              }`}
+            />
+            {activeVeterinarian?.is_online_now
+              ? 'Online agora'
+              : filteredAvailability.length > 0
+                ? `${filteredAvailability.length} horário(s) publicado(s)`
+                : 'Sem horários publicados'}
           </span>
         </div>
 
@@ -781,9 +809,13 @@ export function BookingFlow() {
             </span>
           </div>
           <p className="text-sm leading-6 text-slate-600">
-            Valor base de referência R$ 180,00 com aplicação automática de descontos do
-            Clube DrVet ou cupom de parceiro em Pagamentos. Nenhuma cobrança é feita ao
-            enviar a solicitação.
+            Honorário da consulta:{' '}
+            <strong className="text-[#153b50]">
+              {brl.format(
+                (activeVeterinarian?.consultation_fee_cents ?? 18000) / 100,
+              )}
+            </strong>{' '}
+            com aplicação automática de descontos do Clube DrVet ou cupom de parceiro em Pagamentos. Nenhuma cobrança é feita ao enviar a solicitação.
           </p>
         </div>
 

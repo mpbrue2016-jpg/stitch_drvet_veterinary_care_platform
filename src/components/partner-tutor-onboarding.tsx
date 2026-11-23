@@ -11,8 +11,12 @@ import {
   cadastrarUsuario,
   entrarComEmailSenha,
 } from '@/services/auth.service';
+import {
+  buscarAtribuicaoAtiva,
+  registrarAtribuicaoParceiro,
+} from '@/services/partners.service';
 import { criarPet, listarPets } from '@/services/pets.service';
-import type { Pet, UserProfile } from '@/types/entities';
+import type { PartnerAttribution, Pet, UserProfile } from '@/types/entities';
 
 type Step = 'account' | 'pet' | 'success';
 
@@ -35,6 +39,7 @@ export function PartnerTutorOnboarding() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [existingPets, setExistingPets] = useState<Pet[]>([]);
   const [createdPet, setCreatedPet] = useState<Pet | null>(null);
+  const [attribution, setAttribution] = useState<PartnerAttribution | null>(null);
 
   const [loading, setLoading] = useState(configured);
   const [submitting, setSubmitting] = useState(false);
@@ -60,6 +65,27 @@ export function PartnerTutorOnboarding() {
       const current = await buscarPerfilAtual();
       setProfile(current);
       if (current) {
+        const urlCupom =
+          typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search).get('cupom')?.trim().toUpperCase()
+            : '';
+
+        if (urlCupom) {
+          try {
+            const { attribution: saved } = await registrarAtribuicaoParceiro(urlCupom);
+            setAttribution(saved);
+            setCouponCode(saved.coupon_code);
+          } catch {
+            // Non-blocking fallback when partner coupon isn't seeded or migration not applied yet
+          }
+        } else {
+          const activeAttr = await buscarAtribuicaoAtiva().catch(() => ({ attribution: null }));
+          if (activeAttr.attribution) {
+            setAttribution(activeAttr.attribution);
+            setCouponCode(activeAttr.attribution.coupon_code);
+          }
+        }
+
         const { pets } = await listarPets();
         setExistingPets(pets);
         setStep('pet');
@@ -139,6 +165,14 @@ export function PartnerTutorOnboarding() {
 
     setSubmitting(true);
     try {
+      if (!attribution && couponCode) {
+        try {
+          const { attribution: saved } = await registrarAtribuicaoParceiro(couponCode);
+          setAttribution(saved);
+        } catch {
+          // Allow onboarding completion even if coupon isn't registered in partner_listings
+        }
+      }
       const { pet } = await criarPet(parsed.data);
       setCreatedPet(pet);
       setExistingPets((current) => [pet, ...current]);
@@ -173,7 +207,9 @@ export function PartnerTutorOnboarding() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-gradient-to-r from-[#10344A] to-[#153B50] p-5 text-white shadow-card">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
-            Atendimento Parceiro Verificado
+            {attribution
+              ? `Cupom vinculado (${attribution.discount_percent}% OFF)`
+              : 'Atendimento Parceiro Verificado'}
           </span>
           <h2 className="mt-2 text-lg font-extrabold sm:text-xl">{partnerName}</h2>
           <p className="mt-1 text-xs text-slate-300">
@@ -182,7 +218,7 @@ export function PartnerTutorOnboarding() {
         </div>
         <div className="rounded-xl border border-emerald-400/40 bg-white/10 px-4 py-2.5 text-center">
           <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-            Cupom QR Ativo
+            {attribution ? 'Cupom Salvo na Conta' : 'Cupom QR Ativo'}
           </p>
           <p className="mt-0.5 text-xl font-extrabold tracking-widest text-white">
             {couponCode}

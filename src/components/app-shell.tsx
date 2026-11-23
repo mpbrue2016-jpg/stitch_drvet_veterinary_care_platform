@@ -80,13 +80,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isPublicRoute =
     isPublicHome ||
     pathname === '/cadastro' ||
-    pathname === '/apresentacao' ||
-    pathname === '/setup-supabase';
+    pathname === '/apresentacao';
   const isAuthPage = pathname === '/login' || pathname === '/senha/nova';
   const pageTitle =
-    pathname === '/setup-supabase'
-      ? 'Conexão Supabase & 12 Migrations SQL'
-      : navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
+    navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
 
   useEffect(() => {
     if (!isSupabaseConfigured() || isPublicRoute || isAuthPage) return;
@@ -184,12 +181,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ? 'Conecte uma conta autorizada para acessar os dados clínicos.'
                 : 'Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY em .env.local.'}
             </p>
-            <Link
-              className="mt-2 inline-flex font-bold text-[#0B68C2] hover:underline"
-              href="/setup-supabase"
-            >
-              Schema &amp; 12 Migrations SQL →
-            </Link>
           </div>
         </aside>
       )}

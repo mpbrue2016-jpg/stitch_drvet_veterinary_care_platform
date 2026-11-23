@@ -20,10 +20,6 @@ export default function LoginPage() {
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [needsSetup, setNeedsSetup] = useState(false);
-  const [schemaNotice, setSchemaNotice] = useState<{
-    located: number;
-    total: number;
-  } | null>(null);
   const [nextPath, setNextPath] = useState('/agendamento');
 
   useEffect(() => {
@@ -41,28 +37,6 @@ export default function LoginPage() {
       setErrorMessage(
         'Não foi possível confirmar o acesso. Solicite um novo link de confirmação.',
       );
-    }
-
-    if (configured) {
-      void fetch('/api/supabase/schema-status', { cache: 'no-store' })
-        .then((res) => (res.ok ? res.json() : null))
-        .then(
-          (
-            data: {
-              schemaReady?: boolean;
-              locatedTablesCount?: number;
-              totalTables?: number;
-            } | null,
-          ) => {
-            if (data && data.schemaReady === false) {
-              setSchemaNotice({
-                located: data.locatedTablesCount ?? 0,
-                total: data.totalTables ?? 22,
-              });
-            }
-          },
-        )
-        .catch(() => {});
     }
   }, []);
 
@@ -184,23 +158,6 @@ export default function LoginPage() {
               Apresentação
             </Link>
             .
-          </div>
-        )}
-
-        {!needsSetup && schemaNotice && (
-          <div className="mt-5 rounded-xl border border-sky-200 bg-[#f0f8fb] p-3 text-sm text-[#153b50]">
-            <p className="font-bold">
-              Supabase Auth conectado · {schemaNotice.located}/{schemaNotice.total} tabelas localizadas
-            </p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              Para liberar perfis, prontuários, agendamentos e pagamentos, execute as 11 migrations SQL no seu projeto Supabase.
-            </p>
-            <Link
-              className="mt-2 inline-block text-xs font-bold text-[#087a68] underline"
-              href="/setup-supabase"
-            >
-              Localizar tabelas e copiar script das 11 migrations →
-            </Link>
           </div>
         )}
 
