@@ -1460,4 +1460,127 @@ $$;
 revoke all on function public.upsert_my_payout_account(text, text, text) from public, anon;
 grant execute on function public.upsert_my_payout_account(text, text, text) to authenticated;
 
+-- ============================================================================
+-- 11. PERMISSÕES EXPLÍCITAS DE TABELAS E FUNÇÕES (GRANTS + RLS)
+-- ============================================================================
+
+grant select on table public.pets to authenticated;
+grant select on table public.subscription_plans, public.partner_listings to anon, authenticated;
+grant insert, update, delete on table
+  public.organizations,
+  public.organization_memberships,
+  public.veterinarian_profiles,
+  public.commission_ledger,
+  public.anticipation_requests
+  to authenticated;
+
+grant execute on function public.settle_payment_order(uuid, text) to authenticated, service_role;
+
+-- ============================================================================
+-- 12. BACKFILL DE PERFIS PARA USUÁRIOS JÁ EXISTENTES EM auth.users
+-- ============================================================================
+
+insert into public.profiles (id, display_name, email, role)
+select
+  u.id,
+  left(coalesce(nullif(btrim(u.raw_user_meta_data ->> 'display_name'), ''), ''), 120),
+  u.email,
+  case
+    when u.email = 'admin@drvet.local' then 'admin'::public.user_role
+    when u.email in ('camila.vet@drvet.local', 'rafael.vet@drvet.local') then 'veterinarian'::public.user_role
+    else 'tutor'::public.user_role
+  end
+from auth.users u
+on conflict (id) do update
+set email = coalesce(excluded.email, public.profiles.email),
+    display_name = case
+      when public.profiles.display_name = '' then excluded.display_name
+      else public.profiles.display_name
+    end,
+    role = case
+      when excluded.email = 'admin@drvet.local' then 'admin'::public.user_role
+      else public.profiles.role
+    end;
+
+-- ============================================================================
+-- 13. SUPORTE ADMINISTRATIVO EM transition_appointment
+-- ============================================================================
+
+create or replace function public.transition_appointment(
+  target_appointment uuid,
+  next_status public.appointment_status
+)
+returns public.appointments
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  current_appointment public.appointments;
+  is_assigned_veterinarian boolean;
+  is_authorized_owner boolean;
+  is_global_admin boolean := public.is_admin();
+begin
+  select appointment.*
+  into current_appointment
+  from public.appointments appointment
+  where appointment.id = target_appointment
+  for update;
+
+  if not found then
+    raise exception 'Appointment not found' using errcode = 'P0002';
+  end if;
+
+  is_assigned_veterinarian :=
+    current_appointment.veterinarian_id = auth.uid()
+    and public.is_approved_veterinarian(
+      current_appointment.organization_id,
+      auth.uid()
+    );
+  is_authorized_owner :=
+    is_global_admin
+    or current_appointment.tutor_id = auth.uid()
+    or public.has_organization_role(
+      current_appointment.organization_id,
+      array['owner', 'admin']::public.organization_role[]
+    );
+
+  if next_status = 'cancelled' then
+    if not (is_authorized_owner or is_assigned_veterinarian) then
+      raise exception 'Not authorized to cancel this appointment'
+        using errcode = '42501';
+    end if;
+    if current_appointment.status not in ('pending', 'confirmed')
+       or (current_appointment.starts_at <= now() and not is_global_admin) then
+      raise exception 'Appointment can no longer be cancelled'
+        using errcode = '22023';
+    end if;
+  elsif next_status = 'confirmed' then
+    if (not is_assigned_veterinarian and not is_global_admin)
+       or current_appointment.status <> 'pending'
+       or current_appointment.starts_at <= now() then
+      raise exception 'Appointment cannot be confirmed'
+        using errcode = '42501';
+    end if;
+  elsif next_status = 'completed' then
+    if (not is_assigned_veterinarian and not is_global_admin)
+       or current_appointment.status <> 'confirmed'
+       or (current_appointment.ends_at > now() and not is_global_admin) then
+      raise exception 'Appointment cannot be completed'
+        using errcode = '42501';
+    end if;
+  else
+    raise exception 'Unsupported appointment status transition'
+      using errcode = '22023';
+  end if;
+
+  update public.appointments
+  set status = next_status
+  where id = target_appointment
+  returning * into current_appointment;
+
+  return current_appointment;
+end;
+$$;
+
 notify pgrst, 'reload schema';

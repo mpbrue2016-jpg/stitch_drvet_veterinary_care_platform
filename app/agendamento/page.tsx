@@ -36,7 +36,9 @@ export default function Agendamento({
         >
           {denied === 'admin'
             ? 'Acesso restrito a administradores master da plataforma.'
-            : 'Acesso restrito a perfis profissionais (veterinário, parceiro ou equipe credenciada).'}
+            : denied === 'schema'
+              ? 'As tabelas do banco de dados Supabase ainda não foram inicializadas.'
+              : 'Acesso restrito a perfis profissionais (veterinário, parceiro ou equipe credenciada).'}
         </div>
       )}
       <AppointmentsList />

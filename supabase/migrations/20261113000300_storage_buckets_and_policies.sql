@@ -34,6 +34,7 @@ set public = excluded.public,
 --   clinical-attachments: <pet_id>/<appointment_id>/<arquivo>
 
 -- Policy: tutores donos do pet, veterinários que atendem o pet e administradores globais podem visualizar arquivos clínicos, laudos e avatares autorizados.
+drop policy if exists "Authorized users can read DrVet storage objects" on storage.objects;
 create policy "Authorized users can read DrVet storage objects"
   on storage.objects for select to authenticated
   using (
@@ -62,6 +63,7 @@ create policy "Authorized users can read DrVet storage objects"
   );
 
 -- Policy: tutores podem enviar avatares de seus pets; veterinários aprovados (e tutores em exames) podem enviar arquivos nos respectivos atendimentos/pets.
+drop policy if exists "Authorized users can upload DrVet storage objects" on storage.objects;
 create policy "Authorized users can upload DrVet storage objects"
   on storage.objects for insert to authenticated
   with check (
@@ -97,6 +99,7 @@ create policy "Authorized users can upload DrVet storage objects"
   );
 
 -- Policy: apenas quem enviou o arquivo (owner), o tutor dono do avatar ou o administrador global pode remover objetos do Storage.
+drop policy if exists "Owners and admins can delete DrVet storage objects" on storage.objects;
 create policy "Owners and admins can delete DrVet storage objects"
   on storage.objects for delete to authenticated
   using (

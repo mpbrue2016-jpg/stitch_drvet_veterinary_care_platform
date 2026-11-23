@@ -68,6 +68,7 @@ create trigger set_teleconsultation_sessions_updated_at
 alter table public.teleconsultation_sessions enable row level security;
 
 -- Policy: tutor participante, veterinário designado, membro da clínica e admin podem visualizar a sessão de teleconsulta.
+drop policy if exists "Participants and org members can view teleconsultation sessions" on public.teleconsultation_sessions;
 create policy "Participants and org members can view teleconsultation sessions"
   on public.teleconsultation_sessions for select to authenticated
   using (
@@ -83,6 +84,7 @@ create policy "Participants and org members can view teleconsultation sessions"
   );
 
 -- Policy: apenas o veterinário designado (ou admin) pode atualizar estado, consentimento de gravação e anotações da sala.
+drop policy if exists "Assigned veterinarian or admin can update teleconsultation session" on public.teleconsultation_sessions;
 create policy "Assigned veterinarian or admin can update teleconsultation session"
   on public.teleconsultation_sessions for update to authenticated
   using (public.is_admin() or veterinarian_id = (select auth.uid()))
@@ -110,6 +112,7 @@ create trigger set_teleconsultation_messages_updated_at
 alter table public.teleconsultation_messages enable row level security;
 
 -- Policy: somente participantes da sessão (tutor, veterinário) e admin podem ler mensagens da sala.
+drop policy if exists "Session participants can view teleconsultation messages" on public.teleconsultation_messages;
 create policy "Session participants can view teleconsultation messages"
   on public.teleconsultation_messages for select to authenticated
   using (
@@ -122,6 +125,7 @@ create policy "Session participants can view teleconsultation messages"
   );
 
 -- Policy: somente o tutor ou o veterinário da sessão podem enviar mensagens identificadas pelo próprio user_id.
+drop policy if exists "Session participants can send teleconsultation messages" on public.teleconsultation_messages;
 create policy "Session participants can send teleconsultation messages"
   on public.teleconsultation_messages for insert to authenticated
   with check (
@@ -234,11 +238,13 @@ create trigger set_subscription_plans_updated_at
 alter table public.subscription_plans enable row level security;
 
 -- Policy: qualquer usuário autenticado pode visualizar planos ativos do Clube DrVet; admins gerenciam todos os planos.
+drop policy if exists "Authenticated users can view active subscription plans" on public.subscription_plans;
 create policy "Authenticated users can view active subscription plans"
   on public.subscription_plans for select to authenticated
   using (active = true or public.is_admin());
 
 -- Policy: apenas administradores globais podem criar, editar ou desativar planos do Clube DrVet.
+drop policy if exists "Admins manage subscription plans" on public.subscription_plans;
 create policy "Admins manage subscription plans"
   on public.subscription_plans for all to authenticated
   using (public.is_admin())
@@ -272,10 +278,12 @@ create trigger set_pet_subscriptions_updated_at
 alter table public.pet_subscriptions enable row level security;
 
 -- Policy: tutores visualizam e atualizam (pausar/cancelar) apenas assinaturas dos próprios pets; admin visualiza tudo.
+drop policy if exists "Owners and admins can view pet subscriptions" on public.pet_subscriptions;
 create policy "Owners and admins can view pet subscriptions"
   on public.pet_subscriptions for select to authenticated
   using (public.is_admin() or owner_id = (select auth.uid()));
 
+drop policy if exists "Owners and admins can update pet subscriptions" on public.pet_subscriptions;
 create policy "Owners and admins can update pet subscriptions"
   on public.pet_subscriptions for update to authenticated
   using (public.is_admin() or owner_id = (select auth.uid()))
@@ -315,6 +323,7 @@ create trigger set_payment_orders_updated_at
 alter table public.payment_orders enable row level security;
 
 -- Policy: cada usuário visualiza apenas os próprios comprovantes/pedidos de pagamento; org owners/admins e admin global podem auditar.
+drop policy if exists "Users and authorized admins can view payment orders" on public.payment_orders;
 create policy "Users and authorized admins can view payment orders"
   on public.payment_orders for select to authenticated
   using (
@@ -463,6 +472,7 @@ create trigger set_partner_listings_updated_at
 alter table public.partner_listings enable row level security;
 
 -- Policy: usuários autenticados visualizam parceiros ativos e cupons; membros da organização e admin gerenciam os cadastros da própria organização.
+drop policy if exists "Authenticated users can view active partner listings" on public.partner_listings;
 create policy "Authenticated users can view active partner listings"
   on public.partner_listings for select to authenticated
   using (
@@ -475,6 +485,7 @@ create policy "Authenticated users can view active partner listings"
     )
   );
 
+drop policy if exists "Org owners and admins manage partner listings" on public.partner_listings;
 create policy "Org owners and admins manage partner listings"
   on public.partner_listings for all to authenticated
   using (
@@ -523,6 +534,7 @@ create trigger set_ad_campaigns_updated_at
 alter table public.ad_campaigns enable row level security;
 
 -- Policy: membros da organização e administradores gerenciam as campanhas DrVet Ads da própria empresa.
+drop policy if exists "Org members and admins view ad campaigns" on public.ad_campaigns;
 create policy "Org members and admins view ad campaigns"
   on public.ad_campaigns for select to authenticated
   using (
@@ -534,6 +546,7 @@ create policy "Org members and admins view ad campaigns"
     )
   );
 
+drop policy if exists "Org owners and admins manage ad campaigns" on public.ad_campaigns;
 create policy "Org owners and admins manage ad campaigns"
   on public.ad_campaigns for all to authenticated
   using (

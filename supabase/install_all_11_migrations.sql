@@ -1,12 +1,10 @@
 -- ============================================================================
--- DrVet / DrVets — Instalador Consolidado e Idempotente (13 Migrations SQL)
--- Gerado a partir de supabase/migrations/ (ordem cronológica exata 01 -> 13)
--- Seguro para executar no Supabase SQL Editor (pode ser reexecutado sem erros).
+-- DRVET — INSTALACAO COMPLETA CONSOLIDADA (13 MIGRATIONS)
 -- ============================================================================
 
--- ----------------------------------------------------------------------------
--- MIGRATION 01/11: 20261112210000_initial_drvet_backend.sql
--- ----------------------------------------------------------------------------
+-- ============================================================================
+-- MIGRATION: 20261112210000_initial_drvet_backend.sql
+-- ============================================================================
 
 create schema if not exists extensions;
 
@@ -14,69 +12,33 @@ set search_path = public, extensions;
 
 create extension if not exists btree_gist with schema extensions;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'organization_role'
-  ) then
-    create type public.organization_role as enum (
+create type public.organization_role as enum (
   'owner',
   'admin',
   'veterinarian',
   'staff',
   'billing'
 );
-  end if;
-end
-$$;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'professional_status'
-  ) then
-    create type public.professional_status as enum (
+create type public.professional_status as enum (
   'pending',
   'approved',
   'suspended'
 );
-  end if;
-end
-$$;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'appointment_kind'
-  ) then
-    create type public.appointment_kind as enum (
+create type public.appointment_kind as enum (
   'teleconsultation',
   'in_person'
 );
-  end if;
-end
-$$;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'appointment_status'
-  ) then
-    create type public.appointment_status as enum (
+create type public.appointment_status as enum (
   'pending',
   'confirmed',
   'cancelled',
   'completed'
 );
-  end if;
-end
-$$;
 
-create table if not exists public.profiles (
+create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   display_name text not null default '' check (char_length(display_name) <= 120),
   phone text check (phone is null or char_length(phone) <= 32),
@@ -84,14 +46,14 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.organizations (
+create table public.organizations (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 2 and 120),
   created_by uuid not null references public.profiles (id) on delete restrict,
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.organization_memberships (
+create table public.organization_memberships (
   organization_id uuid not null references public.organizations (id) on delete cascade,
   user_id uuid not null references public.profiles (id) on delete cascade,
   role public.organization_role not null,
@@ -99,7 +61,7 @@ create table if not exists public.organization_memberships (
   primary key (organization_id, user_id)
 );
 
-create table if not exists public.veterinarian_profiles (
+create table public.veterinarian_profiles (
   user_id uuid not null references public.profiles (id) on delete cascade,
   organization_id uuid not null references public.organizations (id) on delete cascade,
   registration_number text not null,
@@ -111,7 +73,7 @@ create table if not exists public.veterinarian_profiles (
   unique (registration_region, registration_number)
 );
 
-create table if not exists public.pets (
+create table public.pets (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references public.profiles (id) on delete restrict,
   name text not null check (char_length(name) between 1 and 100),
@@ -124,7 +86,7 @@ create table if not exists public.pets (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.professional_availability (
+create table public.professional_availability (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null,
   veterinarian_id uuid not null,
@@ -142,7 +104,7 @@ create table if not exists public.professional_availability (
   ) where (is_available)
 );
 
-create table if not exists public.appointments (
+create table public.appointments (
   id uuid primary key default gen_random_uuid(),
   availability_id uuid not null
     references public.professional_availability (id) on delete restrict,
@@ -167,18 +129,18 @@ create table if not exists public.appointments (
   ) where (status in ('pending', 'confirmed'))
 );
 
-create index if not exists pets_owner_id_idx on public.pets (owner_id);
-create index if not exists appointments_tutor_starts_idx
+create index pets_owner_id_idx on public.pets (owner_id);
+create index appointments_tutor_starts_idx
   on public.appointments (tutor_id, starts_at desc);
-create index if not exists appointments_veterinarian_starts_idx
+create index appointments_veterinarian_starts_idx
   on public.appointments (veterinarian_id, starts_at);
-create index if not exists appointments_organization_starts_idx
+create index appointments_organization_starts_idx
   on public.appointments (organization_id, starts_at);
-create index if not exists availability_start_idx
+create index availability_start_idx
   on public.professional_availability (starts_at)
   where (is_available);
 
-create or replace function public.validate_availability_change()
+create function public.validate_availability_change()
 returns trigger
 language plpgsql
 security definer
@@ -207,12 +169,12 @@ begin
 end;
 $$;
 
-drop trigger if exists professional_availability_validate on public.professional_availability;
-create trigger professional_availability_validate before insert or update of starts_at, ends_at, is_available
+create trigger professional_availability_validate
+  before insert or update of starts_at, ends_at, is_available
   on public.professional_availability
   for each row execute function public.validate_availability_change();
 
-create or replace function public.validate_appointment_insert()
+create function public.validate_appointment_insert()
 returns trigger
 language plpgsql
 security definer
@@ -244,11 +206,11 @@ begin
 end;
 $$;
 
-drop trigger if exists appointments_validate_insert on public.appointments;
-create trigger appointments_validate_insert before insert on public.appointments
+create trigger appointments_validate_insert
+  before insert on public.appointments
   for each row execute function public.validate_appointment_insert();
 
-create or replace function public.set_updated_at()
+create function public.set_updated_at()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -259,19 +221,19 @@ begin
 end;
 $$;
 
-drop trigger if exists profiles_set_updated_at on public.profiles;
-create trigger profiles_set_updated_at before update on public.profiles
+create trigger profiles_set_updated_at
+  before update on public.profiles
   for each row execute function public.set_updated_at();
 
-drop trigger if exists pets_set_updated_at on public.pets;
-create trigger pets_set_updated_at before update on public.pets
+create trigger pets_set_updated_at
+  before update on public.pets
   for each row execute function public.set_updated_at();
 
-drop trigger if exists appointments_set_updated_at on public.appointments;
-create trigger appointments_set_updated_at before update on public.appointments
+create trigger appointments_set_updated_at
+  before update on public.appointments
   for each row execute function public.set_updated_at();
 
-create or replace function public.sync_appointment_availability()
+create function public.sync_appointment_availability()
 returns trigger
 language plpgsql
 security definer
@@ -297,11 +259,11 @@ begin
 end;
 $$;
 
-drop trigger if exists appointments_sync_availability on public.appointments;
-create trigger appointments_sync_availability after insert or update of status on public.appointments
+create trigger appointments_sync_availability
+  after insert or update of status on public.appointments
   for each row execute function public.sync_appointment_availability();
 
-create or replace function public.handle_new_user()
+create function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
@@ -317,11 +279,11 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created after insert on auth.users
+create trigger on_auth_user_created
+  after insert on auth.users
   for each row execute function public.handle_new_user();
 
-create or replace function public.has_organization_role(
+create function public.has_organization_role(
   target_organization uuid,
   allowed_roles public.organization_role[]
 )
@@ -340,7 +302,7 @@ as $$
   );
 $$;
 
-create or replace function public.is_approved_veterinarian(
+create function public.is_approved_veterinarian(
   target_organization uuid,
   target_user uuid
 )
@@ -363,7 +325,7 @@ as $$
   );
 $$;
 
-create or replace function public.owns_pet(target_pet uuid)
+create function public.owns_pet(target_pet uuid)
 returns boolean
 language sql
 stable
@@ -378,7 +340,7 @@ as $$
   );
 $$;
 
-create or replace function public.can_access_pet_as_professional(target_pet uuid)
+create function public.can_access_pet_as_professional(target_pet uuid)
 returns boolean
 language sql
 stable
@@ -394,7 +356,7 @@ as $$
   );
 $$;
 
-create or replace function public.create_organization(organization_name text)
+create function public.create_organization(organization_name text)
 returns uuid
 language plpgsql
 security definer
@@ -423,7 +385,7 @@ begin
 end;
 $$;
 
-create or replace function public.add_veterinarian(
+create function public.add_veterinarian(
   target_organization uuid,
   target_user uuid,
   target_registration_number text,
@@ -476,7 +438,7 @@ begin
 end;
 $$;
 
-create or replace function public.approve_veterinarian(
+create function public.approve_veterinarian(
   target_organization uuid,
   target_user uuid
 )
@@ -508,7 +470,7 @@ begin
 end;
 $$;
 
-create or replace function public.transition_appointment(
+create function public.transition_appointment(
   target_appointment uuid,
   next_status public.appointment_status
 )
@@ -618,17 +580,17 @@ grant execute on function public.transition_appointment(
   public.appointment_status
 ) to authenticated;
 
-drop policy if exists "Profiles are visible to their owner" on public.profiles;
-create policy "Profiles are visible to their owner" on public.profiles for select to authenticated
+create policy "Profiles are visible to their owner"
+  on public.profiles for select to authenticated
   using (id = (select auth.uid()));
 
-drop policy if exists "Users update their own profile" on public.profiles;
-create policy "Users update their own profile" on public.profiles for update to authenticated
+create policy "Users update their own profile"
+  on public.profiles for update to authenticated
   using (id = (select auth.uid()))
   with check (id = (select auth.uid()));
 
-drop policy if exists "Organization members can read their organizations" on public.organizations;
-create policy "Organization members can read their organizations" on public.organizations for select to authenticated
+create policy "Organization members can read their organizations"
+  on public.organizations for select to authenticated
   using (
     public.has_organization_role(
       id,
@@ -637,8 +599,8 @@ create policy "Organization members can read their organizations" on public.orga
     )
   );
 
-drop policy if exists "Members can read their own membership" on public.organization_memberships;
-create policy "Members can read their own membership" on public.organization_memberships for select to authenticated
+create policy "Members can read their own membership"
+  on public.organization_memberships for select to authenticated
   using (
     user_id = (select auth.uid())
     or public.has_organization_role(
@@ -647,8 +609,8 @@ create policy "Members can read their own membership" on public.organization_mem
     )
   );
 
-drop policy if exists "Members can read their veterinarian roster" on public.veterinarian_profiles;
-create policy "Members can read their veterinarian roster" on public.veterinarian_profiles for select to authenticated
+create policy "Members can read their veterinarian roster"
+  on public.veterinarian_profiles for select to authenticated
   using (
     user_id = (select auth.uid())
     or public.has_organization_role(
@@ -658,8 +620,8 @@ create policy "Members can read their veterinarian roster" on public.veterinaria
     )
   );
 
-drop policy if exists "Organization owners can register veterinarians" on public.veterinarian_profiles;
-create policy "Organization owners can register veterinarians" on public.veterinarian_profiles for insert to authenticated
+create policy "Organization owners can register veterinarians"
+  on public.veterinarian_profiles for insert to authenticated
   with check (
     public.has_organization_role(
       organization_id,
@@ -674,8 +636,8 @@ create policy "Organization owners can register veterinarians" on public.veterin
     )
   );
 
-drop policy if exists "Organization owners can update veterinarian approval" on public.veterinarian_profiles;
-create policy "Organization owners can update veterinarian approval" on public.veterinarian_profiles for update to authenticated
+create policy "Organization owners can update veterinarian approval"
+  on public.veterinarian_profiles for update to authenticated
   using (
     public.has_organization_role(
       organization_id,
@@ -689,17 +651,17 @@ create policy "Organization owners can update veterinarian approval" on public.v
     )
   );
 
-drop policy if exists "Pet owners can manage their pets" on public.pets;
-create policy "Pet owners can manage their pets" on public.pets for all to authenticated
+create policy "Pet owners can manage their pets"
+  on public.pets for all to authenticated
   using (owner_id = (select auth.uid()))
   with check (owner_id = (select auth.uid()));
 
-drop policy if exists "Assigned veterinarians can read patient pets" on public.pets;
-create policy "Assigned veterinarians can read patient pets" on public.pets for select to authenticated
+create policy "Assigned veterinarians can read patient pets"
+  on public.pets for select to authenticated
   using (public.can_access_pet_as_professional(id));
 
-drop policy if exists "Authenticated users can view open availability" on public.professional_availability;
-create policy "Authenticated users can view open availability" on public.professional_availability for select to authenticated
+create policy "Authenticated users can view open availability"
+  on public.professional_availability for select to authenticated
   using (
     (is_available and starts_at > now())
     or veterinarian_id = (select auth.uid())
@@ -709,8 +671,8 @@ create policy "Authenticated users can view open availability" on public.profess
     )
   );
 
-drop policy if exists "Approved veterinarians manage their availability" on public.professional_availability;
-create policy "Approved veterinarians manage their availability" on public.professional_availability for all to authenticated
+create policy "Approved veterinarians manage their availability"
+  on public.professional_availability for all to authenticated
   using (
     veterinarian_id = (select auth.uid())
     and public.is_approved_veterinarian(organization_id, (select auth.uid()))
@@ -721,8 +683,8 @@ create policy "Approved veterinarians manage their availability" on public.profe
     and (not is_available or starts_at > now())
   );
 
-drop policy if exists "Owners and assigned care team can read appointments" on public.appointments;
-create policy "Owners and assigned care team can read appointments" on public.appointments for select to authenticated
+create policy "Owners and assigned care team can read appointments"
+  on public.appointments for select to authenticated
   using (
     tutor_id = (select auth.uid())
     or (
@@ -738,8 +700,8 @@ create policy "Owners and assigned care team can read appointments" on public.ap
     )
   );
 
-drop policy if exists "Pet owners can request appointments in open slots" on public.appointments;
-create policy "Pet owners can request appointments in open slots" on public.appointments for insert to authenticated
+create policy "Pet owners can request appointments in open slots"
+  on public.appointments for insert to authenticated
   with check (
     tutor_id = (select auth.uid())
     and public.owns_pet(pet_id)
@@ -802,23 +764,15 @@ grant execute on function public.can_access_pet_as_professional(uuid)
 comment on schema public is
   'DrVet initial schema for identity, organizations, pets and appointments. Review before applying to any existing project.';
 
--- ----------------------------------------------------------------------------
--- MIGRATION 02/11: 20261112213000_clinical_records.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261112213000_clinical_records.sql
+-- ============================================================================
 
 -- Finalized SOAP records are immutable; edits remain drafts until finalized.
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'clinical_record_status'
-  ) then
-    create type public.clinical_record_status as enum ('draft', 'finalized');
-  end if;
-end
-$$;
+create type public.clinical_record_status as enum ('draft', 'finalized');
 
-create table if not exists public.clinical_records (
+create table public.clinical_records (
   id uuid primary key default gen_random_uuid(),
   appointment_id uuid not null unique
     references public.appointments (id) on delete restrict,
@@ -841,13 +795,13 @@ create table if not exists public.clinical_records (
   )
 );
 
-create index if not exists clinical_records_pet_created_idx
+create index clinical_records_pet_created_idx
   on public.clinical_records (pet_id, created_at desc);
-create index if not exists clinical_records_organization_created_idx
+create index clinical_records_organization_created_idx
   on public.clinical_records (organization_id, created_at desc);
 
-drop trigger if exists clinical_records_set_updated_at on public.clinical_records;
-create trigger clinical_records_set_updated_at before update on public.clinical_records
+create trigger clinical_records_set_updated_at
+  before update on public.clinical_records
   for each row execute function public.set_updated_at();
 
 alter table public.clinical_records enable row level security;
@@ -856,8 +810,8 @@ revoke all on table public.clinical_records from anon, authenticated;
 grant usage on type public.clinical_record_status to authenticated;
 grant select on public.clinical_records to authenticated;
 
-drop policy if exists "Care team and tutors can read authorized clinical records" on public.clinical_records;
-create policy "Care team and tutors can read authorized clinical records" on public.clinical_records for select to authenticated
+create policy "Care team and tutors can read authorized clinical records"
+  on public.clinical_records for select to authenticated
   using (
     (
       veterinarian_id = (select auth.uid())
@@ -878,7 +832,7 @@ create policy "Care team and tutors can read authorized clinical records" on pub
     )
   );
 
-create or replace function public.save_clinical_record(
+create function public.save_clinical_record(
   target_appointment uuid,
   target_subjective text,
   target_objective text,
@@ -1009,11 +963,12 @@ grant execute on function public.save_clinical_record(
   public.clinical_record_status
 ) to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 03/11: 20261112214000_vaccination_records.sql
--- ----------------------------------------------------------------------------
 
-create table if not exists public.vaccination_records (
+-- ============================================================================
+-- MIGRATION: 20261112214000_vaccination_records.sql
+-- ============================================================================
+
+create table public.vaccination_records (
   id uuid primary key default gen_random_uuid(),
   appointment_id uuid not null
     references public.appointments (id) on delete restrict,
@@ -1031,9 +986,9 @@ create table if not exists public.vaccination_records (
   check (next_due_on is null or next_due_on >= administered_on)
 );
 
-create index if not exists vaccination_records_pet_administered_idx
+create index vaccination_records_pet_administered_idx
   on public.vaccination_records (pet_id, administered_on desc);
-create index if not exists vaccination_records_appointment_idx
+create index vaccination_records_appointment_idx
   on public.vaccination_records (appointment_id);
 
 alter table public.vaccination_records enable row level security;
@@ -1041,8 +996,8 @@ alter table public.vaccination_records enable row level security;
 revoke all on table public.vaccination_records from anon, authenticated;
 grant select on public.vaccination_records to authenticated;
 
-drop policy if exists "Tutors and treating veterinarians can read vaccination records" on public.vaccination_records;
-create policy "Tutors and treating veterinarians can read vaccination records" on public.vaccination_records for select to authenticated
+create policy "Tutors and treating veterinarians can read vaccination records"
+  on public.vaccination_records for select to authenticated
   using (
     exists (
       select 1
@@ -1062,7 +1017,7 @@ create policy "Tutors and treating veterinarians can read vaccination records" o
     )
   );
 
-create or replace function public.create_vaccination_record(
+create function public.create_vaccination_record(
   target_appointment uuid,
   target_vaccine_name text,
   target_administered_on date,
@@ -1167,32 +1122,15 @@ grant execute on function public.create_vaccination_record(
   text
 ) to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 04/11: 20261112215000_exam_orders.sql
--- ----------------------------------------------------------------------------
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'exam_modality'
-  ) then
-    create type public.exam_modality as enum ('laboratory', 'imaging');
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'exam_order_status'
-  ) then
-    create type public.exam_order_status as enum ('requested', 'resulted');
-  end if;
-end
-$$;
+-- ============================================================================
+-- MIGRATION: 20261112215000_exam_orders.sql
+-- ============================================================================
 
-create table if not exists public.exam_orders (
+create type public.exam_modality as enum ('laboratory', 'imaging');
+create type public.exam_order_status as enum ('requested', 'resulted');
+
+create table public.exam_orders (
   id uuid primary key default gen_random_uuid(),
   appointment_id uuid not null
     references public.appointments (id) on delete restrict,
@@ -1218,9 +1156,9 @@ create table if not exists public.exam_orders (
   )
 );
 
-create index if not exists exam_orders_pet_requested_idx
+create index exam_orders_pet_requested_idx
   on public.exam_orders (pet_id, requested_at desc);
-create index if not exists exam_orders_appointment_idx
+create index exam_orders_appointment_idx
   on public.exam_orders (appointment_id);
 
 alter table public.exam_orders enable row level security;
@@ -1230,8 +1168,8 @@ grant usage on type public.exam_modality to authenticated;
 grant usage on type public.exam_order_status to authenticated;
 grant select on public.exam_orders to authenticated;
 
-drop policy if exists "Tutors, treating veterinarians and organization admins can read exam orders" on public.exam_orders;
-create policy "Tutors, treating veterinarians and organization admins can read exam orders" on public.exam_orders for select to authenticated
+create policy "Tutors, treating veterinarians and organization admins can read exam orders"
+  on public.exam_orders for select to authenticated
   using (
     exists (
       select 1
@@ -1255,7 +1193,7 @@ create policy "Tutors, treating veterinarians and organization admins can read e
     )
   );
 
-create or replace function public.create_exam_order(
+create function public.create_exam_order(
   target_appointment uuid,
   target_modality public.exam_modality,
   target_exam_name text,
@@ -1329,7 +1267,7 @@ begin
 end;
 $$;
 
-create or replace function public.record_exam_result(
+create function public.record_exam_result(
   target_exam_order uuid,
   target_result_summary text,
   target_laboratory_name text default null,
@@ -1418,39 +1356,24 @@ grant execute on function public.record_exam_result(
   timestamptz
 ) to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 05/11: 20261112216000_availability_blocks.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261112216000_availability_blocks.sql
+-- ============================================================================
 
 alter table public.professional_availability
-  add column if not exists is_blocked boolean not null default false,
-  add column if not exists blocked_at timestamptz,
-  add column if not exists block_reason text;
-
-do $
-begin
-  if not exists (
-    select 1 from pg_constraint where conname = 'professional_availability_block_reason_check'
-  ) then
-    alter table public.professional_availability
-      add constraint professional_availability_block_reason_check
-      check (block_reason is null or char_length(block_reason) <= 300);
-  end if;
-  if not exists (
-    select 1 from pg_constraint where conname = 'professional_availability_block_state_check'
-  ) then
-    alter table public.professional_availability
-      add constraint professional_availability_block_state_check
-      check (
-        not (is_available and is_blocked)
-        and (
-          (is_blocked and blocked_at is not null)
-          or (not is_blocked and blocked_at is null and block_reason is null)
-        )
-      );
-  end if;
-end
-$;
+  add column is_blocked boolean not null default false,
+  add column blocked_at timestamptz,
+  add column block_reason text
+    check (block_reason is null or char_length(block_reason) <= 300),
+  add constraint professional_availability_block_state_check
+    check (
+      not (is_available and is_blocked)
+      and (
+        (is_blocked and blocked_at is not null)
+        or (not is_blocked and blocked_at is null and block_reason is null)
+      )
+    );
 
 create or replace function public.validate_availability_change()
 returns trigger
@@ -1484,10 +1407,10 @@ begin
 end;
 $$;
 
-drop trigger if exists professional_availability_validate
+drop trigger professional_availability_validate
   on public.professional_availability;
-drop trigger if exists professional_availability_validate on public.professional_availability;
-create trigger professional_availability_validate before insert or update of starts_at, ends_at, is_available, is_blocked
+create trigger professional_availability_validate
+  before insert or update of starts_at, ends_at, is_available, is_blocked
   on public.professional_availability
   for each row execute function public.validate_availability_change();
 
@@ -1519,7 +1442,7 @@ begin
 end;
 $$;
 
-create or replace function public.set_availability_block(
+create function public.set_availability_block(
   target_availability uuid,
   should_block boolean,
   target_reason text default null
@@ -1608,11 +1531,12 @@ revoke all on function public.set_availability_block(uuid, boolean, text)
 grant execute on function public.set_availability_block(uuid, boolean, text)
   to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 06/11: 20261112217000_prescription_drafts.sql
--- ----------------------------------------------------------------------------
 
-create table if not exists public.prescription_drafts (
+-- ============================================================================
+-- MIGRATION: 20261112217000_prescription_drafts.sql
+-- ============================================================================
+
+create table public.prescription_drafts (
   id uuid primary key default gen_random_uuid(),
   appointment_id uuid not null unique
     references public.appointments (id) on delete restrict,
@@ -1632,7 +1556,7 @@ create table if not exists public.prescription_drafts (
   updated_at timestamptz not null default now()
 );
 
-create index if not exists prescription_drafts_veterinarian_updated_idx
+create index prescription_drafts_veterinarian_updated_idx
   on public.prescription_drafts (veterinarian_id, updated_at desc);
 
 alter table public.prescription_drafts enable row level security;
@@ -1640,8 +1564,8 @@ alter table public.prescription_drafts enable row level security;
 revoke all on table public.prescription_drafts from anon, authenticated;
 grant select on public.prescription_drafts to authenticated;
 
-drop policy if exists "Assigned veterinarians can read their prescription drafts" on public.prescription_drafts;
-create policy "Assigned veterinarians can read their prescription drafts" on public.prescription_drafts for select to authenticated
+create policy "Assigned veterinarians can read their prescription drafts"
+  on public.prescription_drafts for select to authenticated
   using (
     veterinarian_id = (select auth.uid())
     and public.is_approved_veterinarian(
@@ -1650,7 +1574,7 @@ create policy "Assigned veterinarians can read their prescription drafts" on pub
     )
   );
 
-create or replace function public.save_prescription_draft(
+create function public.save_prescription_draft(
   target_appointment uuid,
   target_items jsonb
 )
@@ -1771,9 +1695,10 @@ revoke all on function public.save_prescription_draft(uuid, jsonb)
 grant execute on function public.save_prescription_draft(uuid, jsonb)
   to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 07/11: 20261113000100_profiles_roles_and_updated_at.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000100_profiles_roles_and_updated_at.sql
+-- ============================================================================
 
 -- Fase 1: Perfis com role/email, updated_at em todas as tabelas e auditoria de RLS (incluindo perfil admin).
 
@@ -1962,8 +1887,8 @@ create trigger prescription_drafts_set_updated_at
 drop policy if exists "Organization owners can register veterinarians" on public.veterinarian_profiles;
 
 -- Policy: apenas donos/admins da mesma organização (ou admin global) podem cadastrar veterinários que já possuam vínculo 'veterinarian' naquela organização.
-drop policy if exists "Organization owners can register veterinarians" on public.veterinarian_profiles;
-create policy "Organization owners can register veterinarians" on public.veterinarian_profiles for insert to authenticated
+create policy "Organization owners can register veterinarians"
+  on public.veterinarian_profiles for insert to authenticated
   with check (
     public.is_admin()
     or (
@@ -1984,13 +1909,13 @@ create policy "Organization owners can register veterinarians" on public.veterin
 -- Policies adicionais para suporte a leitura de nomes na equipe/agendamento e acesso total do perfil admin.
 
 -- Policy: administradores globais podem consultar todos os perfis de usuário.
-drop policy if exists "Admins can read all profiles" on public.profiles;
-create policy "Admins can read all profiles" on public.profiles for select to authenticated
+create policy "Admins can read all profiles"
+  on public.profiles for select to authenticated
   using (public.is_admin());
 
 -- Policy: membros de uma organização e usuários autenticados visualizando veterinários aprovados podem ler o nome de exibição do profissional.
-drop policy if exists "Authenticated users can read approved veterinarian profiles summary" on public.profiles;
-create policy "Authenticated users can read approved veterinarian profiles summary" on public.profiles for select to authenticated
+create policy "Authenticated users can read approved veterinarian profiles summary"
+  on public.profiles for select to authenticated
   using (
     exists (
       select 1
@@ -2007,121 +1932,95 @@ create policy "Authenticated users can read approved veterinarian profiles summa
   );
 
 -- Policy: usuários autenticados podem consultar dados públicos de credenciamento de veterinários aprovados durante o agendamento.
-drop policy if exists "Authenticated users can read approved veterinarians" on public.veterinarian_profiles;
-create policy "Authenticated users can read approved veterinarians" on public.veterinarian_profiles for select to authenticated
+create policy "Authenticated users can read approved veterinarians"
+  on public.veterinarian_profiles for select to authenticated
   using (status = 'approved');
 
 -- Policy: administradores globais podem gerenciar organizações.
-drop policy if exists "Admins can manage all organizations" on public.organizations;
-create policy "Admins can manage all organizations" on public.organizations for all to authenticated
+create policy "Admins can manage all organizations"
+  on public.organizations for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: administradores globais podem consultar e gerenciar vínculos organizacionais.
-drop policy if exists "Admins can manage all memberships" on public.organization_memberships;
-create policy "Admins can manage all memberships" on public.organization_memberships for all to authenticated
+create policy "Admins can manage all memberships"
+  on public.organization_memberships for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: administradores globais podem gerenciar todos os perfis de veterinários.
-drop policy if exists "Admins can manage all veterinarian profiles" on public.veterinarian_profiles;
-create policy "Admins can manage all veterinarian profiles" on public.veterinarian_profiles for all to authenticated
+create policy "Admins can manage all veterinarian profiles"
+  on public.veterinarian_profiles for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: administradores globais podem consultar e gerenciar todos os pets.
-drop policy if exists "Admins can manage all pets" on public.pets;
-create policy "Admins can manage all pets" on public.pets for all to authenticated
+create policy "Admins can manage all pets"
+  on public.pets for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: administradores globais podem consultar e gerenciar toda a disponibilidade publicada.
-drop policy if exists "Admins can manage all availability" on public.professional_availability;
-create policy "Admins can manage all availability" on public.professional_availability for all to authenticated
+create policy "Admins can manage all availability"
+  on public.professional_availability for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: administradores globais podem consultar todos os agendamentos.
-drop policy if exists "Admins can read all appointments" on public.appointments;
-create policy "Admins can read all appointments" on public.appointments for select to authenticated
+create policy "Admins can read all appointments"
+  on public.appointments for select to authenticated
   using (public.is_admin());
 
 -- Policy: administradores globais podem consultar todos os prontuários clínicos.
-drop policy if exists "Admins can read all clinical records" on public.clinical_records;
-create policy "Admins can read all clinical records" on public.clinical_records for select to authenticated
+create policy "Admins can read all clinical records"
+  on public.clinical_records for select to authenticated
   using (public.is_admin());
 
 -- Policy: administradores globais podem consultar todos os registros de vacinação.
-drop policy if exists "Admins can read all vaccination records" on public.vaccination_records;
-create policy "Admins can read all vaccination records" on public.vaccination_records for select to authenticated
+create policy "Admins can read all vaccination records"
+  on public.vaccination_records for select to authenticated
   using (public.is_admin());
 
 -- Policy: administradores globais podem consultar todos os pedidos e resultados de exames.
-drop policy if exists "Admins can read all exam orders" on public.exam_orders;
-create policy "Admins can read all exam orders" on public.exam_orders for select to authenticated
+create policy "Admins can read all exam orders"
+  on public.exam_orders for select to authenticated
   using (public.is_admin());
 
 -- Policy: administradores globais podem consultar rascunhos de receita.
-drop policy if exists "Admins can read all prescription drafts" on public.prescription_drafts;
-create policy "Admins can read all prescription drafts" on public.prescription_drafts for select to authenticated
+create policy "Admins can read all prescription drafts"
+  on public.prescription_drafts for select to authenticated
   using (public.is_admin());
 
 grant usage on type public.user_role to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 08/11: 20261113000200_commissions_and_payouts.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000200_commissions_and_payouts.sql
+-- ============================================================================
 
 -- Fase 1: Tabelas financeiras para /comissoes (extrato de comissões, contas de repasse e solicitações de antecipação).
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'commission_origin'
-  ) then
-    create type public.commission_origin as enum (
+create type public.commission_origin as enum (
   'teleconsultation',
   'in_person',
   'pharmacy_split',
   'partner_plan'
 );
-  end if;
-end
-$$;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'commission_status'
-  ) then
-    create type public.commission_status as enum (
+create type public.commission_status as enum (
   'available',
   'pending',
   'paid'
 );
-  end if;
-end
-$$;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = 'public' and t.typname = 'anticipation_status'
-  ) then
-    create type public.anticipation_status as enum (
+create type public.anticipation_status as enum (
   'requested',
   'approved',
   'paid',
   'rejected'
 );
-  end if;
-end
-$$;
 
-create table if not exists public.payout_accounts (
+create table public.payout_accounts (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations (id) on delete cascade,
   veterinarian_id uuid not null references public.profiles (id) on delete cascade,
@@ -2134,7 +2033,7 @@ create table if not exists public.payout_accounts (
   unique (organization_id, veterinarian_id)
 );
 
-create table if not exists public.commission_ledger (
+create table public.commission_ledger (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations (id) on delete restrict,
   veterinarian_id uuid not null references public.profiles (id) on delete restrict,
@@ -2151,7 +2050,7 @@ create table if not exists public.commission_ledger (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.anticipation_requests (
+create table public.anticipation_requests (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations (id) on delete restrict,
   veterinarian_id uuid not null references public.profiles (id) on delete restrict,
@@ -2163,25 +2062,25 @@ create table if not exists public.anticipation_requests (
   updated_at timestamptz not null default now()
 );
 
-create index if not exists payout_accounts_vet_idx
+create index payout_accounts_vet_idx
   on public.payout_accounts (veterinarian_id);
-create index if not exists commission_ledger_vet_occurred_idx
+create index commission_ledger_vet_occurred_idx
   on public.commission_ledger (veterinarian_id, occurred_at desc);
-create index if not exists commission_ledger_org_status_idx
+create index commission_ledger_org_status_idx
   on public.commission_ledger (organization_id, status, origin);
-create index if not exists anticipation_requests_vet_created_idx
+create index anticipation_requests_vet_created_idx
   on public.anticipation_requests (veterinarian_id, created_at desc);
 
-drop trigger if exists payout_accounts_set_updated_at on public.payout_accounts;
-create trigger payout_accounts_set_updated_at before update on public.payout_accounts
+create trigger payout_accounts_set_updated_at
+  before update on public.payout_accounts
   for each row execute function public.set_updated_at();
 
-drop trigger if exists commission_ledger_set_updated_at on public.commission_ledger;
-create trigger commission_ledger_set_updated_at before update on public.commission_ledger
+create trigger commission_ledger_set_updated_at
+  before update on public.commission_ledger
   for each row execute function public.set_updated_at();
 
-drop trigger if exists anticipation_requests_set_updated_at on public.anticipation_requests;
-create trigger anticipation_requests_set_updated_at before update on public.anticipation_requests
+create trigger anticipation_requests_set_updated_at
+  before update on public.anticipation_requests
   for each row execute function public.set_updated_at();
 
 alter table public.payout_accounts enable row level security;
@@ -2200,8 +2099,8 @@ grant select on public.commission_ledger to authenticated;
 grant select on public.anticipation_requests to authenticated;
 
 -- Policy: o veterinário titular, gestores/billing da clínica e administradores globais podem consultar dados de conta de repasse.
-drop policy if exists "Veterinarians, org billing and admins can read payout accounts" on public.payout_accounts;
-create policy "Veterinarians, org billing and admins can read payout accounts" on public.payout_accounts for select to authenticated
+create policy "Veterinarians, org billing and admins can read payout accounts"
+  on public.payout_accounts for select to authenticated
   using (
     veterinarian_id = (select auth.uid())
     or public.has_organization_role(
@@ -2212,14 +2111,14 @@ create policy "Veterinarians, org billing and admins can read payout accounts" o
   );
 
 -- Policy: apenas o titular da conta ou administradores podem cadastrar/alterar sua conta de repasse (não altera saldo).
-drop policy if exists "Veterinarians and admins can manage own payout account" on public.payout_accounts;
-create policy "Veterinarians and admins can manage own payout account" on public.payout_accounts for all to authenticated
+create policy "Veterinarians and admins can manage own payout account"
+  on public.payout_accounts for all to authenticated
   using (veterinarian_id = (select auth.uid()) or public.is_admin())
   with check (veterinarian_id = (select auth.uid()) or public.is_admin());
 
 -- Policy: apenas o veterinário titular, perfis de gestão/billing da organização e administradores podem visualizar lançamentos no extrato (imutáveis pelo cliente).
-drop policy if exists "Veterinarians, org billing and admins can read commission ledger" on public.commission_ledger;
-create policy "Veterinarians, org billing and admins can read commission ledger" on public.commission_ledger for select to authenticated
+create policy "Veterinarians, org billing and admins can read commission ledger"
+  on public.commission_ledger for select to authenticated
   using (
     veterinarian_id = (select auth.uid())
     or public.has_organization_role(
@@ -2230,14 +2129,14 @@ create policy "Veterinarians, org billing and admins can read commission ledger"
   );
 
 -- Policy: apenas administradores globais podem inserir/atualizar lançamentos diretos no ledger (webhooks usam service_role no servidor).
-drop policy if exists "Admins can manage commission ledger" on public.commission_ledger;
-create policy "Admins can manage commission ledger" on public.commission_ledger for all to authenticated
+create policy "Admins can manage commission ledger"
+  on public.commission_ledger for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
 -- Policy: o veterinário solicitante, gestores da organização e administradores podem consultar pedidos de antecipação.
-drop policy if exists "Veterinarians, org admins and global admins can read anticipation requests" on public.anticipation_requests;
-create policy "Veterinarians, org admins and global admins can read anticipation requests" on public.anticipation_requests for select to authenticated
+create policy "Veterinarians, org admins and global admins can read anticipation requests"
+  on public.anticipation_requests for select to authenticated
   using (
     veterinarian_id = (select auth.uid())
     or public.has_organization_role(
@@ -2248,8 +2147,8 @@ create policy "Veterinarians, org admins and global admins can read anticipation
   );
 
 -- Policy: administradores globais podem gerenciar o ciclo de antecipações.
-drop policy if exists "Admins can manage anticipation requests" on public.anticipation_requests;
-create policy "Admins can manage anticipation requests" on public.anticipation_requests for all to authenticated
+create policy "Admins can manage anticipation requests"
+  on public.anticipation_requests for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
@@ -2347,9 +2246,10 @@ revoke all on function public.request_commission_anticipation(integer, text)
 grant execute on function public.request_commission_anticipation(integer, text)
   to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 09/11: 20261113000300_storage_buckets_and_policies.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000300_storage_buckets_and_policies.sql
+-- ============================================================================
 
 -- Fase 3: Buckets de Storage e políticas de acesso para laudos de exames, anexos clínicos e avatares de pets.
 
@@ -2388,7 +2288,8 @@ set public = excluded.public,
 
 -- Policy: tutores donos do pet, veterinários que atendem o pet e administradores globais podem visualizar arquivos clínicos, laudos e avatares autorizados.
 drop policy if exists "Authorized users can read DrVet storage objects" on storage.objects;
-create policy "Authorized users can read DrVet storage objects" on storage.objects for select to authenticated
+create policy "Authorized users can read DrVet storage objects"
+  on storage.objects for select to authenticated
   using (
     bucket_id in ('pet-avatars', 'exam-reports', 'clinical-attachments')
     and (
@@ -2416,7 +2317,8 @@ create policy "Authorized users can read DrVet storage objects" on storage.objec
 
 -- Policy: tutores podem enviar avatares de seus pets; veterinários aprovados (e tutores em exames) podem enviar arquivos nos respectivos atendimentos/pets.
 drop policy if exists "Authorized users can upload DrVet storage objects" on storage.objects;
-create policy "Authorized users can upload DrVet storage objects" on storage.objects for insert to authenticated
+create policy "Authorized users can upload DrVet storage objects"
+  on storage.objects for insert to authenticated
   with check (
     bucket_id in ('pet-avatars', 'exam-reports', 'clinical-attachments')
     and (
@@ -2451,7 +2353,8 @@ create policy "Authorized users can upload DrVet storage objects" on storage.obj
 
 -- Policy: apenas quem enviou o arquivo (owner), o tutor dono do avatar ou o administrador global pode remover objetos do Storage.
 drop policy if exists "Owners and admins can delete DrVet storage objects" on storage.objects;
-create policy "Owners and admins can delete DrVet storage objects" on storage.objects for delete to authenticated
+create policy "Owners and admins can delete DrVet storage objects"
+  on storage.objects for delete to authenticated
   using (
     bucket_id in ('pet-avatars', 'exam-reports', 'clinical-attachments')
     and (
@@ -2464,9 +2367,10 @@ create policy "Owners and admins can delete DrVet storage objects" on storage.ob
     )
   );
 
--- ----------------------------------------------------------------------------
--- MIGRATION 10/11: 20261113000400_teleconsulta_subscriptions_partners.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000400_teleconsulta_subscriptions_partners.sql
+-- ============================================================================
 
 -- Fase 4 (Expansão Stitch): Teleconsulta, Clube DrVet (Assinaturas & Pagamentos), Portal B2B de Parceiros e DrVet Ads.
 
@@ -2539,7 +2443,8 @@ alter table public.teleconsultation_sessions enable row level security;
 
 -- Policy: tutor participante, veterinário designado, membro da clínica e admin podem visualizar a sessão de teleconsulta.
 drop policy if exists "Participants and org members can view teleconsultation sessions" on public.teleconsultation_sessions;
-create policy "Participants and org members can view teleconsultation sessions" on public.teleconsultation_sessions for select to authenticated
+create policy "Participants and org members can view teleconsultation sessions"
+  on public.teleconsultation_sessions for select to authenticated
   using (
     public.is_admin()
     or tutor_id = (select auth.uid())
@@ -2554,7 +2459,8 @@ create policy "Participants and org members can view teleconsultation sessions" 
 
 -- Policy: apenas o veterinário designado (ou admin) pode atualizar estado, consentimento de gravação e anotações da sala.
 drop policy if exists "Assigned veterinarian or admin can update teleconsultation session" on public.teleconsultation_sessions;
-create policy "Assigned veterinarian or admin can update teleconsultation session" on public.teleconsultation_sessions for update to authenticated
+create policy "Assigned veterinarian or admin can update teleconsultation session"
+  on public.teleconsultation_sessions for update to authenticated
   using (public.is_admin() or veterinarian_id = (select auth.uid()))
   with check (public.is_admin() or veterinarian_id = (select auth.uid()));
 
@@ -2581,7 +2487,8 @@ alter table public.teleconsultation_messages enable row level security;
 
 -- Policy: somente participantes da sessão (tutor, veterinário) e admin podem ler mensagens da sala.
 drop policy if exists "Session participants can view teleconsultation messages" on public.teleconsultation_messages;
-create policy "Session participants can view teleconsultation messages" on public.teleconsultation_messages for select to authenticated
+create policy "Session participants can view teleconsultation messages"
+  on public.teleconsultation_messages for select to authenticated
   using (
     public.is_admin()
     or exists (
@@ -2593,7 +2500,8 @@ create policy "Session participants can view teleconsultation messages" on publi
 
 -- Policy: somente o tutor ou o veterinário da sessão podem enviar mensagens identificadas pelo próprio user_id.
 drop policy if exists "Session participants can send teleconsultation messages" on public.teleconsultation_messages;
-create policy "Session participants can send teleconsultation messages" on public.teleconsultation_messages for insert to authenticated
+create policy "Session participants can send teleconsultation messages"
+  on public.teleconsultation_messages for insert to authenticated
   with check (
     sender_id = (select auth.uid())
     and exists (
@@ -2705,12 +2613,14 @@ alter table public.subscription_plans enable row level security;
 
 -- Policy: qualquer usuário autenticado pode visualizar planos ativos do Clube DrVet; admins gerenciam todos os planos.
 drop policy if exists "Authenticated users can view active subscription plans" on public.subscription_plans;
-create policy "Authenticated users can view active subscription plans" on public.subscription_plans for select to authenticated
+create policy "Authenticated users can view active subscription plans"
+  on public.subscription_plans for select to authenticated
   using (active = true or public.is_admin());
 
 -- Policy: apenas administradores globais podem criar, editar ou desativar planos do Clube DrVet.
 drop policy if exists "Admins manage subscription plans" on public.subscription_plans;
-create policy "Admins manage subscription plans" on public.subscription_plans for all to authenticated
+create policy "Admins manage subscription plans"
+  on public.subscription_plans for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
 
@@ -2743,11 +2653,13 @@ alter table public.pet_subscriptions enable row level security;
 
 -- Policy: tutores visualizam e atualizam (pausar/cancelar) apenas assinaturas dos próprios pets; admin visualiza tudo.
 drop policy if exists "Owners and admins can view pet subscriptions" on public.pet_subscriptions;
-create policy "Owners and admins can view pet subscriptions" on public.pet_subscriptions for select to authenticated
+create policy "Owners and admins can view pet subscriptions"
+  on public.pet_subscriptions for select to authenticated
   using (public.is_admin() or owner_id = (select auth.uid()));
 
 drop policy if exists "Owners and admins can update pet subscriptions" on public.pet_subscriptions;
-create policy "Owners and admins can update pet subscriptions" on public.pet_subscriptions for update to authenticated
+create policy "Owners and admins can update pet subscriptions"
+  on public.pet_subscriptions for update to authenticated
   using (public.is_admin() or owner_id = (select auth.uid()))
   with check (public.is_admin() or owner_id = (select auth.uid()));
 
@@ -2786,7 +2698,8 @@ alter table public.payment_orders enable row level security;
 
 -- Policy: cada usuário visualiza apenas os próprios comprovantes/pedidos de pagamento; org owners/admins e admin global podem auditar.
 drop policy if exists "Users and authorized admins can view payment orders" on public.payment_orders;
-create policy "Users and authorized admins can view payment orders" on public.payment_orders for select to authenticated
+create policy "Users and authorized admins can view payment orders"
+  on public.payment_orders for select to authenticated
   using (
     public.is_admin()
     or user_id = (select auth.uid())
@@ -2934,7 +2847,8 @@ alter table public.partner_listings enable row level security;
 
 -- Policy: usuários autenticados visualizam parceiros ativos e cupons; membros da organização e admin gerenciam os cadastros da própria organização.
 drop policy if exists "Authenticated users can view active partner listings" on public.partner_listings;
-create policy "Authenticated users can view active partner listings" on public.partner_listings for select to authenticated
+create policy "Authenticated users can view active partner listings"
+  on public.partner_listings for select to authenticated
   using (
     active = true
     or public.is_admin()
@@ -2946,7 +2860,8 @@ create policy "Authenticated users can view active partner listings" on public.p
   );
 
 drop policy if exists "Org owners and admins manage partner listings" on public.partner_listings;
-create policy "Org owners and admins manage partner listings" on public.partner_listings for all to authenticated
+create policy "Org owners and admins manage partner listings"
+  on public.partner_listings for all to authenticated
   using (
     public.is_admin()
     or exists (
@@ -2994,7 +2909,8 @@ alter table public.ad_campaigns enable row level security;
 
 -- Policy: membros da organização e administradores gerenciam as campanhas DrVet Ads da própria empresa.
 drop policy if exists "Org members and admins view ad campaigns" on public.ad_campaigns;
-create policy "Org members and admins view ad campaigns" on public.ad_campaigns for select to authenticated
+create policy "Org members and admins view ad campaigns"
+  on public.ad_campaigns for select to authenticated
   using (
     public.is_admin()
     or exists (
@@ -3005,7 +2921,8 @@ create policy "Org members and admins view ad campaigns" on public.ad_campaigns 
   );
 
 drop policy if exists "Org owners and admins manage ad campaigns" on public.ad_campaigns;
-create policy "Org owners and admins manage ad campaigns" on public.ad_campaigns for all to authenticated
+create policy "Org owners and admins manage ad campaigns"
+  on public.ad_campaigns for all to authenticated
   using (
     public.is_admin()
     or exists (
@@ -3025,9 +2942,10 @@ create policy "Org owners and admins manage ad campaigns" on public.ad_campaigns
     )
   );
 
--- ----------------------------------------------------------------------------
--- MIGRATION 11/11: 20261113000500_admin_integrations_and_checkout.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000500_admin_integrations_and_checkout.sql
+-- ============================================================================
 
 -- Fase 5 (Expansão Stitch): Painel Master Admin, RBAC, Integrações (Asaas/Mercado Pago/LiveKit/ERP) e Checkout de Teleconsulta.
 
@@ -3068,7 +2986,8 @@ alter table public.integration_configs enable row level security;
 
 -- Policy: apenas administradores globais ou owners/admins da própria organização visualizam metadados de integrações (sem segredos).
 drop policy if exists "Admins and org owners view integration configs" on public.integration_configs;
-create policy "Admins and org owners view integration configs" on public.integration_configs for select to authenticated
+create policy "Admins and org owners view integration configs"
+  on public.integration_configs for select to authenticated
   using (
     public.is_admin()
     or (
@@ -3084,7 +3003,8 @@ create policy "Admins and org owners view integration configs" on public.integra
 
 -- Policy: apenas administradores globais ou owners/admins da própria organização gerenciam integrações.
 drop policy if exists "Admins and org owners manage integration configs" on public.integration_configs;
-create policy "Admins and org owners manage integration configs" on public.integration_configs for all to authenticated
+create policy "Admins and org owners manage integration configs"
+  on public.integration_configs for all to authenticated
   using (
     public.is_admin()
     or (
@@ -3273,9 +3193,12 @@ $$;
 
 grant execute on function public.create_teleconsultation_payment(uuid, public.payment_method, text) to authenticated;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 12/12: 20261113000600_push_notifications.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261113000600_push_notifications.sql
+-- ============================================================================
+
+-- Fase 6: Notificações Push (Web Push VAPID), Preferências de Lembrete e Alertas de Fila Veterinária.
 
 create table if not exists public.push_subscriptions (
   id uuid primary key default gen_random_uuid(),
@@ -3617,9 +3540,10 @@ begin
   end if;
 end $$;
 
--- ----------------------------------------------------------------------------
--- MIGRATION 13/13: 20261123000100_production_repairs_and_features.sql
--- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- MIGRATION: 20261123000100_production_repairs_and_features.sql
+-- ============================================================================
 
 -- Migration 13: Correções estruturais, catálogo público seguro, receitas emitidas com QR,
 -- notas fiscais, termos persistidos, atribuição QR parceiro, solicitações de perfil e liquidação financeira.
@@ -5083,7 +5007,131 @@ $$;
 revoke all on function public.upsert_my_payout_account(text, text, text) from public, anon;
 grant execute on function public.upsert_my_payout_account(text, text, text) to authenticated;
 
+-- ============================================================================
+-- 11. PERMISSÕES EXPLÍCITAS DE TABELAS E FUNÇÕES (GRANTS + RLS)
+-- ============================================================================
+
+grant select on table public.pets to authenticated;
+grant select on table public.subscription_plans, public.partner_listings to anon, authenticated;
+grant insert, update, delete on table
+  public.organizations,
+  public.organization_memberships,
+  public.veterinarian_profiles,
+  public.commission_ledger,
+  public.anticipation_requests
+  to authenticated;
+
+grant execute on function public.settle_payment_order(uuid, text) to authenticated, service_role;
+
+-- ============================================================================
+-- 12. BACKFILL DE PERFIS PARA USUÁRIOS JÁ EXISTENTES EM auth.users
+-- ============================================================================
+
+insert into public.profiles (id, display_name, email, role)
+select
+  u.id,
+  left(coalesce(nullif(btrim(u.raw_user_meta_data ->> 'display_name'), ''), ''), 120),
+  u.email,
+  case
+    when u.email = 'admin@drvet.local' then 'admin'::public.user_role
+    when u.email in ('camila.vet@drvet.local', 'rafael.vet@drvet.local') then 'veterinarian'::public.user_role
+    else 'tutor'::public.user_role
+  end
+from auth.users u
+on conflict (id) do update
+set email = coalesce(excluded.email, public.profiles.email),
+    display_name = case
+      when public.profiles.display_name = '' then excluded.display_name
+      else public.profiles.display_name
+    end,
+    role = case
+      when excluded.email = 'admin@drvet.local' then 'admin'::public.user_role
+      else public.profiles.role
+    end;
+
+-- ============================================================================
+-- 13. SUPORTE ADMINISTRATIVO EM transition_appointment
+-- ============================================================================
+
+create or replace function public.transition_appointment(
+  target_appointment uuid,
+  next_status public.appointment_status
+)
+returns public.appointments
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  current_appointment public.appointments;
+  is_assigned_veterinarian boolean;
+  is_authorized_owner boolean;
+  is_global_admin boolean := public.is_admin();
+begin
+  select appointment.*
+  into current_appointment
+  from public.appointments appointment
+  where appointment.id = target_appointment
+  for update;
+
+  if not found then
+    raise exception 'Appointment not found' using errcode = 'P0002';
+  end if;
+
+  is_assigned_veterinarian :=
+    current_appointment.veterinarian_id = auth.uid()
+    and public.is_approved_veterinarian(
+      current_appointment.organization_id,
+      auth.uid()
+    );
+  is_authorized_owner :=
+    is_global_admin
+    or current_appointment.tutor_id = auth.uid()
+    or public.has_organization_role(
+      current_appointment.organization_id,
+      array['owner', 'admin']::public.organization_role[]
+    );
+
+  if next_status = 'cancelled' then
+    if not (is_authorized_owner or is_assigned_veterinarian) then
+      raise exception 'Not authorized to cancel this appointment'
+        using errcode = '42501';
+    end if;
+    if current_appointment.status not in ('pending', 'confirmed')
+       or (current_appointment.starts_at <= now() and not is_global_admin) then
+      raise exception 'Appointment can no longer be cancelled'
+        using errcode = '22023';
+    end if;
+  elsif next_status = 'confirmed' then
+    if (not is_assigned_veterinarian and not is_global_admin)
+       or current_appointment.status <> 'pending'
+       or current_appointment.starts_at <= now() then
+      raise exception 'Appointment cannot be confirmed'
+        using errcode = '42501';
+    end if;
+  elsif next_status = 'completed' then
+    if (not is_assigned_veterinarian and not is_global_admin)
+       or current_appointment.status <> 'confirmed'
+       or (current_appointment.ends_at > now() and not is_global_admin) then
+      raise exception 'Appointment cannot be completed'
+        using errcode = '42501';
+    end if;
+  else
+    raise exception 'Unsupported appointment status transition'
+      using errcode = '22023';
+  end if;
+
+  update public.appointments
+  set status = next_status
+  where id = target_appointment
+  returning * into current_appointment;
+
+  return current_appointment;
+end;
+$$;
+
 notify pgrst, 'reload schema';
+
 
 -- Recarrega schema cache do PostgREST após aplicar as 13 migrations
 notify pgrst, 'reload schema';

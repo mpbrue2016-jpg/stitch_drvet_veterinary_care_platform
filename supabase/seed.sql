@@ -145,10 +145,16 @@ begin
     (mariana_id, mariana_id, jsonb_build_object('sub', mariana_id::text, 'email', 'mariana.tutor@drvet.local'), 'email', mariana_id::text, now(), now(), now())
   on conflict do nothing;
 
-  update public.profiles set role = 'admin', display_name = 'Admin DrVet' where id = admin_id;
-  update public.profiles set role = 'veterinarian', display_name = 'Dra. Camila Nogueira' where id = camila_id;
-  update public.profiles set role = 'veterinarian', display_name = 'Dr. Rafael Tavares' where id = rafael_id;
-  update public.profiles set role = 'tutor', display_name = 'Mariana Costa' where id = mariana_id;
+  insert into public.profiles (id, display_name, email, role)
+  values
+    (admin_id, 'Admin DrVet', 'admin@drvet.local', 'admin'),
+    (camila_id, 'Dra. Camila Nogueira', 'camila.vet@drvet.local', 'veterinarian'),
+    (rafael_id, 'Dr. Rafael Tavares', 'rafael.vet@drvet.local', 'veterinarian'),
+    (mariana_id, 'Mariana Costa', 'mariana.tutor@drvet.local', 'tutor')
+  on conflict (id) do update
+  set role = excluded.role,
+      display_name = excluded.display_name,
+      email = excluded.email;
 
   -- 2. Organização e equipe veterinária
   insert into public.organizations (id, name, created_by)
@@ -214,8 +220,8 @@ begin
     id, organization_id, veterinarian_id, starts_at, ends_at, is_available, is_blocked, blocked_at, block_reason
   )
   values
-    (slot_past_1, org_id, camila_id, date_trunc('hour', now() - interval '2 days') + interval '10 hours', date_trunc('hour', now() - interval '2 days') + interval '10 hours 45 minutes', false, false, null, null),
-    (slot_past_2, org_id, camila_id, date_trunc('hour', now() - interval '1 day') + interval '14 hours', date_trunc('hour', now() - interval '1 day') + interval '14 hours 45 minutes', false, false, null, null),
+    (slot_past_1, org_id, camila_id, date_trunc('day', now() - interval '2 days') + interval '10 hours', date_trunc('day', now() - interval '2 days') + interval '10 hours 45 minutes', false, false, null, null),
+    (slot_past_2, org_id, camila_id, date_trunc('day', now() - interval '1 day') + interval '14 hours', date_trunc('day', now() - interval '1 day') + interval '14 hours 45 minutes', false, false, null, null),
     ('40000000-0000-4000-8000-000000000009', org_id, camila_id, date_trunc('day', now() - interval '45 days') + interval '11 hours', date_trunc('day', now() - interval '45 days') + interval '11 hours 45 minutes', false, false, null, null),
     (slot_future_1, org_id, camila_id, date_trunc('day', now() + interval '1 day') + interval '16 hours', date_trunc('day', now() + interval '1 day') + interval '16 hours 45 minutes', false, false, null, null),
     (slot_future_2, org_id, camila_id, date_trunc('day', now() + interval '2 days') + interval '11 hours', date_trunc('day', now() + interval '2 days') + interval '11 hours 45 minutes', false, false, null, null),

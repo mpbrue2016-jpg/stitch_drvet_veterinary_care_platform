@@ -36,6 +36,7 @@ create trigger set_integration_configs_updated_at
 alter table public.integration_configs enable row level security;
 
 -- Policy: apenas administradores globais ou owners/admins da própria organização visualizam metadados de integrações (sem segredos).
+drop policy if exists "Admins and org owners view integration configs" on public.integration_configs;
 create policy "Admins and org owners view integration configs"
   on public.integration_configs for select to authenticated
   using (
@@ -52,6 +53,7 @@ create policy "Admins and org owners view integration configs"
   );
 
 -- Policy: apenas administradores globais ou owners/admins da própria organização gerenciam integrações.
+drop policy if exists "Admins and org owners manage integration configs" on public.integration_configs;
 create policy "Admins and org owners manage integration configs"
   on public.integration_configs for all to authenticated
   using (
