@@ -42,6 +42,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('pets')
     .select('id, name, species, breed, birth_date, sex')
+    .eq('owner_id', authData.user.id)
     .order('name');
 
   if (error) {

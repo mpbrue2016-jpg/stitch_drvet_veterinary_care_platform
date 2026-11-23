@@ -64,6 +64,20 @@ export async function middleware(request: NextRequest) {
     return redirect;
   }
 
+  // Exigir confirmação de e-mail quando a política de Auth do Supabase exigir.
+  // data.user.email_confirmed_at é preenchido apenas após clicar no link enviado por e-mail.
+  if (!data.user.email_confirmed_at) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.searchParams.set('next', request.nextUrl.pathname);
+    loginUrl.searchParams.set('confirm_email', 'required');
+    const redirect = NextResponse.redirect(loginUrl);
+    response.cookies.getAll().forEach((cookie) =>
+      redirect.cookies.set(cookie),
+    );
+    return redirect;
+  }
+
   return response;
 }
 

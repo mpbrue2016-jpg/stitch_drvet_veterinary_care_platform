@@ -30,6 +30,11 @@ export default function LoginPage() {
     if (searchParams.get('error') === 'callback') {
       setErrorMessage('Não foi possível confirmar o acesso. Solicite um novo link de confirmação.');
     }
+    if (searchParams.get('confirm_email') === 'required') {
+      setErrorMessage(
+        'Confirme seu e-mail antes de acessar as áreas protegidas. Abra o link enviado para o seu endereço.',
+      );
+    }
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

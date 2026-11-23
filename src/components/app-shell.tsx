@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -58,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [userRole, setUserRole] = useState<'tutor' | 'veterinarian' | 'admin' | 'staff'>('tutor');
   const isPublicHome = pathname === '/';
   const isAuthPage = pathname === '/login' || pathname === '/senha/nova';
   const pageTitle = navigation.find((item) => isActiveRoute(pathname, item.href))?.label ?? 'DrVet';
@@ -76,6 +77,96 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadUserRole() {
+      const supabase = createSupabaseBrowserClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        if (!cancelled) setUserRole('tutor');
+        return;
+      }
+
+      const [membershipsResult, veterinarianResult] = await Promise.all([
+        supabase
+          .from('organization_memberships')
+          .select('organization_id, role')
+          .eq('user_id', data.user!.id)
+          .order('organization_id', { ascending: true }),
+        supabase
+          .from('veterinarian_profiles')
+          .select('organization_id, status')
+          .eq('user_id', data.user!.id)
+          .eq('status', 'approved')
+          .maybeSingle(),
+      ]);
+
+      if (cancelled) return;
+
+      const memberships = membershipsResult.data ?? [];
+      const isAdmin = memberships.some(
+        (membership) =>
+          membership.role === 'owner' || membership.role === 'admin',
+      );
+      const isVeterinarian =
+        memberships.some(
+          (membership) => membership.role === 'veterinarian',
+        ) && Boolean(veterinarianResult.data);
+
+      if (isAdmin) {
+        setUserRole('admin');
+        return;
+      }
+
+      if (isVeterinarian) {
+        setUserRole('veterinarian');
+        return;
+      }
+
+      if (memberships.length > 0) {
+        setUserRole('staff');
+        return;
+      }
+
+      setUserRole('tutor');
+    }
+
+    void loadUserRole();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function isNavItemVisible(item: { href: string }) {
+    switch (userRole) {
+      case 'admin':
+        return true;
+      case 'veterinarian':
+        return (
+          item.href === '/' ||
+          item.href === '/agenda' ||
+          item.href === '/agendamento' ||
+          item.href === '/carteira/vacinas' ||
+          item.href === '/exames' ||
+          item.href === '/receitas'
+        );
+      case 'tutor':
+        return (
+          item.href === '/' ||
+          item.href === '/agendamento' ||
+          item.href === '/carteira/vacinas'
+        );
+      case 'staff':
+        return item.href === '/' || item.href === '/agendamento';
+      default:
+        return item.href === '/' || item.href === '/agendamento';
+    }
+  }
+
+  const visibleNavigation = navigation.filter((item) => isNavItemVisible(item));
+
   return (
     <div className={`${isPublicHome || isAuthPage ? 'min-h-screen' : 'min-h-screen lg:flex'} bg-[#f6faff]`}>
       {!isPublicHome && !isAuthPage && (
@@ -91,7 +182,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <nav aria-label="Navegação principal" className="grid gap-1 px-3 py-4">
               <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">Prática médica</p>
-              {navigation.slice(0, 6).map((item) => {
+              {visibleNavigation.slice(0, 6).map((item) => {
                 const active = isActiveRoute(pathname, item.href);
                 return (
                   <Link
@@ -107,7 +198,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 );
               })}
               <p className="px-3 pb-2 pt-6 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">Gestão &amp; sistema</p>
-              {navigation.slice(6).map((item) => (
+              {visibleNavigation.slice(6).map((item) => (
                 <Link
                   aria-current={isActiveRoute(pathname, item.href) ? 'page' : undefined}
                   className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors ${isActiveRoute(pathname, item.href) ? 'bg-[#13a88a] text-white shadow-sm' : 'text-slate-700 hover:bg-[#d4ebff]'}`}
@@ -205,7 +296,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
             {menuOpen && (
               <nav aria-label="Navegação móvel" className="grid gap-1 border-t border-slate-100 bg-[#ebf5ff] p-3 lg:hidden">
-                {navigation.map((item) => {
+                {visibleNavigation.map((item) => {
                   const active = isActiveRoute(pathname, item.href);
                   return (
                     <Link
