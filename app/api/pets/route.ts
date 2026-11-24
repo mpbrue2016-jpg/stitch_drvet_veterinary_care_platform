@@ -23,12 +23,8 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('pets')
-<<<<<<< HEAD
-    .select('id, name, species, breed, birth_date, sex')
-    .eq('owner_id', authData.user.id)
-=======
     .select(PET_COLUMNS)
->>>>>>> origin/main
+    .eq('owner_id', authData.user.id)
     .order('name');
 
   if (error) {
