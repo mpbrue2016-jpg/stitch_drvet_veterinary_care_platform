@@ -54,6 +54,7 @@ export interface UserProfile {
   email?: string;
   phone: string | null;
   role: 'tutor' | 'veterinarian' | 'partner' | 'admin';
+  avatar_path?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -76,6 +77,7 @@ export interface VeterinarianProfile {
   consultation_fee_cents?: number;
   bio?: string | null;
   is_online_now?: boolean;
+  avatar_path?: string | null;
   created_at?: string;
 }
 
@@ -91,6 +93,7 @@ export interface PublicVeterinarian {
   bio: string | null;
   is_online_now: boolean;
   open_slots_count: number;
+  avatar_path?: string | null;
 }
 
 export interface PetSummary {
@@ -433,8 +436,36 @@ export interface RoleApplication {
   specialty: string | null;
   city: string | null;
   state: string | null;
+  avatar_path?: string | null;
   status: 'pending' | 'approved' | 'rejected';
   reviewer_notes: string | null;
   reviewed_at: string | null;
+  created_at: string;
+}
+
+export type FacialBiometricStatus = 'active' | 'revoked' | 'pending_recalibration';
+
+export interface FacialBiometricProfile {
+  id: string;
+  user_id: string;
+  status: FacialBiometricStatus;
+  algorithm: string;
+  template_hash: string;
+  liveness_score: number;
+  device_label: string | null;
+  enrolled_at: string;
+  last_verified_at: string | null;
+  updated_at: string;
+}
+
+export interface FacialBiometricVerification {
+  id: string;
+  user_id: string;
+  biometric_id: string | null;
+  event_type: 'enroll' | 'verify_success' | 'verify_failed' | 'revoke';
+  similarity_score: number | null;
+  liveness_score: number | null;
+  matched: boolean;
+  device_label: string | null;
   created_at: string;
 }

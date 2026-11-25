@@ -68,6 +68,9 @@ export function PaymentsCheckout() {
   const [method, setMethod] = useState<PaymentMethod>('pix');
   const [couponCode, setCouponCode] = useState('');
   const [activePendingOrder, setActivePendingOrder] = useState<PaymentOrder | null>(null);
+  const [checkoutGatewayMode, setCheckoutGatewayMode] = useState<
+    'mercado_pago_pix' | 'static_pix_brcode' | null
+  >(null);
   const [copiedPixId, setCopiedPixId] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -196,16 +199,23 @@ export function PaymentsCheckout() {
     setErrorMessage('');
     setNotice('');
     try {
-      const { payment } = await gerarCheckoutConsulta({
+      const { payment, gatewayMode } = await gerarCheckoutConsulta({
         appointmentId: selectedAppointmentId,
         method,
         couponCode,
       });
       setCouponCode('');
+      setCheckoutGatewayMode(gatewayMode ?? null);
       if (payment.status === 'pending') {
         setActivePendingOrder(payment);
+        const modeNote =
+          gatewayMode === 'mercado_pago_pix'
+            ? 'via gateway Mercado Pago'
+            : method === 'pix'
+              ? 'em modo BR-Code EMVCo local (aguardando liquidação/conciliação)'
+              : '';
         setNotice(
-          `Cobrança gerada (${payment.external_reference ?? payment.id.slice(0, 8)}). Conclua o pagamento e aguarde a confirmação.`,
+          `Cobrança gerada ${modeNote ? `${modeNote} ` : ''}(${payment.external_reference ?? payment.id.slice(0, 8)}). Conclua o pagamento e aguarde a confirmação.`,
         );
       } else {
         setNotice(
@@ -390,6 +400,21 @@ export function PaymentsCheckout() {
                     />
                   )}
                   <div className="grid gap-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={
+                          checkoutGatewayMode === 'mercado_pago_pix' ||
+                          Boolean(activePendingOrder.provider_payment_id)
+                            ? 'success'
+                            : 'info'
+                        }
+                      >
+                        {checkoutGatewayMode === 'mercado_pago_pix' ||
+                        Boolean(activePendingOrder.provider_payment_id)
+                          ? 'PIX Gateway (Mercado Pago)'
+                          : 'PIX BR-Code EMVCo (sem baixa automática sem gateway)'}
+                      </Badge>
+                    </div>
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                         Referência da cobrança

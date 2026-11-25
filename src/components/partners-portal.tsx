@@ -8,6 +8,7 @@ import {
   EmptyState,
   Input,
   PageHeader,
+  PaginationControls,
   Select,
   Skeleton,
   Tabs,
@@ -15,10 +16,10 @@ import {
 import { listarOrganizacoesEVeterinarios } from '@/services/organizations.service';
 import {
   atualizarStatusCampanhaAds,
+  buscarPortalParceirosPaginado,
   cadastrarParceiroB2B,
   criarCampanhaAds,
-  listarCampanhasAds,
-  listarParceirosAtivos,
+  type PartnersPaginationMeta,
 } from '@/services/partners.service';
 import type {
   AdCampaign,
@@ -54,6 +55,28 @@ export function PartnersPortal() {
   const [partners, setPartners] = useState<PartnerListing[]>([]);
   const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [kindFilter, setKindFilter] = useState<PartnerKind | ''>('');
+  const [page, setPage] = useState(1);
+  const [partnersPagination, setPartnersPagination] =
+    useState<PartnersPaginationMeta>({
+      page: 1,
+      limit: 12,
+      total: 0,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
+  const [campaignsPagination, setCampaignsPagination] =
+    useState<PartnersPaginationMeta>({
+      page: 1,
+      limit: 12,
+      total: 0,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -81,15 +104,21 @@ export function PartnersPortal() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [partnersRes, campaignsRes, orgsRes] = await Promise.all([
-        listarParceirosAtivos(),
-        listarCampanhasAds(),
+      const [portalRes, orgsRes] = await Promise.all([
+        buscarPortalParceirosPaginado({
+          q: appliedQuery,
+          kind: kindFilter,
+          page,
+          limit: 12,
+        }),
         listarOrganizacoesEVeterinarios().catch(() => ({
           organizations: [] as Organization[],
         })),
       ]);
-      setPartners(partnersRes.partners);
-      setCampaigns(campaignsRes.campaigns);
+      setPartners(portalRes.partners);
+      setCampaigns(portalRes.campaigns);
+      setPartnersPagination(portalRes.pagination.partners);
+      setCampaignsPagination(portalRes.pagination.campaigns);
       setOrganizations(orgsRes.organizations);
 
       const firstOrgId = orgsRes.organizations[0]?.id ?? '';
@@ -110,7 +139,7 @@ export function PartnersPortal() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [appliedQuery, kindFilter, page]);
 
   useEffect(() => {
     void loadData();
@@ -241,9 +270,63 @@ export function PartnersPortal() {
           tabs={[
             {
               id: 'rede',
-              label: `Rede credenciada (${partners.length})`,
+              label: `Rede credenciada (${partnersPagination.total})`,
               content: (
                 <div className="grid gap-5">
+                  <Card
+                    title="Filtrar rede credenciada"
+                    description="Busque por nome fantasia, cidade, UF ou código de cupom."
+                  >
+                    <form
+                      className="grid gap-3 sm:grid-cols-[1fr_200px_auto]"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        setPage(1);
+                        setAppliedQuery(searchQuery);
+                      }}
+                    >
+                      <Input
+                        id="partner-search"
+                        label="Busca textual"
+                        onChange={(event) => setSearchQuery(event.target.value)}
+                        placeholder="Ex.: Farmácia, São Paulo, DRVET15"
+                        value={searchQuery}
+                      />
+                      <Select
+                        id="partner-filter-kind"
+                        label="Categoria"
+                        onChange={(event) => {
+                          setPage(1);
+                          setKindFilter(event.target.value as PartnerKind | '');
+                        }}
+                        value={kindFilter}
+                      >
+                        <option value="">Todas</option>
+                        <option value="pharmacy">Farmácias</option>
+                        <option value="pet_shop">Pet Shops</option>
+                      </Select>
+                      <div className="flex items-end gap-2">
+                        <Button type="submit" variant="secondary">
+                          Filtrar
+                        </Button>
+                        {(appliedQuery || kindFilter) && (
+                          <Button
+                            onClick={() => {
+                              setSearchQuery('');
+                              setAppliedQuery('');
+                              setKindFilter('');
+                              setPage(1);
+                            }}
+                            type="button"
+                            variant="outline"
+                          >
+                            Limpar
+                          </Button>
+                        )}
+                      </div>
+                    </form>
+                  </Card>
+
                   {partners.length === 0 ? (
                     <Card>
                       <EmptyState
@@ -252,26 +335,35 @@ export function PartnersPortal() {
                       />
                     </Card>
                   ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {partners.map((partner) => (
-                        <Card
-                          description={`${partner.city} · ${partner.state}`}
-                          key={partner.id}
-                          title={partner.trade_name}
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <Badge variant="info">
-                              {partner.kind === 'pharmacy'
-                                ? 'Farmácia parceira'
-                                : 'Pet Shop'}
-                            </Badge>
-                            <span className="rounded-lg bg-[#ebf5ff] px-3 py-1.5 font-mono text-sm font-bold text-[#006b57]">
-                              {partner.coupon_code} · {partner.discount_percent}% OFF
-                            </span>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
+                    <>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {partners.map((partner) => (
+                          <Card
+                            description={`${partner.city} · ${partner.state}`}
+                            key={partner.id}
+                            title={partner.trade_name}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <Badge variant="info">
+                                {partner.kind === 'pharmacy'
+                                  ? 'Farmácia parceira'
+                                  : 'Pet Shop'}
+                              </Badge>
+                              <span className="rounded-lg bg-[#ebf5ff] px-3 py-1.5 font-mono text-sm font-bold text-[#006b57]">
+                                {partner.coupon_code} · {partner.discount_percent}% OFF
+                              </span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                      <PaginationControls
+                        disabled={loading}
+                        onPageChange={(nextPage) => setPage(nextPage)}
+                        page={partnersPagination.page}
+                        total={partnersPagination.total}
+                        totalPages={partnersPagination.totalPages}
+                      />
+                    </>
                   )}
 
                   {manageableOrgs.length > 0 && (
@@ -401,7 +493,7 @@ export function PartnersPortal() {
             },
             {
               id: 'ads',
-              label: `DrVet Ads (${campaigns.length})`,
+              label: `DrVet Ads (${campaignsPagination.total})`,
               content: (
                 <div className="grid gap-5">
                   <Card
@@ -414,49 +506,58 @@ export function PartnersPortal() {
                         description="Organizações credenciadas podem criar campanhas sazonais abaixo."
                       />
                     ) : (
-                      <ul className="grid gap-3">
-                        {campaigns.map((camp) => (
-                          <li
-                            className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f6faff] p-4"
-                            key={camp.id}
-                          >
-                            <div>
-                              <p className="font-bold text-[#153b50]">
-                                {camp.title}
-                              </p>
-                              <p className="mt-1 text-xs text-slate-600">
-                                {placementLabel[camp.placement]} · Orçamento:{' '}
-                                {brl.format(camp.budget_cents / 100)} ·{' '}
-                                {camp.clicks_count} cliques
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant={campaignStatusVariant[camp.status]}>
-                                {camp.status === 'active'
-                                  ? 'Ativa'
-                                  : camp.status === 'paused'
-                                    ? 'Pausada'
-                                    : camp.status}
-                              </Badge>
-                              {manageableOrgs.some(
-                                (o) => o.id === camp.organization_id,
-                              ) && (
-                                <Button
-                                  className="min-h-9 px-3 text-xs"
-                                  disabled={saving}
-                                  onClick={() => void handleToggleCampaign(camp)}
-                                  type="button"
-                                  variant="outline"
-                                >
+                      <>
+                        <ul className="grid gap-3">
+                          {campaigns.map((camp) => (
+                            <li
+                              className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#f6faff] p-4"
+                              key={camp.id}
+                            >
+                              <div>
+                                <p className="font-bold text-[#153b50]">
+                                  {camp.title}
+                                </p>
+                                <p className="mt-1 text-xs text-slate-600">
+                                  {placementLabel[camp.placement]} · Orçamento:{' '}
+                                  {brl.format(camp.budget_cents / 100)} ·{' '}
+                                  {camp.clicks_count} cliques
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge variant={campaignStatusVariant[camp.status]}>
                                   {camp.status === 'active'
-                                    ? 'Pausar'
-                                    : 'Reativar'}
-                                </Button>
-                              )}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                                    ? 'Ativa'
+                                    : camp.status === 'paused'
+                                      ? 'Pausada'
+                                      : camp.status}
+                                </Badge>
+                                {manageableOrgs.some(
+                                  (o) => o.id === camp.organization_id,
+                                ) && (
+                                  <Button
+                                    className="min-h-9 px-3 text-xs"
+                                    disabled={saving}
+                                    onClick={() => void handleToggleCampaign(camp)}
+                                    type="button"
+                                    variant="outline"
+                                  >
+                                    {camp.status === 'active'
+                                      ? 'Pausar'
+                                      : 'Reativar'}
+                                  </Button>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                        <PaginationControls
+                          disabled={loading}
+                          onPageChange={(nextPage) => setPage(nextPage)}
+                          page={campaignsPagination.page}
+                          total={campaignsPagination.total}
+                          totalPages={campaignsPagination.totalPages}
+                        />
+                      </>
                     )}
                   </Card>
 

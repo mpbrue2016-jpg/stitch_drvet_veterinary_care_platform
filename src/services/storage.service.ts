@@ -1,10 +1,12 @@
+import { validateBinaryUploadSignature } from '@/lib/security/file-signature';
 import { getSupabaseClient } from '@/lib/supabase';
 import { toFriendlyError } from './errors';
 
 export type DrVetStorageBucket =
   | 'exam-reports'
   | 'clinical-attachments'
-  | 'pet-avatars';
+  | 'pet-avatars'
+  | 'vet-avatars';
 
 export interface UploadStorageFileInput {
   bucket: DrVetStorageBucket;
@@ -43,6 +45,12 @@ const BUCKET_RULES: Record<
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
     formatsLabel: 'JPG, PNG ou WEBP',
   },
+  'vet-avatars': {
+    maxBytes: 5 * 1024 * 1024,
+    maxLabel: '5 MB',
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    formatsLabel: 'JPG, PNG ou WEBP',
+  },
 };
 
 export function validarArquivoStorage(bucket: DrVetStorageBucket, file: File) {
@@ -55,6 +63,23 @@ export function validarArquivoStorage(bucket: DrVetStorageBucket, file: File) {
   }
   if (!rule.mimeTypes.includes(file.type)) {
     throw new Error(`Formato não suportado. Utilize ${rule.formatsLabel}.`);
+  }
+}
+
+export async function validarArquivoMagicBytes(
+  bucket: DrVetStorageBucket,
+  file: File,
+) {
+  validarArquivoStorage(bucket, file);
+  const rule = BUCKET_RULES[bucket];
+  const headerBuffer = await file.slice(0, 16).arrayBuffer();
+  const signatureCheck = validateBinaryUploadSignature({
+    bytes: new Uint8Array(headerBuffer),
+    declaredMimeType: file.type,
+    allowedMimeTypes: rule.mimeTypes,
+  });
+  if (!signatureCheck.valid) {
+    throw new Error(signatureCheck.reason);
   }
 }
 
@@ -74,7 +99,7 @@ export async function uploadArquivoStorage(
   input: UploadStorageFileInput,
 ): Promise<{ path: string }> {
   try {
-    validarArquivoStorage(input.bucket, input.file);
+    await validarArquivoMagicBytes(input.bucket, input.file);
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.storage
       .from(input.bucket)
@@ -108,6 +133,22 @@ export async function obterUrlAssinadaStorage(
     return data.signedUrl;
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível gerar o link seguro do arquivo.');
+  }
+}
+
+export function obterUrlPublicaStorage(
+  bucket: DrVetStorageBucket,
+  path: string | null | undefined,
+): string | null {
+  if (!path) return null;
+  const clean = path.trim();
+  if (!clean || clean.includes('..')) return null;
+  try {
+    const supabase = getSupabaseClient();
+    const { data } = supabase.storage.from(bucket).getPublicUrl(clean);
+    return data?.publicUrl || null;
+  } catch {
+    return null;
   }
 }
 

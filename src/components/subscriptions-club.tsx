@@ -227,7 +227,7 @@ export function SubscriptionsClub() {
                             Nenhum pet cadastrado ainda.{' '}
                             <Link
                               className="font-semibold text-[#006b57] underline"
-                              href="/pets/novo"
+                              href="/pets/novo?next=/assinaturas"
                             >
                               Cadastre seu pet primeiro →
                             </Link>

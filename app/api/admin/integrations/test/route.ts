@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 import { validateSafeExternalUrl } from '@/lib/security/ssrf';
 
@@ -12,26 +15,24 @@ const testIntegrationSchema = z
   .strict();
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:admin:integrations:test',
+    limit: 15,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = testIntegrationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Informe uma integração válida para testar.' },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe uma integração válida para testar.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const [{ data: profile, error: profileError }, { data: config, error: configError }] =
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       supabase
         .from('profiles')
         .select('role')
-        .eq('id', authData.user.id)
+        .eq('id', authUser.id)
         .maybeSingle(),
       supabase
         .from('integration_configs')
@@ -49,17 +50,23 @@ export async function POST(request: NextRequest) {
     ]);
 
   if (profileError || configError) {
-    return supabaseErrorResponse(
-      profileError ?? configError,
-      'Não foi possível carregar a configuração da integração.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        profileError ?? configError,
+        'Não foi possível carregar a configuração da integração.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
   if (!config) {
-    return NextResponse.json(
-      { error: 'Integração não encontrada ou sem acesso.' },
-      { status: 404 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Integração não encontrada ou sem acesso.' },
+        { status: 404 },
+      ),
+      rateLimit,
     );
   }
 
@@ -69,15 +76,28 @@ export async function POST(request: NextRequest) {
       .from('organization_memberships')
       .select('role')
       .eq('organization_id', config.organization_id)
-      .eq('user_id', authData.user.id)
+      .eq('user_id', authUser.id)
       .maybeSingle();
     hasOrgAdmin = membership?.role === 'owner' || membership?.role === 'admin';
   }
 
   if (profile?.role !== 'admin' && !hasOrgAdmin) {
-    return NextResponse.json(
-      { error: 'Apenas administradores podem testar endpoints de integração.' },
-      { status: 403 },
+    logAuditEvent({
+      event: 'admin.integration_test_denied',
+      resource: 'integration_configs',
+      action: 'test',
+      outcome: 'denied',
+      actorId: authUser.id,
+      statusCode: 403,
+      requestId,
+      metadata: { integrationId: config.id },
+    });
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Apenas administradores podem testar endpoints de integração.' },
+        { status: 403 },
+      ),
+      rateLimit,
     );
   }
 
@@ -93,9 +113,20 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', config.id);
 
-    return NextResponse.json(
-      { error: urlCheck.reason },
-      { status: 400 },
+    logAuditEvent({
+      event: 'admin.integration_ssrf_blocked',
+      resource: 'integration_configs',
+      action: 'test',
+      outcome: 'denied',
+      actorId: authUser.id,
+      statusCode: 400,
+      requestId,
+      metadata: { integrationId: config.id, provider: config.provider },
+    });
+
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({ error: urlCheck.reason }, { status: 400 }),
+      rateLimit,
     );
   }
 
@@ -143,15 +174,32 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (updateError) {
-    return supabaseErrorResponse(
-      updateError,
-      'Não foi possível salvar o resultado do teste.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        updateError,
+        'Não foi possível salvar o resultado do teste.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({
-    integration: updated,
-    reachable,
+  logAuditEvent({
+    event: 'admin.integration_tested',
+    resource: 'integration_configs',
+    action: 'test',
+    outcome: reachable ? 'allowed' : 'error',
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: { integrationId: config.id, provider: config.provider, reachable },
   });
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      integration: updated,
+      reachable,
+    }),
+    rateLimit,
+  );
 }

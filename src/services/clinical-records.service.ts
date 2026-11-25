@@ -149,23 +149,28 @@ export async function salvarProntuario(
   input: SaveClinicalRecordInput,
 ): Promise<{ clinicalRecord: ClinicalRecord }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('save_clinical_record', {
-      target_appointment: input.appointment_id,
-      target_subjective: input.subjective,
-      target_objective: input.objective,
-      target_assessment: input.assessment,
-      target_plan: input.plan,
-      target_vitals: input.vitals as unknown as Json,
-      target_status: input.status,
+    const response = await fetch('/api/clinical-records', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
     });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      clinicalRecord?: ClinicalRecord & { vitals: Json };
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.clinicalRecord) {
+      throw new Error(
+        payload?.error || 'Não foi possível salvar o prontuário.',
+      );
+    }
 
     return {
       clinicalRecord: {
-        ...data,
-        vitals: parseVitals(data.vitals),
+        ...payload.clinicalRecord,
+        vitals: parseVitals(payload.clinicalRecord.vitals),
       },
     };
   } catch (error) {

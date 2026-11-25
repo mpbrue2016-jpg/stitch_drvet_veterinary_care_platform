@@ -283,7 +283,11 @@ export function Toast({
   };
 
   return (
-    <div className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 text-sm ${colors[variant]}`} role={role}>
+    <div
+      aria-live={variant === 'danger' ? 'assertive' : 'polite'}
+      className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 text-sm ${colors[variant]}`}
+      role={role}
+    >
       <span>{message}</span>
       {onDismiss && (
         <Button aria-label="Dispensar aviso" className="min-h-7 px-2" onClick={onDismiss} type="button" variant="ghost">
@@ -293,3 +297,52 @@ export function Toast({
     </div>
   );
 }
+
+export function PaginationControls({
+  page,
+  totalPages,
+  total,
+  onPageChange,
+  disabled = false,
+}: {
+  page: number;
+  totalPages: number;
+  total: number;
+  onPageChange: (nextPage: number) => void;
+  disabled?: boolean;
+}) {
+  if (total === 0) return null;
+
+  return (
+    <nav
+      aria-label="Paginação de resultados"
+      className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 text-xs text-slate-600"
+    >
+      <p>
+        Página <strong>{page}</strong> de <strong>{totalPages}</strong> ·{' '}
+        <strong>{total}</strong> registro{total === 1 ? '' : 's'}
+      </p>
+      <div className="flex items-center gap-2">
+        <Button
+          aria-label="Página anterior"
+          disabled={disabled || page <= 1}
+          onClick={() => onPageChange(page - 1)}
+          type="button"
+          variant="outline"
+        >
+          ← Anterior
+        </Button>
+        <Button
+          aria-label="Próxima página"
+          disabled={disabled || page >= totalPages}
+          onClick={() => onPageChange(page + 1)}
+          type="button"
+          variant="outline"
+        >
+          Próxima →
+        </Button>
+      </div>
+    </nav>
+  );
+}
+

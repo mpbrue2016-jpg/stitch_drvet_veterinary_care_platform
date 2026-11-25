@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import { persistServerAuditLog } from '@/lib/notifications/outbox';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 import { clinicalVitalsSchema } from '@/lib/validations';
 
@@ -18,30 +22,25 @@ const saveClinicalRecordSchema = z
   .strict();
 
 export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:clinical-records:get',
+    limit: 90,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const appointmentId = z
     .string()
     .uuid()
     .safeParse(request.nextUrl.searchParams.get('appointmentId'));
   if (!appointmentId.success) {
-    return NextResponse.json(
-      { error: 'Informe um agendamento válido.' },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe um agendamento válido.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
 
@@ -52,14 +51,20 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (appointmentError) {
-    return supabaseErrorResponse(
-      appointmentError,
-      'Não foi possível carregar o agendamento.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        appointmentError,
+        'Não foi possível carregar o agendamento.',
+        500,
+      ),
+      rateLimit,
     );
   }
   if (!appointment) {
-    return NextResponse.json({ error: 'Agendamento não encontrado.' }, { status: 404 });
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({ error: 'Agendamento não encontrado.' }, { status: 404 }),
+      rateLimit,
+    );
   }
 
   const { data: clinicalRecord, error: recordError } = await supabase
@@ -71,46 +76,47 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (recordError) {
-    return supabaseErrorResponse(
-      recordError,
-      'Não foi possível carregar o prontuário.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        recordError,
+        'Não foi possível carregar o prontuário.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({
-    clinicalRecord,
-    canEdit:
-      appointment.veterinarian_id === authData.user.id &&
-      (appointment.status === 'completed' ||
-        (appointment.status === 'confirmed' &&
-          new Date(appointment.starts_at).getTime() <= Date.now())),
-  });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      clinicalRecord,
+      canEdit:
+        appointment.veterinarian_id === authUser.id &&
+        (appointment.status === 'completed' ||
+          (appointment.status === 'confirmed' &&
+            new Date(appointment.starts_at).getTime() <= Date.now())),
+    }),
+    rateLimit,
+  );
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:clinical-records:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = saveClinicalRecordSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
 
@@ -135,16 +141,47 @@ export async function POST(request: NextRequest) {
             : error.code === '55000'
               ? 409
               : 500;
-    return supabaseErrorResponse(
-      error,
-      error.code === '55000'
-        ? 'Este prontuário já foi finalizado e não pode ser alterado.'
-        : error.code === '22023'
-          ? 'Revise os campos SOAP obrigatórios e os valores dos sinais vitais.'
-          : 'Não foi possível salvar o prontuário.',
-      status,
+    const failedAudit = {
+      event: 'clinical_records.save_failed',
+      resource: 'clinical_records',
+      action: parsed.data.status,
+      outcome: (status === 403 ? 'denied' : 'error') as 'denied' | 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { appointmentId: parsed.data.appointment_id },
+    };
+    logAuditEvent(failedAudit);
+    await persistServerAuditLog(failedAudit);
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        error.code === '55000'
+          ? 'Este prontuário já foi finalizado e não pode ser alterado.'
+          : error.code === '22023'
+            ? 'Revise os campos SOAP obrigatórios e os valores dos sinais vitais.'
+            : 'Não foi possível salvar o prontuário.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ clinicalRecord: data });
+  const savedAudit = {
+    event: 'clinical_records.saved',
+    resource: 'clinical_records',
+    action: parsed.data.status,
+    outcome: 'allowed' as const,
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: { appointmentId: parsed.data.appointment_id, status: parsed.data.status },
+  };
+  logAuditEvent(savedAudit);
+  await persistServerAuditLog(savedAudit);
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ clinicalRecord: data }),
+    rateLimit,
+  );
 }

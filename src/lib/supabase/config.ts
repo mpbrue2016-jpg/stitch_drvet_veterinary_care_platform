@@ -34,3 +34,18 @@ export function isSupabaseConfigured() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
   );
 }
+
+export function getAppBaseUrl(fallbackOrigin = 'http://localhost:3000'): string {
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (!configured) return fallbackOrigin;
+  try {
+    const parsed = new URL(configured);
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+      return parsed.origin;
+    }
+  } catch {
+    // Fallback to request/browser origin if NEXT_PUBLIC_APP_URL is invalid.
+  }
+  return fallbackOrigin;
+}
+

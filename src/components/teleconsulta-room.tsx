@@ -8,6 +8,7 @@ import {
   PhoneCall,
   PhoneOff,
   Radio,
+  ShieldCheck,
   Video,
   VideoOff,
 } from 'lucide-react';
@@ -25,10 +26,13 @@ import { listarAgendamentos } from '@/services/appointments.service';
 import {
   abrirSalaTeleconsulta,
   atualizarSessaoTeleconsulta,
+  buscarConsentimentoTeleconsulta,
   enviarMensagemTeleconsulta,
   inscreverMensagensTeleconsulta,
   listarMensagensTeleconsulta,
   listarSessoesTeleconsulta,
+  registrarConsentimentoTeleconsulta,
+  type ConsentReadinessPayload,
 } from '@/services/teleconsultations.service';
 import type {
   Appointment,
@@ -79,6 +83,11 @@ export function TeleconsultaRoom() {
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+  const [consentData, setConsentData] = useState<ConsentReadinessPayload | null>(
+    null,
+  );
+  const [consentError, setConsentError] = useState('');
+  const [consentBusy, setConsentBusy] = useState(false);
 
   // WebRTC state
   const [callState, setCallState] = useState<CallState>('idle');
@@ -224,6 +233,35 @@ export function TeleconsultaRoom() {
     return () => {
       cancelled = true;
       unsubscribe();
+    };
+  }, [selectedSessionId]);
+
+  useEffect(() => {
+    if (!selectedSessionId) {
+      setConsentData(null);
+      setConsentError('');
+      return;
+    }
+
+    let cancelled = false;
+    setConsentError('');
+    void buscarConsentimentoTeleconsulta(selectedSessionId)
+      .then((res) => {
+        if (!cancelled) setConsentData(res);
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setConsentData(null);
+          setConsentError(
+            error instanceof Error
+              ? error.message
+              : 'Não foi possível verificar o consentimento bilateral.',
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
     };
   }, [selectedSessionId]);
 
@@ -501,7 +539,64 @@ export function TeleconsultaRoom() {
     }
   }
 
+  async function handleToggleParticipantConsent(granted: boolean) {
+    if (!selectedSession) return;
+    setConsentBusy(true);
+    setConsentError('');
+    setNotice('');
+    try {
+      const updated = await registrarConsentimentoTeleconsulta(
+        selectedSession.id,
+        granted,
+      );
+      setConsentData((current) => ({
+        consent: updated.consent,
+        readiness: updated.readiness,
+        actorParty:
+          current?.actorParty ??
+          (selectedSession.tutor_id === currentUserId
+            ? 'tutor'
+            : selectedSession.veterinarian_id === currentUserId
+              ? 'vet'
+              : 'observer'),
+      }));
+      setSessions((current) =>
+        current.map((item) =>
+          item.id === selectedSession.id
+            ? { ...item, recording_consent: updated.readiness.bilateralConsented }
+            : item,
+        ),
+      );
+      setNotice(
+        granted
+          ? 'Seu consentimento individual foi registrado com data/hora.'
+          : 'Seu consentimento foi revogado.',
+      );
+    } catch (error) {
+      setConsentError(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao registrar consentimento.',
+      );
+    } finally {
+      setConsentBusy(false);
+    }
+  }
+
   const isSessionVet = selectedSession?.veterinarian_id === currentUserId;
+  const actorParty =
+    consentData?.actorParty ??
+    (selectedSession?.tutor_id === currentUserId
+      ? 'tutor'
+      : selectedSession?.veterinarian_id === currentUserId
+        ? 'vet'
+        : 'observer');
+  const actorHasConsented =
+    actorParty === 'tutor'
+      ? Boolean(consentData?.readiness.tutorConsented)
+      : actorParty === 'vet'
+        ? Boolean(consentData?.readiness.vetConsented)
+        : false;
 
   return (
     <div className="grid gap-5">
@@ -642,8 +737,14 @@ export function TeleconsultaRoom() {
                       Status: {statusLabels[selectedSession.status]}
                     </p>
                     <p className="mt-1 text-xs text-slate-200">
-                      Consentimento de registro:{' '}
-                      {selectedSession.recording_consent ? 'Autorizado' : 'Não autorizado'}
+                      Consentimento bilateral:{' '}
+                      {consentData
+                        ? consentData.readiness.bilateralConsented
+                          ? 'Tutor e veterinário autorizaram'
+                          : 'Aguardando anuência de ambas as partes'
+                        : selectedSession.recording_consent
+                          ? 'Autorizado'
+                          : 'Pendente'}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -677,23 +778,6 @@ export function TeleconsultaRoom() {
                         Encerrar sala
                       </Button>
                     )}
-                    {isSessionVet && (
-                      <Button
-                        disabled={busy}
-                        onClick={() =>
-                          void handleUpdateSession({
-                            sessionId: selectedSession.id,
-                            recording_consent: !selectedSession.recording_consent,
-                          })
-                        }
-                        type="button"
-                        variant="outline"
-                      >
-                        {selectedSession.recording_consent
-                          ? 'Revogar gravação'
-                          : 'Autorizar gravação'}
-                      </Button>
-                    )}
                     <Link
                       className="inline-flex min-h-10 items-center rounded-lg bg-white px-4 text-sm font-semibold text-[#153b50]"
                       href={`/prontuarios/${selectedSession.appointment_id}`}
@@ -709,6 +793,116 @@ export function TeleconsultaRoom() {
                       </Link>
                     )}
                   </div>
+                </div>
+
+                {/* Consentimento Bilateral LGPD & CFMV */}
+                <div className="rounded-2xl border border-slate-200 bg-[#f6faff] p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm font-bold text-[#153b50]">
+                        <ShieldCheck className="h-4 w-4 text-[#087a68]" />
+                        <span>Consentimento Bilateral LGPD &amp; CFMV</span>
+                      </div>
+                      <p className="text-xs text-slate-600">
+                        Nenhuma gravação é iniciada ou armazenada localmente sem anuência explícita de ambos os participantes e bucket privado criptografado.
+                      </p>
+                    </div>
+                    {actorParty !== 'observer' && (
+                      <Button
+                        disabled={
+                          consentBusy || selectedSession.status === 'ended'
+                        }
+                        onClick={() =>
+                          void handleToggleParticipantConsent(!actorHasConsented)
+                        }
+                        type="button"
+                        variant={actorHasConsented ? 'outline' : 'secondary'}
+                      >
+                        {consentBusy
+                          ? 'Registrando...'
+                          : actorHasConsented
+                            ? 'Revogar meu consentimento'
+                            : 'Autorizar como participante'}
+                      </Button>
+                    )}
+                  </div>
+
+                  {consentError && (
+                    <p
+                      className="mt-3 rounded-xl bg-red-50 p-2.5 text-xs text-red-800"
+                      role="alert"
+                    >
+                      {consentError}
+                    </p>
+                  )}
+
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                        Tutor responsável
+                      </p>
+                      <div className="mt-1">
+                        <Badge
+                          variant={
+                            consentData?.readiness.tutorConsented
+                              ? 'success'
+                              : 'warning'
+                          }
+                        >
+                          {consentData?.readiness.tutorConsented
+                            ? 'Consentido'
+                            : 'Pendente'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                        Médico-veterinário
+                      </p>
+                      <div className="mt-1">
+                        <Badge
+                          variant={
+                            consentData?.readiness.vetConsented
+                              ? 'success'
+                              : 'warning'
+                          }
+                        >
+                          {consentData?.readiness.vetConsented
+                            ? 'Consentido'
+                            : 'Pendente'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                        Gravação de mídia
+                      </p>
+                      <div className="mt-1">
+                        <Badge
+                          variant={
+                            consentData?.readiness.recordingPermitted
+                              ? 'success'
+                              : 'neutral'
+                          }
+                        >
+                          {consentData?.readiness.recordingPermitted
+                            ? 'Habilitada'
+                            : 'Desativada por política'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {consentData &&
+                    consentData.readiness.missingRequirements.length > 0 && (
+                      <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-slate-600">
+                        {consentData.readiness.missingRequirements.map((req) => (
+                          <li key={req}>{req}</li>
+                        ))}
+                      </ul>
+                    )}
                 </div>
 
                 {/* Vídeo e Áudio WebRTC P2P com sinalização via Supabase Realtime */}

@@ -1,10 +1,29 @@
 import { getSupabaseClient } from '@/lib/supabase';
+import type { RecordingReadinessResult } from '@/lib/teleconsultation/consent';
 import type {
   TeleconsultationMessage,
   TeleconsultationSession,
   TeleconsultationStatus,
 } from '@/types/entities';
 import { toFriendlyError } from './errors';
+
+export interface TeleconsultationConsentSummary {
+  session_id: string;
+  appointment_id: string;
+  tutor_id: string;
+  veterinarian_id: string;
+  policy_version: string;
+  tutor_consented_at: string | null;
+  tutor_revoked_at: string | null;
+  vet_consented_at: string | null;
+  vet_revoked_at: string | null;
+}
+
+export interface ConsentReadinessPayload {
+  consent: TeleconsultationConsentSummary | null;
+  readiness: RecordingReadinessResult;
+  actorParty: 'tutor' | 'vet' | 'observer';
+}
 
 const SESSION_COLUMNS =
   'id, appointment_id, organization_id, pet_id, tutor_id, veterinarian_id, room_code, status, recording_consent, started_at, ended_at, notes, created_at, updated_at';
@@ -44,12 +63,24 @@ export async function abrirSalaTeleconsulta(
   appointmentId: string,
 ): Promise<{ session: TeleconsultationSession }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('open_teleconsultation_session', {
-      target_appointment: appointmentId,
+    const response = await fetch('/api/teleconsultation/sessions', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ appointmentId }),
     });
-    if (error) throw error;
-    return { session: data };
+    const payload = (await response.json().catch(() => null)) as {
+      session?: TeleconsultationSession;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.session) {
+      throw new Error(
+        payload?.error || 'Não foi possível abrir a sala de teleconsulta.',
+      );
+    }
+
+    return { session: payload.session };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -61,45 +92,111 @@ export async function abrirSalaTeleconsulta(
 export async function atualizarSessaoTeleconsulta(input: {
   sessionId: string;
   status?: TeleconsultationStatus;
-  recording_consent?: boolean;
   notes?: string | null;
 }): Promise<{ session: TeleconsultationSession }> {
   try {
-    const supabase = getSupabaseClient();
-    const now = new Date().toISOString();
-    const patch: {
-      status?: TeleconsultationStatus;
-      recording_consent?: boolean;
-      notes?: string | null;
-      started_at?: string | null;
-      ended_at?: string | null;
-    } = {};
+    const response = await fetch('/api/teleconsultation/sessions', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: input.sessionId,
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.notes !== undefined
+          ? { notes: input.notes?.trim() || null }
+          : {}),
+      }),
+    });
+    const payload = (await response.json().catch(() => null)) as {
+      session?: TeleconsultationSession;
+      error?: string;
+    } | null;
 
-    if (input.status !== undefined) {
-      patch.status = input.status;
-      if (input.status === 'in_progress') patch.started_at = now;
-      if (input.status === 'ended') patch.ended_at = now;
-    }
-    if (input.recording_consent !== undefined) {
-      patch.recording_consent = input.recording_consent;
-    }
-    if (input.notes !== undefined) {
-      patch.notes = input.notes?.trim() || null;
+    if (!response.ok || !payload?.session) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível atualizar a sessão de teleconsulta.',
+      );
     }
 
-    const { data, error } = await supabase
-      .from('teleconsultation_sessions')
-      .update(patch)
-      .eq('id', input.sessionId)
-      .select(SESSION_COLUMNS)
-      .single();
-
-    if (error) throw error;
-    return { session: data };
+    return { session: payload.session };
   } catch (error) {
     throw toFriendlyError(
       error,
       'Não foi possível atualizar a sessão de teleconsulta.',
+    );
+  }
+}
+
+export async function buscarConsentimentoTeleconsulta(
+  sessionId: string,
+): Promise<ConsentReadinessPayload> {
+  try {
+    const response = await fetch(
+      `/api/teleconsultation/consent?sessionId=${encodeURIComponent(sessionId)}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+      },
+    );
+    const payload = (await response.json().catch(() => null)) as
+      | (ConsentReadinessPayload & { error?: string })
+      | null;
+    if (!response.ok || !payload?.readiness) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível verificar o status do consentimento bilateral.',
+      );
+    }
+    return {
+      consent: payload.consent ?? null,
+      readiness: payload.readiness,
+      actorParty: payload.actorParty ?? 'observer',
+    };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível verificar o status do consentimento bilateral.',
+    );
+  }
+}
+
+export async function registrarConsentimentoTeleconsulta(
+  sessionId: string,
+  granted: boolean,
+): Promise<{
+  consent: TeleconsultationConsentSummary | null;
+  readiness: RecordingReadinessResult;
+}> {
+  try {
+    const response = await fetch('/api/teleconsultation/consent', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ sessionId, granted }),
+    });
+    const payload = (await response.json().catch(() => null)) as
+      | {
+          consent?: TeleconsultationConsentSummary | null;
+          readiness?: RecordingReadinessResult;
+          error?: string;
+        }
+      | null;
+    if (!response.ok || !payload?.readiness) {
+      throw new Error(
+        payload?.error || 'Não foi possível registrar seu consentimento.',
+      );
+    }
+    return {
+      consent: payload.consent ?? null,
+      readiness: payload.readiness,
+    };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível registrar seu consentimento.',
     );
   }
 }
@@ -128,37 +225,26 @@ export async function enviarMensagemTeleconsulta(input: {
   message: string;
 }): Promise<{ message: TeleconsultationMessage }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
-      throw new Error('Faça login para enviar mensagens na sala.');
+    const response = await fetch('/api/teleconsultation/messages', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: input.sessionId,
+        message: input.message.trim(),
+      }),
+    });
+
+    const payload = (await response.json().catch(() => null)) as {
+      message?: TeleconsultationMessage;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.message) {
+      throw new Error(payload?.error || 'Não foi possível enviar a mensagem.');
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', authData.user.id)
-      .maybeSingle();
-
-    const senderName =
-      profile?.display_name ||
-      String(authData.user.user_metadata?.display_name ?? '') ||
-      authData.user.email ||
-      'Participante';
-
-    const { data, error } = await supabase
-      .from('teleconsultation_messages')
-      .insert({
-        session_id: input.sessionId,
-        sender_id: authData.user.id,
-        sender_name: senderName,
-        message: input.message.trim(),
-      })
-      .select('id, session_id, sender_id, sender_name, message, created_at')
-      .single();
-
-    if (error) throw error;
-    return { message: data };
+    return { message: payload.message };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível enviar a mensagem.');
   }

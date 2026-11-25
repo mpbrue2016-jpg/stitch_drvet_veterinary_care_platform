@@ -80,25 +80,26 @@ export async function criarHorarioDisponivel(
   input: CreateAvailabilityInput,
 ): Promise<{ slot: AvailabilitySlot }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
-      throw new Error('Faça login para publicar horários.');
+    const response = await fetch('/api/availability', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+
+    const payload = (await response.json().catch(() => null)) as {
+      availability?: AvailabilitySlot;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.availability) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível criar o horário. Verifique aprovação e sobreposição.',
+      );
     }
 
-    const { data, error } = await supabase
-      .from('professional_availability')
-      .insert({
-        organization_id: input.organization_id,
-        veterinarian_id: authData.user.id,
-        starts_at: input.starts_at,
-        ends_at: input.ends_at,
-      })
-      .select(AVAILABILITY_COLUMNS)
-      .single();
-
-    if (error) throw error;
-    return { slot: data };
+    return { slot: payload.availability };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -113,15 +114,30 @@ export async function alternarBloqueioHorario(input: {
   block_reason: string | null;
 }): Promise<{ slot: AvailabilitySlot }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('set_availability_block', {
-      target_availability: input.id,
-      should_block: input.is_blocked,
-      target_reason: input.is_blocked ? input.block_reason ?? null : null,
+    const response = await fetch('/api/availability', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: input.id,
+        is_blocked: input.is_blocked,
+        block_reason: input.is_blocked ? input.block_reason ?? null : null,
+      }),
     });
 
-    if (error) throw error;
-    return { slot: data };
+    const payload = (await response.json().catch(() => null)) as {
+      availability?: AvailabilitySlot;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.availability) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível atualizar o bloqueio deste horário.',
+      );
+    }
+
+    return { slot: payload.availability };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -132,13 +148,22 @@ export async function alternarBloqueioHorario(input: {
 
 export async function excluirHorarioDisponivel(id: string): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase
-      .from('professional_availability')
-      .delete()
-      .eq('id', id);
+    const response = await fetch('/api/availability', {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+
+    if (!response.ok) {
+      throw new Error(
+        payload?.error || 'Não foi possível excluir o horário.',
+      );
+    }
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível excluir o horário.');
   }

@@ -1,6 +1,16 @@
+import type { PaginationMeta } from '@/lib/pagination';
 import { getSupabaseClient } from '@/lib/supabase';
 import type { ExamModality, ExamOrder, PetSummary } from '@/types/entities';
 import { toFriendlyError } from './errors';
+
+export interface ListExamOrdersParams {
+  appointmentId?: string;
+  q?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
 
 export interface CreateExamOrderInput {
   appointment_id: string;
@@ -37,31 +47,43 @@ async function attachPets<T extends { pet_id: string }>(
 }
 
 export async function listarPedidosExames(
-  appointmentId?: string,
-): Promise<{ examOrders: ExamOrder[] }> {
+  appointmentIdOrParams?: string | ListExamOrdersParams,
+): Promise<{ examOrders: ExamOrder[]; pagination?: PaginationMeta }> {
   try {
-    const supabase = getSupabaseClient();
-    let query = supabase
-      .from('exam_orders')
-      .select(EXAM_ORDER_COLUMNS)
-      .order('requested_at', { ascending: false })
-      .limit(100);
+    const params: ListExamOrdersParams =
+      typeof appointmentIdOrParams === 'string'
+        ? { appointmentId: appointmentIdOrParams }
+        : (appointmentIdOrParams ?? {});
 
-    if (appointmentId) {
-      query = query.eq('appointment_id', appointmentId);
+    const query = new URLSearchParams();
+    if (params.appointmentId) query.set('appointmentId', params.appointmentId);
+    if (params.q?.trim()) query.set('q', params.q.trim());
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.page && params.page > 0) query.set('page', String(params.page));
+    if (params.limit && params.limit > 0) query.set('limit', String(params.limit));
+
+    const qs = query.toString();
+    const response = await fetch(`/api/exam-orders${qs ? `?${qs}` : ''}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const payload = (await response.json().catch(() => null)) as {
+      examOrders?: ExamOrder[];
+      pagination?: PaginationMeta;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload) {
+      throw new Error(
+        payload?.error || 'Não foi possível carregar os pedidos de exames.',
+      );
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-
-    const rows = data ?? [];
-    const petById = await attachPets(rows);
-
     return {
-      examOrders: rows.map((row) => ({
-        ...row,
-        pet: petById.get(row.pet_id) ?? null,
-      })),
+      examOrders: payload.examOrders ?? [],
+      pagination: payload.pagination,
     };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível carregar os pedidos de exames.');
@@ -96,24 +118,31 @@ export async function criarPedidoExame(
   input: CreateExamOrderInput,
 ): Promise<{ examOrder: ExamOrder }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('create_exam_order', {
-      target_appointment: input.appointment_id,
-      target_modality: input.modality,
-      target_exam_name: input.exam_name.trim(),
-      target_clinical_indication: input.clinical_indication.trim(),
-      target_instructions: input.instructions?.trim() || null,
+    const response = await fetch('/api/exam-orders', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        appointment_id: input.appointment_id,
+        modality: input.modality,
+        exam_name: input.exam_name.trim(),
+        clinical_indication: input.clinical_indication.trim(),
+        instructions: input.instructions?.trim() || null,
+      }),
     });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      examOrder?: ExamOrder;
+      error?: string;
+    } | null;
 
-    const petById = await attachPets([data]);
-    return {
-      examOrder: {
-        ...data,
-        pet: petById.get(data.pet_id) ?? null,
-      },
-    };
+    if (!response.ok || !payload?.examOrder) {
+      throw new Error(
+        payload?.error || 'Não foi possível criar o pedido de exame.',
+      );
+    }
+
+    return { examOrder: payload.examOrder };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível criar o pedido de exame.');
   }
@@ -123,23 +152,30 @@ export async function registrarResultadoExame(
   input: RecordExamResultInput,
 ): Promise<{ examOrder: ExamOrder }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('record_exam_result', {
-      target_exam_order: input.id,
-      target_result_summary: input.result_summary.trim(),
-      target_laboratory_name: input.laboratory_name?.trim() || null,
-      target_performed_at: input.performed_at || null,
+    const response = await fetch('/api/exam-orders', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: input.id,
+        result_summary: input.result_summary.trim(),
+        laboratory_name: input.laboratory_name?.trim() || null,
+        performed_at: input.performed_at || null,
+      }),
     });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      examOrder?: ExamOrder;
+      error?: string;
+    } | null;
 
-    const petById = await attachPets([data]);
-    return {
-      examOrder: {
-        ...data,
-        pet: petById.get(data.pet_id) ?? null,
-      },
-    };
+    if (!response.ok || !payload?.examOrder) {
+      throw new Error(
+        payload?.error || 'Não foi possível registrar o resultado do exame.',
+      );
+    }
+
+    return { examOrder: payload.examOrder };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível registrar o resultado do exame.');
   }

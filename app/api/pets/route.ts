@@ -1,78 +1,164 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { supabaseErrorResponse } from '@/lib/supabase/api-error';
-import { createPetSchema } from '@/lib/validations';
+import { logAuditEvent } from '@/lib/logging/audit';
+import { parseListFilterParams } from '@/lib/pagination';
+import {
+  createAuthorizedPet,
+  createSupabasePetsDataClient,
+  deleteAuthorizedPet,
+  listAuthorizedPets,
+  updateAuthorizedPet,
+} from '@/lib/pets/server-pets';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
+import type { RateLimitResult } from '@/lib/security/rate-limit';
 
-const PET_COLUMNS =
-  'id, owner_id, name, species, breed, birth_date, sex, notes, created_at, updated_at';
+function toJsonResponse<T>(
+  result:
+    | { ok: true; status: number; data: T }
+    | { ok: false; status: number; error: string; code?: string; details?: unknown },
+  rateLimit: RateLimitResult | null,
+) {
+  const response = result.ok
+    ? NextResponse.json(result.data, { status: result.status })
+    : NextResponse.json(
+        {
+          error: result.error,
+          ...(result.code ? { code: result.code } : {}),
+          ...(result.details ? { details: result.details } : {}),
+        },
+        { status: result.status },
+      );
 
-export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
+  return applyRateLimitHeadersToResponse(response, rateLimit);
+}
+
+export async function GET(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:pets:get',
+    limit: 90,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+
+  const scope = request.nextUrl.searchParams.get('scope');
+  const petId = request.nextUrl.searchParams.get('id');
+  const { page, limit, q } = parseListFilterParams(request.nextUrl.searchParams, {
+    limit: 50,
+    maxLimit: 100,
+  });
+
+  const result = await listAuthorizedPets(
+    createSupabasePetsDataClient(ctx.supabase),
+    ctx.user,
+    { scope, petId, q, page, limit },
+  );
+
+  if (!result.ok && result.status === 403) {
+    logAuditEvent({
+      event: 'pets.list_denied',
+      resource: 'pets',
+      action: 'read',
+      outcome: 'denied',
+      actorId: ctx.user.id,
+      statusCode: result.status,
+      requestId: ctx.requestId,
+      metadata: { scope: scope ?? 'mine' },
+    });
   }
 
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
-  }
-
-  const { data, error } = await supabase
-    .from('pets')
-    .select(PET_COLUMNS)
-    .eq('owner_id', authData.user.id)
-    .order('name');
-
-  if (error) {
-    return supabaseErrorResponse(error, 'Não foi possível carregar os pets.', 500);
-  }
-
-  return NextResponse.json({ pets: data });
+  return toJsonResponse(result, ctx.rateLimit);
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:pets:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
 
   const body: unknown = await request.json().catch(() => null);
-  const parsed = createPetSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
-    );
+  const result = await createAuthorizedPet(
+    createSupabasePetsDataClient(ctx.supabase),
+    ctx.user,
+    body,
+  );
+
+  logAuditEvent({
+    event: result.ok ? 'pets.created' : 'pets.create_failed',
+    resource: 'pets',
+    action: 'create',
+    outcome: result.ok ? 'allowed' : result.status === 403 ? 'denied' : 'error',
+    actorId: ctx.user.id,
+    statusCode: result.status,
+    requestId: ctx.requestId,
+    metadata: result.ok ? { petId: result.data.pet.id } : undefined,
+  });
+
+  return toJsonResponse(result, ctx.rateLimit);
+}
+
+export async function PATCH(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:pets:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+
+  const body: unknown = await request.json().catch(() => null);
+  const result = await updateAuthorizedPet(
+    createSupabasePetsDataClient(ctx.supabase),
+    ctx.user,
+    body,
+  );
+
+  logAuditEvent({
+    event: result.ok ? 'pets.updated' : 'pets.update_failed',
+    resource: 'pets',
+    action: 'update',
+    outcome: result.ok ? 'allowed' : result.status === 403 ? 'denied' : 'error',
+    actorId: ctx.user.id,
+    statusCode: result.status,
+    requestId: ctx.requestId,
+    metadata: result.ok ? { petId: result.data.pet.id } : undefined,
+  });
+
+  return toJsonResponse(result, ctx.rateLimit);
+}
+
+export async function DELETE(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:pets:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+
+  let petId = request.nextUrl.searchParams.get('id');
+  if (!petId) {
+    const body = (await request.json().catch(() => null)) as { id?: string } | null;
+    petId = body?.id ?? null;
   }
 
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
-  }
+  const result = await deleteAuthorizedPet(
+    createSupabasePetsDataClient(ctx.supabase),
+    ctx.user,
+    petId,
+  );
 
-  const { data, error } = await supabase
-    .from('pets')
-    .insert({
-      owner_id: authData.user.id,
-      ...parsed.data,
-      breed: parsed.data.breed || null,
-      birth_date: parsed.data.birth_date || null,
-      sex: parsed.data.sex ?? null,
-      notes: parsed.data.notes || null,
-    })
-    .select(PET_COLUMNS)
-    .single();
+  logAuditEvent({
+    event: result.ok ? 'pets.deleted' : 'pets.delete_failed',
+    resource: 'pets',
+    action: 'delete',
+    outcome: result.ok ? 'allowed' : result.status === 403 ? 'denied' : 'error',
+    actorId: ctx.user.id,
+    statusCode: result.status,
+    requestId: ctx.requestId,
+    metadata: petId ? { petId } : undefined,
+  });
 
-  if (error) {
-    return supabaseErrorResponse(error, 'Não foi possível cadastrar o pet.', 500);
-  }
-
-  return NextResponse.json({ pet: data }, { status: 201 });
+  return toJsonResponse(result, ctx.rateLimit);
 }

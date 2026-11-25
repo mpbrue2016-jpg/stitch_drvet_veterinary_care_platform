@@ -2,13 +2,21 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, EmptyState, Skeleton } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  Input,
+  PaginationControls,
+  Select,
+  Skeleton,
+} from '@/components/ui';
 import { PushInlineBanner } from '@/components/push-inline-banner';
+import type { PaginationMeta } from '@/lib/pagination';
 import {
   atualizarStatusAgendamento,
   listarAgendamentos,
 } from '@/services/appointments.service';
-import type { Appointment } from '@/types/entities';
+import type { Appointment, AppointmentStatus } from '@/types/entities';
 
 const statusLabels: Record<Appointment['status'], string> = {
   pending: 'Aguardando confirmação',
@@ -30,14 +38,48 @@ export function AppointmentsList() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState('');
   const [currentUserId, setCurrentUserId] = useState('');
+  const [deniedNotice, setDeniedNotice] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | ''>('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const denied = new URLSearchParams(window.location.search).get('denied');
+    if (denied === 'admin') {
+      setDeniedNotice(
+        'Acesso restrito: apenas contas com perfil Administrador podem abrir aquela área.',
+      );
+    } else if (denied === 'role') {
+      setDeniedNotice(
+        'Seu perfil atual não possui permissão para acessar aquela área profissional.',
+      );
+    } else if (denied === 'schema') {
+      setDeniedNotice(
+        'Banco de dados ainda não inicializado neste projeto Supabase para validar permissões avançadas.',
+      );
+    }
+  }, []);
 
   const loadAppointments = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
     try {
-      const result = await listarAgendamentos();
+      const result = await listarAgendamentos({
+        page,
+        limit: 10,
+        q: searchQuery || undefined,
+        status: statusFilter || undefined,
+        from: dateFrom || undefined,
+        to: dateTo || undefined,
+      });
       setAppointments(result.appointments);
       setCurrentUserId(result.currentUserId);
+      setPagination(result.pagination ?? null);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar os agendamentos.',
@@ -45,7 +87,7 @@ export function AppointmentsList() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dateFrom, dateTo, page, searchQuery, statusFilter]);
 
   useEffect(() => {
     void loadAppointments();
@@ -90,6 +132,98 @@ export function AppointmentsList() {
         <PushInlineBanner audience="tutor" />
       </div>
 
+      <form
+        aria-label="Filtrar agendamentos"
+        className="mt-5 grid gap-3 rounded-2xl border border-slate-100 bg-[#f6faff] p-4 sm:grid-cols-2 lg:grid-cols-5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setPage(1);
+          setSearchQuery(searchInput.trim());
+        }}
+      >
+        <div className="lg:col-span-2">
+          <Input
+            label="Buscar por pet, motivo ou tipo"
+            name="appointments-search"
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder="Ex.: Pipoca, teleconsulta..."
+            value={searchInput}
+          />
+        </div>
+        <Select
+          label="Status"
+          name="appointments-status"
+          onChange={(event) => {
+            setStatusFilter(event.target.value as AppointmentStatus | '');
+            setPage(1);
+          }}
+          value={statusFilter}
+        >
+          <option value="">Todos os status</option>
+          <option value="pending">Aguardando confirmação</option>
+          <option value="confirmed">Confirmado</option>
+          <option value="completed">Concluído</option>
+          <option value="cancelled">Cancelado</option>
+        </Select>
+        <Input
+          label="De"
+          name="appointments-from"
+          onChange={(event) => {
+            setDateFrom(event.target.value);
+            setPage(1);
+          }}
+          type="date"
+          value={dateFrom}
+        />
+        <Input
+          label="Até"
+          name="appointments-to"
+          onChange={(event) => {
+            setDateTo(event.target.value);
+            setPage(1);
+          }}
+          type="date"
+          value={dateTo}
+        />
+        <div className="flex flex-wrap items-center gap-2 sm:col-span-2 lg:col-span-5">
+          <Button type="submit" variant="primary">
+            Aplicar busca
+          </Button>
+          {(searchQuery || searchInput || statusFilter || dateFrom || dateTo) && (
+            <Button
+              onClick={() => {
+                setSearchInput('');
+                setSearchQuery('');
+                setStatusFilter('');
+                setDateFrom('');
+                setDateTo('');
+                setPage(1);
+              }}
+              type="button"
+              variant="outline"
+            >
+              Limpar filtros
+            </Button>
+          )}
+        </div>
+      </form>
+
+      {deniedNotice && (
+        <div
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950"
+          role="status"
+        >
+          <p>{deniedNotice}</p>
+          <button
+            className="text-xs font-bold underline"
+            onClick={() => setDeniedNotice('')}
+            type="button"
+          >
+            Fechar
+          </button>
+        </div>
+      )}
+
       {errorMessage && (
         <div
           className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-red-50 p-3 text-sm text-red-800"
@@ -110,12 +244,21 @@ export function AppointmentsList() {
       ) : appointments.length === 0 ? (
         <div className="mt-5">
           <EmptyState
-            title="Nenhum agendamento cadastrado"
-            description="Cadastre um pet e escolha um horário disponível para começar."
+            title={
+              searchQuery || statusFilter || dateFrom || dateTo
+                ? 'Nenhum agendamento encontrado para os filtros'
+                : 'Nenhum agendamento cadastrado'
+            }
+            description={
+              searchQuery || statusFilter || dateFrom || dateTo
+                ? 'Ajuste ou limpe os filtros acima para visualizar outros atendimentos.'
+                : 'Cadastre um pet e escolha um horário disponível para começar.'
+            }
           />
         </div>
       ) : (
-        <ul className="mt-5 grid gap-3">
+        <>
+          <ul className="mt-5 grid gap-3">
           {appointments.map((appointment) => (
             <li
               className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#f6faff] p-4"
@@ -233,7 +376,17 @@ export function AppointmentsList() {
               </div>
             </li>
           ))}
-        </ul>
+          </ul>
+          {pagination && (
+            <PaginationControls
+              disabled={loading}
+              onPageChange={(nextPage) => setPage(nextPage)}
+              page={pagination.page}
+              total={pagination.total}
+              totalPages={pagination.totalPages}
+            />
+          )}
+        </>
       )}
     </section>
   );

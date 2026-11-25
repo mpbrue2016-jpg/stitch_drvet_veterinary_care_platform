@@ -1,17 +1,42 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { newPasswordSchema } from '@/lib/validations';
-import { atualizarSenha } from '@/services/auth.service';
+import { atualizarSenha, buscarContextoAcessoAtual } from '@/services/auth.service';
 
 export default function NewPasswordPage() {
   const router = useRouter();
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [hasValidSession, setHasValidSession] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    async function checkSession() {
+      if (!isSupabaseConfigured()) {
+        if (active) {
+          setHasValidSession(false);
+          setCheckingSession(false);
+        }
+        return;
+      }
+      const ctx = await buscarContextoAcessoAtual();
+      if (active) {
+        setHasValidSession(ctx.authenticated && ctx.emailConfirmed);
+        setCheckingSession(false);
+      }
+    }
+    void checkSession();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,50 +91,74 @@ export default function NewPasswordPage() {
           Escolha uma senha com pelo menos 8 caracteres.
         </p>
 
-        <form className="mt-6 grid gap-4" noValidate onSubmit={handleSubmit}>
-          <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-            Nova senha
-            <input
-              autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
-              minLength={8}
-              name="password"
-              required
-              type="password"
-            />
-          </label>
-          <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-            Confirmar nova senha
-            <input
-              autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
-              minLength={8}
-              name="confirmation"
-              required
-              type="password"
-            />
-          </label>
-          {errorMessage && (
-            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
-              {errorMessage}
+        {!checkingSession && !hasValidSession ? (
+          <div className="mt-6 grid gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+            <p className="font-semibold">
+              Sessão de recuperação ausente, não confirmada ou expirada.
             </p>
-          )}
-          {message && (
-            <p
-              className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900"
-              role="status"
+            <p>
+              Para redefinir sua senha com segurança, abra o link enviado por e-mail
+              ou solicite uma nova recuperação na tela de login.
+            </p>
+            <Link
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#087a68] px-5 font-bold text-white"
+              href="/login"
             >
-              {message}
-            </p>
-          )}
-          <button
-            className="min-h-12 rounded-full bg-[#087a68] px-5 font-bold text-white disabled:opacity-60"
-            disabled={isSubmitting}
-            type="submit"
-          >
-            {isSubmitting ? 'Salvando...' : 'Salvar nova senha'}
-          </button>
-        </form>
+              Ir para login e solicitar link
+            </Link>
+          </div>
+        ) : (
+          <form className="mt-6 grid gap-4" noValidate onSubmit={handleSubmit}>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+              Nova senha
+              <input
+                autoComplete="new-password"
+                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                disabled={checkingSession || isSubmitting}
+                minLength={8}
+                name="password"
+                required
+                type="password"
+              />
+            </label>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+              Confirmar nova senha
+              <input
+                autoComplete="new-password"
+                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                disabled={checkingSession || isSubmitting}
+                minLength={8}
+                name="confirmation"
+                required
+                type="password"
+              />
+            </label>
+            {errorMessage && (
+              <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
+                {errorMessage}
+              </p>
+            )}
+            {message && (
+              <p
+                className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900"
+                role="status"
+              >
+                {message}
+              </p>
+            )}
+            <button
+              className="min-h-12 rounded-full bg-[#087a68] px-5 font-bold text-white disabled:opacity-60"
+              disabled={checkingSession || isSubmitting}
+              type="submit"
+            >
+              {checkingSession
+                ? 'Validando sessão...'
+                : isSubmitting
+                  ? 'Salvando...'
+                  : 'Salvar nova senha'}
+            </button>
+          </form>
+        )}
       </section>
     </main>
   );

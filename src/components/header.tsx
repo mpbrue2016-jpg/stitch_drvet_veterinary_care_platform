@@ -79,12 +79,12 @@ export function PublicHeader() {
           >
             <Image
               alt="DrVets Tele Veterinária Logo"
-              className="h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02] md:h-14"
+              className="h-16 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02] md:h-[72px]"
               height={200}
               priority
               quality={95}
               referrerPolicy="no-referrer"
-              sizes="240px"
+              sizes="(min-width: 768px) 280px, 240px"
               src="/home/drvets-logo.webp"
               width={300}
             />
@@ -221,6 +221,7 @@ export function WorkspaceHeader({
   onToggleMenu,
   onSignOut,
   authError,
+  roleLabel,
   mobileNav,
 }: {
   pageTitle: string;
@@ -228,10 +229,11 @@ export function WorkspaceHeader({
   onToggleMenu: () => void;
   onSignOut: () => void;
   authError?: string;
+  roleLabel?: string;
   mobileNav?: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
       <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:h-20 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <button
@@ -257,7 +259,11 @@ export function WorkspaceHeader({
         <div className="flex items-center gap-3">
           <NotificationBell />
           <span className="hidden rounded-full bg-[#dff0ff] px-3 py-1.5 text-xs font-semibold text-slate-700 sm:inline-flex">
-            {isSupabaseEnvConfigured ? 'Sessão autenticada' : 'Modo demonstração (Mock)'}
+            {isSupabaseEnvConfigured
+              ? roleLabel
+                ? `Perfil: ${roleLabel}`
+                : 'Sessão autenticada'
+              : 'Modo demonstração (Mock)'}
           </span>
           <span className="hidden text-sm font-medium text-brand-muted xl:block">
             Telemedicina clínica

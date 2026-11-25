@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const confirmPaymentSchema = z
@@ -12,26 +15,24 @@ const confirmPaymentSchema = z
   .strict();
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:payments:confirm',
+    limit: 20,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = confirmPaymentSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos para baixa financeira.' },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos para baixa financeira.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const { data: order, error } = await supabase.rpc('settle_payment_order', {
@@ -42,12 +43,39 @@ export async function POST(request: NextRequest) {
   if (error) {
     const status =
       error.code === '42501' ? 403 : error.code === 'P0002' ? 404 : 500;
-    return supabaseErrorResponse(
-      error,
-      error.message || 'Não foi possível confirmar a baixa deste pagamento.',
-      status,
+    logAuditEvent({
+      event: 'payments.confirm_failed',
+      resource: 'payment_orders',
+      action: 'settle',
+      outcome: status === 403 ? 'denied' : 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { orderId: parsed.data.orderId },
+    });
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        error.message || 'Não foi possível confirmar a baixa deste pagamento.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ order });
+  logAuditEvent({
+    event: 'payments.confirmed',
+    resource: 'payment_orders',
+    action: 'settle',
+    outcome: 'allowed',
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: { orderId: parsed.data.orderId },
+  });
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ order }),
+    rateLimit,
+  );
 }

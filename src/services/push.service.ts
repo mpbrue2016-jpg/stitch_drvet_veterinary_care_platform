@@ -301,10 +301,18 @@ export async function deletePushSubscription(input: {
   );
 }
 
+export interface NotificationOutboxSummary {
+  schemaReady: boolean;
+  queued: number;
+  sent: number;
+  failed: number;
+}
+
 export async function fetchNotifications(sync = true): Promise<{
   notifications: PushNotificationItem[];
   unreadCount: number;
   schemaMissing: boolean;
+  outboxSummary: NotificationOutboxSummary | null;
 }> {
   const res = await fetch(`/api/push/notifications?sync=${sync ? '1' : '0'}`, {
     cache: 'no-store',
@@ -312,12 +320,18 @@ export async function fetchNotifications(sync = true): Promise<{
   const payload = (await res.json().catch(() => ({}))) as {
     notifications?: PushNotificationItem[];
     unreadCount?: number;
+    outboxSummary?: NotificationOutboxSummary;
     code?: string;
     error?: string;
   };
 
   if (res.status === 503 && payload.code === 'SCHEMA_MISSING') {
-    return { notifications: [], unreadCount: 0, schemaMissing: true };
+    return {
+      notifications: [],
+      unreadCount: 0,
+      schemaMissing: true,
+      outboxSummary: null,
+    };
   }
   if (!res.ok) {
     throw new PushApiError(
@@ -330,6 +344,7 @@ export async function fetchNotifications(sync = true): Promise<{
     notifications: payload.notifications ?? [],
     unreadCount: payload.unreadCount ?? 0,
     schemaMissing: false,
+    outboxSummary: payload.outboxSummary ?? null,
   };
 }
 

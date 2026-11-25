@@ -81,18 +81,31 @@ export async function salvarRascunhoReceita(input: {
   items: PrescriptionItem[];
 }): Promise<{ prescriptionDraft: PrescriptionDraft }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('save_prescription_draft', {
-      target_appointment: input.appointment_id,
-      target_items: input.items as unknown as Json,
+    const response = await fetch('/api/prescription-drafts', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        appointment_id: input.appointment_id,
+        items: input.items,
+      }),
     });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      prescriptionDraft?: PrescriptionDraft & { items: Json };
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.prescriptionDraft) {
+      throw new Error(
+        payload?.error || 'Não foi possível salvar o rascunho de receita.',
+      );
+    }
 
     return {
       prescriptionDraft: {
-        ...data,
-        items: parseItems(data.items),
+        ...payload.prescriptionDraft,
+        items: parseItems(payload.prescriptionDraft.items),
       },
     };
   } catch (error) {
@@ -119,19 +132,45 @@ export async function excluirRascunhoReceita(id: string): Promise<void> {
 
 export async function emitirReceitaOficial(
   appointmentId: string,
-): Promise<{ prescriptionDraft: PrescriptionDraft }> {
+): Promise<{
+  prescriptionDraft: PrescriptionDraft;
+  documentDigestSha256: string | null;
+  digitalSignatureReadiness?: {
+    mode: string;
+    icpBrasilActive: boolean;
+    privateKeyStoredInApp: boolean;
+    canonicalHashAlgorithm: string;
+  };
+}> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('issue_prescription', {
-      target_appointment: appointmentId,
+    const response = await fetch('/api/prescription-drafts/issue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ appointment_id: appointmentId }),
     });
-    if (error) throw error;
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      prescriptionDraft?: PrescriptionDraft & { items: Json };
+      documentDigestSha256?: string | null;
+      digitalSignatureReadiness?: {
+        mode: string;
+        icpBrasilActive: boolean;
+        privateKeyStoredInApp: boolean;
+        canonicalHashAlgorithm: string;
+      };
+    };
+
+    if (!response.ok || !payload.prescriptionDraft) {
+      throw new Error(payload.error || 'Não foi possível emitir a receita.');
+    }
 
     return {
       prescriptionDraft: {
-        ...data,
-        items: parseItems(data.items),
+        ...payload.prescriptionDraft,
+        items: parseItems(payload.prescriptionDraft.items),
       },
+      documentDigestSha256: payload.documentDigestSha256 ?? null,
+      digitalSignatureReadiness: payload.digitalSignatureReadiness,
     };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível emitir a receita.');

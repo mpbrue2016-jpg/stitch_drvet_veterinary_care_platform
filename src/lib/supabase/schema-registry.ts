@@ -124,6 +124,28 @@ export const DRVET_MIGRATIONS_REGISTRY: MigrationSchemaEntry[] = [
       'payment_orders',
     ],
   },
+  {
+    order: 14,
+    filename: '20261124000100_security_indexes_and_audit_logs.sql',
+    title: 'Índices de Paginação/Filtros, Grants Idempotentes & Trilha de Auditoria',
+    stitchScope: 'Hardening de APIs, Paginação & Logs Estruturados',
+    tables: ['pets', 'audit_logs'],
+  },
+  {
+    order: 15,
+    filename: '20261124000200_mvp_architecture_readiness.sql',
+    title: 'Idempotência de Webhooks, Consentimento Bilateral Teleconsulta & Outbox',
+    stitchScope: 'Arquitetura MVP (Pagamentos/Webhooks, Teleconsulta LGPD/CFMV & Notificações)',
+    tables: ['webhook_events', 'teleconsultation_consents', 'notification_outbox'],
+  },
+  {
+    order: 16,
+    filename: '20261125000100_vet_photo_and_facial_biometrics.sql',
+    title: 'Foto Profissional do Veterinário & Biometria Facial no Login',
+    stitchScope: 'Credenciamento CRMV com Foto (vet-avatars) & Biometria Facial (/login, /perfil, /painel/veterinario)',
+    tables: ['facial_biometrics', 'facial_biometric_verifications'],
+    buckets: ['vet-avatars'],
+  },
 ];
 
 export const DRVET_ALL_TABLES: string[] = Array.from(

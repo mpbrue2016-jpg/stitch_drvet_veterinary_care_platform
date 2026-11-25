@@ -14,6 +14,10 @@ import {
   Select,
   Skeleton,
 } from '@/components/ui';
+import {
+  computePrescriptionDigestHex,
+  evaluateDigitalSignatureReadiness,
+} from '@/lib/clinical/prescription-digest';
 import { savePrescriptionDraftSchema } from '@/lib/validations';
 import { listarAgendamentos } from '@/services/appointments.service';
 import {
@@ -76,8 +80,15 @@ export function PrescriptionDrafts() {
   const [saving, setSaving] = useState(false);
   const [issuing, setIssuing] = useState(false);
   const [pendingSwitchId, setPendingSwitchId] = useState<string | null>(null);
+  const [documentDigestSha256, setDocumentDigestSha256] = useState<string | null>(
+    null,
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+  const signatureReadiness = useMemo(
+    () => evaluateDigitalSignatureReadiness(),
+    [],
+  );
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -180,6 +191,40 @@ export function PrescriptionDrafts() {
     setItems(loadedItems.length > 0 ? loadedItems : [{ ...emptyItem }]);
   }, [appointmentId, drafts]);
 
+  useEffect(() => {
+    let active = true;
+    if (
+      !selectedDraft ||
+      selectedDraft.status !== 'issued' ||
+      !selectedDraft.verification_code ||
+      !selectedDraft.issued_at
+    ) {
+      setDocumentDigestSha256(null);
+      return;
+    }
+
+    void computePrescriptionDigestHex({
+      prescriptionId: selectedDraft.id,
+      appointmentId: selectedDraft.appointment_id,
+      organizationId: selectedDraft.organization_id,
+      petId: selectedDraft.pet_id,
+      veterinarianId: selectedDraft.veterinarian_id,
+      verificationCode: selectedDraft.verification_code,
+      issuedAt: selectedDraft.issued_at,
+      items: selectedDraft.items,
+    })
+      .then((digest) => {
+        if (active) setDocumentDigestSha256(digest);
+      })
+      .catch(() => {
+        if (active) setDocumentDigestSha256(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedDraft]);
+
   function updateItem(index: number, field: keyof PrescriptionItem, value: string) {
     setItems((current) =>
       current.map((item, itemIndex) =>
@@ -242,7 +287,11 @@ export function PrescriptionDrafts() {
     setNotice('');
     setIssuing(true);
     try {
-      const { prescriptionDraft } = await emitirReceitaOficial(appointmentId);
+      const { prescriptionDraft, documentDigestSha256: serverDigest } =
+        await emitirReceitaOficial(appointmentId);
+      if (serverDigest) {
+        setDocumentDigestSha256(serverDigest);
+      }
       setNotice(
         `Receita oficial emitida! Código de verificação ${prescriptionDraft.verification_code ?? ''} enviado ao tutor.`,
       );
@@ -543,6 +592,19 @@ export function PrescriptionDrafts() {
                     subtitle="Aponte a câmera para validar autenticidade"
                     value={verificationUrl}
                   />
+                  {documentDigestSha256 && (
+                    <div className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-left">
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
+                        Integridade criptográfica ({signatureReadiness.canonicalHashAlgorithm})
+                      </p>
+                      <p className="mt-1 break-all font-mono text-[11px] text-[#153b50]">
+                        {documentDigestSha256}
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-500">
+                        Manifesto {signatureReadiness.schemaVersion} pronto para assinatura remota PAdES (ICP-Brasil em nuvem) sem armazenamento de chave privada.
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2 print:hidden">
                     <Button
                       onClick={() => window.print()}
@@ -569,7 +631,11 @@ export function PrescriptionDrafts() {
                 Emissão oficial e verificação pública
               </h2>
               <p className="mt-2 text-xs leading-5 text-emerald-900/80">
-                Ao emitir, a prescrição ganha código verificável via QR Code, é liberada para o tutor e bloqueada contra alterações. Para receituários controlados MAPA/CFMV, acople certificado ICP-Brasil no emissor externo.
+                Ao emitir, a prescrição ganha código verificável via QR Code, manifesto SHA-256 imutável e visibilidade para o tutor. Provedores ICP-Brasil previstos para assinatura remota PAdES:{' '}
+                {signatureReadiness.supportedCloudProviders
+                  .map((provider) => provider.label)
+                  .join(', ')}
+                .
               </p>
               {!isIssued && (
                 <div className="mt-4">

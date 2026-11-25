@@ -16,6 +16,7 @@ import {
 import cockpitTheoPet from '@/assets/images/cockpit_theo_pet_1795425127707.jpg';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { buscarCatalogoPublicoVeterinarios } from '@/services/organizations.service';
+import { obterUrlPublicaStorage } from '@/services/storage.service';
 import { listarPlanosClube } from '@/services/subscriptions.service';
 import type { PublicVeterinarian, SubscriptionPlan } from '@/types/entities';
 
@@ -262,7 +263,9 @@ export function HomeLanding() {
       price: brl.format((vet.consultation_fee_cents || 18000) / 100),
       ctaLabel: vet.is_online_now ? 'Consultar Agora' : 'Ver Agenda',
       ctaPrimary: Boolean(vet.is_online_now),
-      avatarSrc: avatarPool[index % avatarPool.length],
+      avatarSrc:
+        obterUrlPublicaStorage('vet-avatars', vet.avatar_path) ??
+        avatarPool[index % avatarPool.length],
       borderTone: vet.is_online_now ? 'border-emerald-400' : 'border-blue-400',
     }));
 
@@ -1213,9 +1216,9 @@ export function HomeLanding() {
                 <p className="mb-4 mt-1 text-xs text-slate-300">
                   Verifique instantaneamente a credencial de qualquer veterinário antes do atendimento.
                 </p>
-                <Link className="text-xs font-bold text-[#25C5DC] hover:underline" href="/agenda">
+                <a className="text-xs font-bold text-[#25C5DC] hover:underline" href="#especialistas">
                   Consultar registro de veterinário →
-                </Link>
+                </a>
               </div>
             </div>
           </div>

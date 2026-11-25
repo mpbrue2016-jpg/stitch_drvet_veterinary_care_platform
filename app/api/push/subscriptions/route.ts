@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const allowedLeadMinutes = z.union([
   z.literal(15),
@@ -64,66 +66,65 @@ const deleteSubscriptionSchema = z
     message: 'Informe endpoint ou id da inscrição.',
   });
 
-export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
-  }
+export async function GET(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:subscriptions:get',
+    limit: 60,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const { data, error } = await supabase
     .from('push_subscriptions')
     .select(
       'id, user_id, endpoint, user_agent, role_hint, reminder_lead_minutes, notify_appointments, notify_queue, is_active, last_notified_at, created_at, updated_at',
     )
-    .eq('user_id', authData.user.id)
+    .eq('user_id', authUser.id)
     .order('updated_at', { ascending: false });
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível carregar as inscrições Push.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível carregar as inscrições Push.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ subscriptions: data ?? [] });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ subscriptions: data ?? [] }),
+    rateLimit,
+  );
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:subscriptions:write',
+    limit: 20,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = createSubscriptionSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados da inscrição Push inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados da inscrição Push inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', authData.user.id)
+    .eq('id', authUser.id)
     .maybeSingle();
 
   const roleHint = profile?.role ?? 'tutor';
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
     .from('push_subscriptions')
     .upsert(
       {
-        user_id: authData.user.id,
+        user_id: authUser.id,
         endpoint: parsed.data.endpoint,
         p256dh: parsed.data.p256dh,
         auth_secret: parsed.data.auth_secret,
@@ -152,37 +153,41 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível ativar as notificações Push.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível ativar as notificações Push.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ subscription: data }, { status: 201 });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ subscription: data }, { status: 201 }),
+    rateLimit,
+  );
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:subscriptions:write',
+    limit: 20,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = updatePreferencesSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Preferências inválidas.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Preferências inválidas.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const patchPayload: {
@@ -208,7 +213,7 @@ export async function PATCH(request: NextRequest) {
   let query = supabase
     .from('push_subscriptions')
     .update(patchPayload)
-    .eq('user_id', authData.user.id);
+    .eq('user_id', authUser.id);
 
   if (parsed.data.id) {
     query = query.eq('id', parsed.data.id);
@@ -219,43 +224,47 @@ export async function PATCH(request: NextRequest) {
   );
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível atualizar as preferências de notificação.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível atualizar as preferências de notificação.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ subscriptions: data ?? [] });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ subscriptions: data ?? [] }),
+    rateLimit,
+  );
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:subscriptions:write',
+    limit: 20,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = deleteSubscriptionSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Informe o endpoint ou identificador da inscrição.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe o endpoint ou identificador da inscrição.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   let query = supabase
     .from('push_subscriptions')
     .delete()
-    .eq('user_id', authData.user.id);
+    .eq('user_id', authUser.id);
 
   if (parsed.data.id) {
     query = query.eq('id', parsed.data.id);
@@ -265,12 +274,18 @@ export async function DELETE(request: NextRequest) {
 
   const { error } = await query;
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível remover a inscrição Push.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível remover a inscrição Push.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ removed: true });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ removed: true }),
+    rateLimit,
+  );
 }

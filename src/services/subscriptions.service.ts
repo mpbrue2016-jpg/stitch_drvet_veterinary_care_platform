@@ -90,14 +90,26 @@ export async function assinarPlanoParaPet(input: {
   method: PaymentMethod;
 }): Promise<{ subscription: PetSubscription }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('subscribe_pet_to_plan', {
-      target_plan: input.planId,
-      target_pet: input.petId,
-      target_method: input.method,
+    const response = await fetch('/api/subscriptions', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
     });
-    if (error) throw error;
-    return { subscription: data };
+
+    const payload = (await response.json().catch(() => null)) as {
+      subscription?: PetSubscription;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.subscription) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível concluir a assinatura do Clube DrVet.',
+      );
+    }
+
+    return { subscription: payload.subscription };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -111,22 +123,26 @@ export async function atualizarStatusAssinatura(input: {
   status: PetSubscriptionStatus;
 }): Promise<{ subscription: PetSubscription }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('pet_subscriptions')
-      .update({
-        status: input.status,
-        cancelled_at:
-          input.status === 'cancelled' ? new Date().toISOString() : null,
-      })
-      .eq('id', input.subscriptionId)
-      .select(
-        'id, plan_id, pet_id, owner_id, status, discount_percent, started_at, next_billing_at, cancelled_at',
-      )
-      .single();
+    const response = await fetch('/api/subscriptions', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
 
-    if (error) throw error;
-    return { subscription: data };
+    const payload = (await response.json().catch(() => null)) as {
+      subscription?: PetSubscription;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.subscription) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível atualizar o status da assinatura.',
+      );
+    }
+
+    return { subscription: payload.subscription };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -162,7 +178,11 @@ export async function gerarCheckoutConsulta(input: {
   appointmentId: string;
   method: PaymentMethod;
   couponCode?: string | null;
-}): Promise<{ payment: PaymentOrder }> {
+}): Promise<{
+  payment: PaymentOrder;
+  gatewayMode?: 'mercado_pago_pix' | 'static_pix_brcode';
+  gatewayConfigured?: boolean;
+}> {
   const response = await fetch('/api/payments/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -175,6 +195,8 @@ export async function gerarCheckoutConsulta(input: {
 
   const payload = (await response.json().catch(() => null)) as {
     order?: PaymentOrder;
+    gatewayMode?: 'mercado_pago_pix' | 'static_pix_brcode';
+    gatewayConfigured?: boolean;
     error?: string;
   } | null;
 
@@ -184,7 +206,11 @@ export async function gerarCheckoutConsulta(input: {
     );
   }
 
-  return { payment: payload.order };
+  return {
+    payment: payload.order,
+    gatewayMode: payload.gatewayMode,
+    gatewayConfigured: payload.gatewayConfigured,
+  };
 }
 
 export async function confirmarPagamentoBaixa(input: {

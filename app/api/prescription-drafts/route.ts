@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import { persistServerAuditLog } from '@/lib/notifications/outbox';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const itemSchema = z
@@ -25,30 +29,25 @@ const saveDraftSchema = z
   .strict();
 
 export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:prescription-drafts:get',
+    limit: 90,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, rateLimit } = ctx;
 
   const appointmentId = request.nextUrl.searchParams.get('appointmentId');
   if (
     appointmentId &&
     !z.string().uuid().safeParse(appointmentId).success
   ) {
-    return NextResponse.json(
-      { error: 'Informe um agendamento válido.' },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe um agendamento válido.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
 
@@ -63,39 +62,40 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await query;
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível carregar os rascunhos de receita.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível carregar os rascunhos de receita.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ prescriptionDrafts: data });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ prescriptionDrafts: data }),
+    rateLimit,
+  );
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:prescription-drafts:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = saveDraftSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
 
@@ -113,14 +113,48 @@ export async function POST(request: NextRequest) {
           : error.code === '22023'
             ? 400
             : 500;
-    return supabaseErrorResponse(
-      error,
-      error.code === '22023'
-        ? 'Revise os itens e os limites de texto do rascunho.'
-        : 'Não foi possível salvar o rascunho de receita.',
-      status,
+    const failedAudit = {
+      event: 'prescription_drafts.save_failed',
+      resource: 'prescription_drafts',
+      action: 'save',
+      outcome: (status === 403 ? 'denied' : 'error') as 'denied' | 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { appointmentId: parsed.data.appointment_id },
+    };
+    logAuditEvent(failedAudit);
+    await persistServerAuditLog(failedAudit);
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        error.code === '22023'
+          ? 'Revise os itens e os limites de texto do rascunho.'
+          : 'Não foi possível salvar o rascunho de receita.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ prescriptionDraft: data });
+  const savedAudit = {
+    event: 'prescription_drafts.saved',
+    resource: 'prescription_drafts',
+    action: 'save',
+    outcome: 'allowed' as const,
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: {
+      appointmentId: parsed.data.appointment_id,
+      itemsCount: parsed.data.items.length,
+    },
+  };
+  logAuditEvent(savedAudit);
+  await persistServerAuditLog(savedAudit);
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ prescriptionDraft: data }),
+    rateLimit,
+  );
 }

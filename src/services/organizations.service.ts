@@ -47,7 +47,7 @@ export async function listarOrganizacoesEVeterinarios(): Promise<{
       supabase
         .from('veterinarian_profiles')
         .select(
-          'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, created_at',
+          'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, avatar_path, created_at',
         )
         .in('organization_id', organizationIds),
     ]);
@@ -95,28 +95,19 @@ export async function criarOrganizacao(
   name: string,
 ): Promise<{ organization: Organization }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: orgId, error } = await supabase.rpc('create_organization', {
-      organization_name: name.trim(),
+    const response = await fetch('/api/organizations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim() }),
     });
-    if (error || !orgId) throw error ?? new Error('Falha ao criar organização.');
-
-    const { data: organization, error: fetchError } = await supabase
-      .from('organizations')
-      .select('id, name, created_at')
-      .eq('id', orgId)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    return {
-      organization: {
-        id: organization.id,
-        name: organization.name,
-        role: 'owner',
-        created_at: organization.created_at,
-      },
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      organization?: Organization;
     };
+    if (!response.ok || !payload.organization) {
+      throw new Error(payload.error || 'Não foi possível criar a organização.');
+    }
+    return { organization: payload.organization };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível criar a organização.');
   }
@@ -128,30 +119,32 @@ export async function registrarVeterinario(input: {
   registration_number: string;
   registration_region: string;
   specialty?: string;
+  avatar_path?: string | null;
 }): Promise<{ professional: VeterinarianProfile }> {
   try {
-    const supabase = getSupabaseClient();
-    const region = input.registration_region.trim().toUpperCase();
-    const { error } = await supabase.rpc('add_veterinarian', {
-      target_organization: input.organization_id,
-      target_user: input.user_id.trim(),
-      target_registration_number: input.registration_number.trim(),
-      target_registration_region: region,
-      target_specialty: input.specialty?.trim() || null,
+    const response = await fetch('/api/organizations/veterinarians', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        organization_id: input.organization_id,
+        user_id: input.user_id.trim(),
+        registration_number: input.registration_number.trim(),
+        registration_region: input.registration_region.trim().toUpperCase(),
+        specialty: input.specialty?.trim() || null,
+        avatar_path: input.avatar_path?.trim() || null,
+      }),
     });
-    if (error) throw error;
-
-    const { data: professional, error: fetchError } = await supabase
-      .from('veterinarian_profiles')
-      .select(
-        'organization_id, user_id, registration_number, registration_region, specialty, status, created_at',
-      )
-      .eq('organization_id', input.organization_id)
-      .eq('user_id', input.user_id.trim())
-      .single();
-
-    if (fetchError) throw fetchError;
-    return { professional };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      professional?: VeterinarianProfile;
+    };
+    if (!response.ok || !payload.professional) {
+      throw new Error(
+        payload.error ||
+          'Não foi possível registrar o profissional. Confira o ID do usuário e o CRMV.',
+      );
+    }
+    return { professional: payload.professional };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -165,12 +158,21 @@ export async function aprovarVeterinario(input: {
   user_id: string;
 }): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase.rpc('approve_veterinarian', {
-      target_organization: input.organization_id,
-      target_user: input.user_id,
+    const response = await fetch('/api/organizations/veterinarians', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        organization_id: input.organization_id,
+        user_id: input.user_id,
+      }),
     });
-    if (error) throw error;
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      status?: string;
+    };
+    if (!response.ok || payload.status !== 'approved') {
+      throw new Error(payload.error || 'Não foi possível aprovar o profissional.');
+    }
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível aprovar o profissional.');
   }
@@ -184,7 +186,7 @@ export async function listarVeterinariosAprovados(): Promise<{
     const { data: professionals, error } = await supabase
       .from('veterinarian_profiles')
       .select(
-        'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, created_at',
+        'organization_id, user_id, registration_number, registration_region, specialty, status, consultation_fee_cents, bio, is_online_now, avatar_path, created_at',
       )
       .eq('status', 'approved')
       .order('created_at', { ascending: false });
@@ -239,17 +241,32 @@ export async function atualizarMeuPerfilVeterinario(input: {
   consultation_fee_cents: number;
   bio?: string | null;
   is_online_now?: boolean;
+  avatar_path?: string | null;
 }): Promise<{ professional: VeterinarianProfile }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('update_my_vet_profile', {
-      target_consultation_fee_cents: input.consultation_fee_cents,
-      target_bio: input.bio?.trim() || null,
-      target_is_online_now:
-        typeof input.is_online_now === 'boolean' ? input.is_online_now : null,
+    const response = await fetch('/api/organizations/veterinarians', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        consultation_fee_cents: input.consultation_fee_cents,
+        bio: input.bio?.trim() || null,
+        is_online_now:
+          typeof input.is_online_now === 'boolean'
+            ? input.is_online_now
+            : undefined,
+        avatar_path: input.avatar_path?.trim() || null,
+      }),
     });
-    if (error) throw error;
-    return { professional: data };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      professional?: VeterinarianProfile;
+    };
+    if (!response.ok || !payload.professional) {
+      throw new Error(
+        payload.error || 'Não foi possível atualizar seu perfil profissional.',
+      );
+    }
+    return { professional: payload.professional };
   } catch (error) {
     throw toFriendlyError(
       error,

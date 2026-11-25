@@ -16,11 +16,13 @@ import {
 import {
   atualizarRoleUsuarioAdmin,
   avaliarSolicitacaoPerfil,
+  buscarProntidaoMvpAdmin,
   listarIntegracoes,
   listarSolicitacoesPerfil,
   listarUsuariosAdmin,
   salvarIntegracao,
   testarIntegracao,
+  type AdminMvpReadinessPayload,
 } from '@/services/admin.service';
 import {
   aprovarVeterinario,
@@ -56,6 +58,8 @@ export function AdminConsole() {
   const [professionals, setProfessionals] = useState<VeterinarianProfile[]>([]);
   const [integrations, setIntegrations] = useState<IntegrationConfig[]>([]);
   const [applications, setApplications] = useState<RoleApplication[]>([]);
+  const [mvpReadiness, setMvpReadiness] =
+    useState<AdminMvpReadinessPayload | null>(null);
   const [testingId, setTestingId] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -73,20 +77,23 @@ export function AdminConsole() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [usersRes, orgsRes, intRes, appsRes] = await Promise.all([
-        listarUsuariosAdmin(),
-        listarOrganizacoesEVeterinarios().catch(() => ({
-          professionals: [] as VeterinarianProfile[],
-        })),
-        listarIntegracoes(),
-        listarSolicitacoesPerfil().catch(() => ({
-          applications: [] as RoleApplication[],
-        })),
-      ]);
+      const [usersRes, orgsRes, intRes, appsRes, readinessRes] =
+        await Promise.all([
+          listarUsuariosAdmin(),
+          listarOrganizacoesEVeterinarios().catch(() => ({
+            professionals: [] as VeterinarianProfile[],
+          })),
+          listarIntegracoes(),
+          listarSolicitacoesPerfil().catch(() => ({
+            applications: [] as RoleApplication[],
+          })),
+          buscarProntidaoMvpAdmin().catch(() => null),
+        ]);
       setUsers(usersRes.users);
       setProfessionals(orgsRes.professionals);
       setIntegrations(intRes.integrations);
       setApplications(appsRes.applications);
+      setMvpReadiness(readinessRes);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -585,6 +592,242 @@ export function AdminConsole() {
                         </Button>
                       </div>
                     </form>
+                  </Card>
+                </div>
+              ),
+            },
+            {
+              id: 'prontidao-mvp',
+              label: 'Prontidão MVP & Auditoria',
+              content: (
+                <div className="grid gap-5">
+                  <Card
+                    title="Prontidão de Gateways e Canais (Servidor)"
+                    description="Verificação segura de variáveis e políticas no servidor, sem expor chaves ou tokens."
+                  >
+                    {!mvpReadiness ? (
+                      <EmptyState
+                        title="Diagnóstico indisponível"
+                        description="Confirme o acesso administrativo para consultar a prontidão do ambiente."
+                      />
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {mvpReadiness.gateways.map((gateway) => (
+                          <div
+                            className="rounded-xl border border-slate-200 bg-[#f6faff] p-4"
+                            key={gateway.provider}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="font-bold text-[#153b50]">
+                                {gateway.provider === 'mercado_pago'
+                                  ? 'Mercado Pago'
+                                  : 'Asaas Pagamentos'}
+                              </p>
+                              <Badge
+                                variant={
+                                  gateway.configured &&
+                                  gateway.webhookVerificationReady
+                                    ? 'success'
+                                    : 'warning'
+                                }
+                              >
+                                {gateway.configured &&
+                                gateway.webhookVerificationReady
+                                  ? 'Pronto no servidor'
+                                  : 'Credenciais pendentes'}
+                              </Badge>
+                            </div>
+                            <p className="mt-2 text-xs text-slate-600">
+                              Webhook HMAC/Anti-replay:{' '}
+                              {gateway.webhookVerificationReady
+                                ? 'Configurado'
+                                : 'Pendente'}
+                            </p>
+                            {gateway.missingEnvVars.length > 0 && (
+                              <p className="mt-2 font-mono text-[11px] text-slate-500">
+                                Faltam: {gateway.missingEnvVars.join(', ')}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+
+                        <div className="rounded-xl border border-slate-200 bg-[#f6faff] p-4">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="font-bold text-[#153b50]">
+                              Teleconsulta &amp; Gravação LGPD
+                            </p>
+                            <Badge
+                              variant={
+                                mvpReadiness.channels.recordingBucketProvisioned
+                                  ? 'success'
+                                  : 'neutral'
+                              }
+                            >
+                              {mvpReadiness.channels.recordingBucketProvisioned
+                                ? 'Bucket ativo'
+                                : 'Gravação desativada'}
+                            </Badge>
+                          </div>
+                          <p className="mt-2 text-xs text-slate-600">
+                            Política{' '}
+                            {mvpReadiness.channels.recordingPolicy.policyVersion} ·
+                            Consentimento bilateral obrigatório · Retenção{' '}
+                            {mvpReadiness.channels.recordingPolicy.retentionDays}{' '}
+                            dias.
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-[#f6faff] p-4">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="font-bold text-[#153b50]">
+                              Web Push &amp; Outbox
+                            </p>
+                            <Badge
+                              variant={
+                                mvpReadiness.channels.webPushConfigured
+                                  ? 'success'
+                                  : 'warning'
+                              }
+                            >
+                              {mvpReadiness.channels.webPushConfigured
+                                ? 'VAPID ativo'
+                                : 'VAPID pendente'}
+                            </Badge>
+                          </div>
+                          <p className="mt-2 text-xs text-slate-600">
+                            Itens na fila outbox:{' '}
+                            {mvpReadiness.telemetry.outboxSchemaReady
+                              ? mvpReadiness.telemetry.outboxItems.length
+                              : 'Aguardando migration #15'}
+                          </p>
+                        </div>
+
+                        {mvpReadiness.channels.digitalSignature && (
+                          <div className="rounded-xl border border-slate-200 bg-[#f6faff] p-4 sm:col-span-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="font-bold text-[#153b50]">
+                                Receita Digital &amp; Assinatura ICP-Brasil
+                              </p>
+                              <Badge
+                                variant={
+                                  mvpReadiness.channels.digitalSignature.icpBrasilActive
+                                    ? 'success'
+                                    : 'info'
+                                }
+                              >
+                                {mvpReadiness.channels.digitalSignature.icpBrasilActive
+                                  ? 'ICP-Brasil ativo'
+                                  : 'QR + SHA-256 ativo (AC externa pendente)'}
+                              </Badge>
+                            </div>
+                            <p className="mt-2 text-xs text-slate-600">
+                              Manifesto{' '}
+                              {mvpReadiness.channels.digitalSignature.schemaVersion} (
+                              {mvpReadiness.channels.digitalSignature.canonicalHashAlgorithm}
+                              ) ativo sem armazenamento de chave privada na aplicação.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Card>
+
+                  <Card
+                    title="Eventos de Webhook e Trilha de Auditoria"
+                    description="Registros recentes de audit_logs (migration #14) e webhook_events (migration #15)."
+                  >
+                    {!mvpReadiness ? (
+                      <EmptyState
+                        title="Sem dados carregados"
+                        description="Atualize o painel para consultar os logs persistentes."
+                      />
+                    ) : !mvpReadiness.telemetry.auditSchemaReady &&
+                      !mvpReadiness.telemetry.webhookSchemaReady ? (
+                      <EmptyState
+                        title="Tabelas de auditoria aguardando migrations #14 e #15"
+                        description="Aplique as migrations pendentes conforme supabase/README_MIGRATIONS.md para ativar audit_logs e webhook_events."
+                      />
+                    ) : (
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        <div>
+                          <h3 className="mb-2 text-sm font-bold text-[#153b50]">
+                            Últimos eventos de auditoria ({mvpReadiness.telemetry.auditLogs.length})
+                          </h3>
+                          {mvpReadiness.telemetry.auditLogs.length === 0 ? (
+                            <p className="text-xs text-slate-500">
+                              Nenhum evento persistido em audit_logs ainda.
+                            </p>
+                          ) : (
+                            <ul className="grid gap-2">
+                              {mvpReadiness.telemetry.auditLogs.map((entry) => (
+                                <li
+                                  className="rounded-xl bg-[#f6faff] p-3 text-xs"
+                                  key={entry.id}
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-bold text-[#153b50]">
+                                      {entry.event}
+                                    </span>
+                                    <Badge
+                                      variant={
+                                        entry.outcome === 'allowed'
+                                          ? 'success'
+                                          : entry.outcome === 'denied'
+                                            ? 'danger'
+                                            : 'warning'
+                                      }
+                                    >
+                                      {entry.outcome}
+                                    </Badge>
+                                  </div>
+                                  <p className="mt-1 text-slate-600">
+                                    {entry.resource} · {entry.action}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+
+                        <div>
+                          <h3 className="mb-2 text-sm font-bold text-[#153b50]">
+                            Webhooks idempotentes ({mvpReadiness.telemetry.webhookEvents.length})
+                          </h3>
+                          {mvpReadiness.telemetry.webhookEvents.length === 0 ? (
+                            <p className="text-xs text-slate-500">
+                              Nenhum evento de webhook registrado ainda.
+                            </p>
+                          ) : (
+                            <ul className="grid gap-2">
+                              {mvpReadiness.telemetry.webhookEvents.map((wh) => (
+                                <li
+                                  className="rounded-xl bg-[#f6faff] p-3 text-xs"
+                                  key={wh.id}
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="font-bold text-[#153b50]">
+                                      {wh.provider} · {wh.event_type}
+                                    </span>
+                                    <Badge
+                                      variant={
+                                        wh.status === 'processed'
+                                          ? 'success'
+                                          : 'warning'
+                                      }
+                                    >
+                                      {wh.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="mt-1 font-mono text-slate-600">
+                                    ID: {wh.event_id}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </Card>
                 </div>
               ),

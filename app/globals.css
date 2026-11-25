@@ -39,3 +39,15 @@ textarea {
   outline: 3px solid rgb(53 198 176 / 70%);
   outline-offset: 2px;
 }
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    color: #0f172a;
+  }
+}

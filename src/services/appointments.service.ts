@@ -1,3 +1,4 @@
+import type { PaginationMeta } from '@/lib/pagination';
 import { getSupabaseClient } from '@/lib/supabase';
 import type {
   Appointment,
@@ -10,6 +11,10 @@ import { toFriendlyError } from './errors';
 export interface ListAppointmentsParams {
   from?: string;
   to?: string;
+  q?: string;
+  status?: AppointmentStatus | '';
+  page?: number;
+  limit?: number;
 }
 
 export interface CreateAppointmentInput {
@@ -40,37 +45,43 @@ async function attachPetSummaries<T extends { pet_id: string }>(
 
 export async function listarAgendamentos(
   params?: ListAppointmentsParams,
-): Promise<{ appointments: Appointment[]; currentUserId: string }> {
+): Promise<{
+  appointments: Appointment[];
+  currentUserId: string;
+  pagination?: PaginationMeta;
+}> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
-      throw new Error('Faça login para consultar os agendamentos.');
+    const query = new URLSearchParams();
+    if (params?.from) query.set('from', params.from);
+    if (params?.to) query.set('to', params.to);
+    if (params?.q?.trim()) query.set('q', params.q.trim());
+    if (params?.status) query.set('status', params.status);
+    if (params?.page && params.page > 0) query.set('page', String(params.page));
+    if (params?.limit && params.limit > 0) query.set('limit', String(params.limit));
+
+    const qs = query.toString();
+    const response = await fetch(`/api/appointments${qs ? `?${qs}` : ''}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const payload = (await response.json().catch(() => null)) as {
+      appointments?: Appointment[];
+      currentUserId?: string;
+      pagination?: PaginationMeta;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload) {
+      throw new Error(
+        payload?.error || 'Não foi possível carregar os agendamentos.',
+      );
     }
-
-    const hasRange = Boolean(params?.from && params?.to);
-    let query = supabase
-      .from('appointments')
-      .select(APPOINTMENT_COLUMNS)
-      .order('starts_at', { ascending: hasRange })
-      .limit(hasRange ? 500 : 100);
-
-    if (params?.from && params?.to) {
-      query = query.gte('starts_at', params.from).lt('starts_at', params.to);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    const rows = data ?? [];
-    const petById = await attachPetSummaries(rows);
 
     return {
-      appointments: rows.map((row) => ({
-        ...row,
-        pet: petById.get(row.pet_id) ?? null,
-      })),
-      currentUserId: authData.user.id,
+      appointments: payload.appointments ?? [],
+      currentUserId: payload.currentUserId ?? '',
+      pagination: payload.pagination,
     };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível carregar os agendamentos.');
@@ -105,66 +116,30 @@ export async function criarAgendamento(
   input: CreateAppointmentInput,
 ): Promise<{ appointment: Appointment }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
-      throw new Error('Faça login para solicitar um agendamento.');
-    }
-
-    const { data: slot, error: slotError } = await supabase
-      .from('professional_availability')
-      .select('id, organization_id, veterinarian_id, starts_at, ends_at')
-      .eq('id', input.availability_id)
-      .eq('is_available', true)
-      .eq('is_blocked', false)
-      .gt('starts_at', new Date().toISOString())
-      .maybeSingle();
-
-    if (slotError) throw slotError;
-    if (!slot) {
-      throw new Error('Este horário não está mais disponível.');
-    }
-
-    const { data, error } = await supabase
-      .from('appointments')
-      .insert({
-        availability_id: slot.id,
-        organization_id: slot.organization_id,
-        veterinarian_id: slot.veterinarian_id,
-        starts_at: slot.starts_at,
-        ends_at: slot.ends_at,
-        tutor_id: authData.user.id,
+    const response = await fetch('/api/appointments', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        availability_id: input.availability_id,
         pet_id: input.pet_id,
         kind: input.kind,
         reason: input.reason?.trim() || null,
-      })
-      .select(APPOINTMENT_COLUMNS)
-      .single();
+      }),
+    });
 
-    if (error) {
-      if (error.code === '23P01' || error.code === '23505') {
-        throw new Error(
-          'Este horário acabou de ser reservado. Escolha outro horário.',
-        );
-      }
-      throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      appointment?: Appointment;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.appointment) {
+      throw new Error(
+        payload?.error || 'Não foi possível solicitar o agendamento.',
+      );
     }
 
-    if (typeof window !== 'undefined') {
-      void fetch('/api/push/dispatch-appointment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointmentId: data.id, event: 'created' }),
-      }).catch(() => null);
-    }
-
-    const petById = await attachPetSummaries([data]);
-    return {
-      appointment: {
-        ...data,
-        pet: petById.get(data.pet_id) ?? null,
-      },
-    };
+    return { appointment: payload.appointment };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível solicitar o agendamento.');
   }
@@ -175,32 +150,26 @@ export async function atualizarStatusAgendamento(
   status: Extract<AppointmentStatus, 'confirmed' | 'cancelled' | 'completed'>,
 ): Promise<{ appointment: Appointment }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('transition_appointment', {
-      target_appointment: id,
-      next_status: status,
+    const response = await fetch('/api/appointments', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
     });
 
-    if (error) throw error;
+    const payload = (await response.json().catch(() => null)) as {
+      appointment?: Appointment;
+      error?: string;
+    } | null;
 
-    if (
-      typeof window !== 'undefined' &&
-      (status === 'confirmed' || status === 'cancelled')
-    ) {
-      void fetch('/api/push/dispatch-appointment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointmentId: data.id, event: status }),
-      }).catch(() => null);
+    if (!response.ok || !payload?.appointment) {
+      throw new Error(
+        payload?.error ||
+          'A mudança de status não foi autorizada ou não é válida.',
+      );
     }
 
-    const petById = await attachPetSummaries([data]);
-    return {
-      appointment: {
-        ...data,
-        pet: petById.get(data.pet_id) ?? null,
-      },
-    };
+    return { appointment: payload.appointment };
   } catch (error) {
     throw toFriendlyError(
       error,

@@ -1,4 +1,10 @@
+import {
+  isEmailConfirmedUser,
+  normalizeUserRole,
+  type UserAuthContext,
+} from '@/lib/auth/guards';
 import { getSupabaseClient } from '@/lib/supabase';
+import type { OrganizationRole } from '@/types/database';
 import type { UserProfile } from '@/types/entities';
 import { isSchemaMissingError, toFriendlyError } from './errors';
 
@@ -44,6 +50,10 @@ export async function entrarComEmailSenha(input: {
       password: input.password,
     });
     if (error) throw error;
+    if (!isEmailConfirmedUser(data.user)) {
+      await supabase.auth.signOut().catch(() => null);
+      throw new Error('Confirme seu e-mail pelo link enviado antes de entrar.');
+    }
     return data;
   } catch (error) {
     throw mapAuthError(error, 'Não foi possível entrar na sua conta.');
@@ -70,6 +80,28 @@ export async function cadastrarUsuario(input: {
     return data;
   } catch (error) {
     throw mapAuthError(error, 'Não foi possível concluir seu cadastro.');
+  }
+}
+
+export async function reenviarConfirmacaoEmail(
+  email: string,
+  emailRedirectTo: string,
+) {
+  try {
+    const supabase = getSupabaseClient();
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo,
+      },
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw mapAuthError(
+      error,
+      'Não foi possível reenviar o e-mail de confirmação.',
+    );
   }
 }
 
@@ -121,7 +153,7 @@ export async function buscarPerfilAtual(): Promise<UserProfile | null> {
 
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('id, display_name, email, phone, role, created_at, updated_at')
+      .select('id, display_name, email, phone, role, avatar_path, created_at, updated_at')
       .eq('id', authData.user.id)
       .maybeSingle();
 
@@ -136,6 +168,7 @@ export async function buscarPerfilAtual(): Promise<UserProfile | null> {
         email: authData.user.email,
         phone: null,
         role: 'tutor',
+        avatar_path: null,
         created_at: authData.user.created_at,
         updated_at: authData.user.created_at,
       };
@@ -150,32 +183,85 @@ export async function buscarPerfilAtual(): Promise<UserProfile | null> {
   }
 }
 
+export async function buscarContextoAcessoAtual(): Promise<
+  UserAuthContext & { authenticated: boolean; emailConfirmed: boolean }
+> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      return {
+        authenticated: false,
+        emailConfirmed: false,
+        role: 'tutor',
+        organizationRoles: [],
+      };
+    }
+
+    const emailConfirmed = isEmailConfirmedUser(authData.user);
+    const [
+      { data: profile, error: profileError },
+      { data: memberships, error: membershipError },
+    ] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', authData.user.id)
+        .maybeSingle(),
+      supabase
+        .from('organization_memberships')
+        .select('role')
+        .eq('user_id', authData.user.id),
+    ]);
+
+    if (profileError && !isSchemaMissingError(profileError)) throw profileError;
+    if (membershipError && !isSchemaMissingError(membershipError)) throw membershipError;
+
+    return {
+      authenticated: true,
+      emailConfirmed,
+      role: normalizeUserRole(profile?.role),
+      organizationRoles: (memberships ?? []).map(
+        (item) => item.role,
+      ) as OrganizationRole[],
+    };
+  } catch {
+    return {
+      authenticated: false,
+      emailConfirmed: false,
+      role: 'tutor',
+      organizationRoles: [],
+    };
+  }
+}
+
 export async function atualizarPerfilAtual(input: {
   display_name: string;
   phone?: string | null;
 }): Promise<UserProfile> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
-      throw new Error('Faça login para atualizar seu perfil.');
-    }
-
-    const { data: updated, error } = await supabase
-      .from('profiles')
-      .update({
+    const response = await fetch('/api/profile', {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         display_name: input.display_name.trim(),
         phone: input.phone?.trim() || null,
-      })
-      .eq('id', authData.user.id)
-      .select('id, display_name, email, phone, role, created_at, updated_at')
-      .single();
+      }),
+    });
 
-    if (error) throw error;
-    return {
-      ...updated,
-      email: updated.email ?? authData.user.email,
-    };
+    const payload = (await response.json().catch(() => null)) as {
+      profile?: UserProfile;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.profile) {
+      throw new Error(
+        payload?.error || 'Não foi possível atualizar os dados do seu perfil.',
+      );
+    }
+
+    return payload.profile;
   } catch (error) {
     throw mapAuthError(error, 'Não foi possível atualizar os dados do seu perfil.');
   }
@@ -188,7 +274,7 @@ export function observarMudancaAutenticacao(
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((_event, session) => {
-    callback(Boolean(session));
+    callback(Boolean(session && isEmailConfirmedUser(session.user)));
   });
   return () => subscription.unsubscribe();
 }

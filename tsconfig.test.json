@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "outDir": "/tmp/drvet-tests",
+    "noEmit": false
+  },
+  "include": [
+    "src/lib/auth/guards.ts",
+    "src/lib/clinical/prescription-digest.ts",
+    "src/lib/clinical/recent-prescription-codes.ts",
+    "src/lib/clinical/server-flows.ts",
+    "src/lib/logging/audit.ts",
+    "src/lib/pagination.ts",
+    "src/lib/payments/architecture.ts",
+    "src/lib/payments/pix-mask.ts",
+    "src/lib/payments/split.ts",
+    "src/lib/pets/server-pets.ts",
+    "src/lib/security/csv.ts",
+    "src/lib/security/file-signature.ts",
+    "src/lib/security/rate-limit.ts",
+    "src/lib/security/ssrf.ts",
+    "src/lib/teleconsultation/consent.ts",
+    "src/lib/validations.ts",
+    "src/services/errors.ts",
+    "tests/**/*.ts"
+  ]
+}

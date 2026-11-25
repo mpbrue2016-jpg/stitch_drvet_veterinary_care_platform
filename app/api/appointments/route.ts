@@ -1,9 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { supabaseErrorResponse } from '@/lib/supabase/api-error';
+import { logAuditEvent } from '@/lib/logging/audit';
+import {
+  persistServerAuditLog,
+  recordAppointmentNotificationOutbox,
+} from '@/lib/notifications/outbox';
+import {
+  matchesPeriodFilter,
+  matchesTextQuery,
+  paginateItems,
+  parseListFilterParams,
+} from '@/lib/pagination';
 import { dispatchBackgroundPushWithServiceRole } from '@/lib/push/server-dispatch';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
+import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const createAppointmentSchema = z
   .object({
@@ -32,59 +45,74 @@ const appointmentRangeSchema = z
     'O fim do período deve ser posterior ao início.',
   );
 
-export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+const statusFilterSchema = z.enum(['pending', 'confirmed', 'cancelled', 'completed']);
 
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
-  }
+export async function GET(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:appointments:get',
+    limit: 90,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const from = request.nextUrl.searchParams.get('from');
   const to = request.nextUrl.searchParams.get('to');
-  if (Boolean(from) !== Boolean(to)) {
-    return NextResponse.json(
-      { error: 'Informe o início e o fim do período.' },
-      { status: 400 },
+  const rawStatus = request.nextUrl.searchParams.get('status')?.trim() || null;
+
+  if (rawStatus && !statusFilterSchema.safeParse(rawStatus).success) {
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({ error: 'Filtro de status inválido.' }, { status: 400 }),
+      rateLimit,
     );
   }
 
-  const range = from && to
+  const isIsoRange = Boolean(from && to && from.includes('T') && to.includes('T'));
+  const range = isIsoRange && from && to
     ? appointmentRangeSchema.safeParse({ from, to })
     : null;
   if (range && !range.success) {
-    return NextResponse.json(
-      { error: 'Informe um período válido.', details: range.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe um período válido.', details: range.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
+
+  const { page, limit, q, from: filterFrom, to: filterTo } = parseListFilterParams(
+    request.nextUrl.searchParams,
+    { limit: isIsoRange ? 500 : 100, maxLimit: 500 },
+  );
 
   let appointmentsQuery = supabase
     .from('appointments')
     .select(
-      'id, kind, status, reason, starts_at, ends_at, pet_id, veterinarian_id, organization_id',
+      'id, availability_id, organization_id, pet_id, tutor_id, veterinarian_id, kind, status, reason, starts_at, ends_at',
     )
     .order('starts_at', { ascending: range !== null })
-    .limit(range ? 500 : 100);
+    .limit(500);
+
   if (range?.success) {
     appointmentsQuery = appointmentsQuery
       .gte('starts_at', range.data.from)
       .lt('starts_at', range.data.to);
   }
+  if (rawStatus) {
+    appointmentsQuery = appointmentsQuery.eq('status', rawStatus as z.infer<typeof statusFilterSchema>);
+  }
 
   const { data, error } = await appointmentsQuery;
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível carregar os agendamentos.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível carregar os agendamentos.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
@@ -98,44 +126,72 @@ export async function GET(request: NextRequest) {
       : { data: [], error: null };
 
   if (petsError) {
-    return supabaseErrorResponse(
-      petsError,
-      'Não foi possível carregar os pacientes dos agendamentos.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        petsError,
+        'Não foi possível carregar os pacientes dos agendamentos.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
   const petById = new Map((pets ?? []).map((pet) => [pet.id, pet]));
-  return NextResponse.json({
-    appointments: data.map((appointment) => ({
-      ...appointment,
-      pet: petById.get(appointment.pet_id) ?? null,
-    })),
-    currentUserId: authData.user.id,
+  const enriched = data.map((appointment) => ({
+    ...appointment,
+    pet: petById.get(appointment.pet_id) ?? null,
+  }));
+
+  const filtered = enriched.filter((appointment) => {
+    const matchesSearch = q
+      ? matchesTextQuery(
+          [
+            appointment.pet?.name,
+            appointment.pet?.species,
+            appointment.reason,
+            appointment.kind === 'teleconsultation' ? 'teleconsulta' : 'presencial',
+          ],
+          q,
+        )
+      : true;
+    const matchesDates =
+      !isIsoRange && (filterFrom || filterTo)
+        ? matchesPeriodFilter(appointment.starts_at, filterFrom, filterTo)
+        : true;
+    return matchesSearch && matchesDates;
   });
+
+  const { items, pagination } = paginateItems(filtered, { page, limit });
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      appointments: items,
+      currentUserId: authUser.id,
+      pagination,
+    }),
+    rateLimit,
+  );
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:appointments:write',
+    limit: 25,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = createAppointmentSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const { data: availability, error: availabilityError } = await supabase
@@ -143,20 +199,27 @@ export async function POST(request: NextRequest) {
     .select('id, organization_id, veterinarian_id, starts_at, ends_at')
     .eq('id', parsed.data.availability_id)
     .eq('is_available', true)
+    .eq('is_blocked', false)
     .gt('starts_at', new Date().toISOString())
     .maybeSingle();
 
   if (availabilityError) {
-    return supabaseErrorResponse(
-      availabilityError,
-      'Não foi possível verificar a disponibilidade.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        availabilityError,
+        'Não foi possível verificar a disponibilidade.',
+        500,
+      ),
+      rateLimit,
     );
   }
   if (!availability) {
-    return NextResponse.json(
-      { error: 'Este horário não está mais disponível.' },
-      { status: 409 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Este horário não está mais disponível.' },
+        { status: 409 },
+      ),
+      rateLimit,
     );
   }
 
@@ -168,65 +231,114 @@ export async function POST(request: NextRequest) {
       veterinarian_id: availability.veterinarian_id,
       starts_at: availability.starts_at,
       ends_at: availability.ends_at,
-      tutor_id: authData.user.id,
+      tutor_id: authUser.id,
       pet_id: parsed.data.pet_id,
       kind: parsed.data.kind,
       reason: parsed.data.reason || null,
     })
-    .select('id, kind, status, starts_at, ends_at')
+    .select(
+      'id, availability_id, organization_id, pet_id, tutor_id, veterinarian_id, kind, status, reason, starts_at, ends_at',
+    )
     .single();
 
   if (error) {
     const isConflict = error.code === '23P01' || error.code === '23505';
-    return supabaseErrorResponse(
-      error,
-      isConflict
-        ? 'Este horário acabou de ser reservado. Escolha outro horário.'
-        : 'Não foi possível solicitar o agendamento. Confira o pet e tente novamente.',
-      isConflict ? 409 : error.code === '42501' ? 403 : 500,
+    const statusCode = isConflict ? 409 : error.code === '42501' ? 403 : 500;
+    const failedAudit = {
+      event: 'appointments.create_failed',
+      resource: 'appointments',
+      action: 'create',
+      outcome: (error.code === '42501' ? 'denied' : 'error') as 'denied' | 'error',
+      actorId: authUser.id,
+      statusCode,
+      requestId,
+    };
+    logAuditEvent(failedAudit);
+    await persistServerAuditLog(failedAudit);
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        isConflict
+          ? 'Este horário acabou de ser reservado. Escolha outro horário.'
+          : 'Não foi possível solicitar o agendamento. Confira o pet e tente novamente.',
+        statusCode,
+      ),
+      rateLimit,
     );
   }
+
+  const createdAudit = {
+    event: 'appointments.created',
+    resource: 'appointments',
+    action: 'create',
+    outcome: 'allowed' as const,
+    actorId: authUser.id,
+    statusCode: 201,
+    requestId,
+    metadata: { appointmentId: data.id, kind: data.kind },
+  };
+  logAuditEvent(createdAudit);
 
   const whenFormatted = new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(new Date(data.starts_at));
 
-  await dispatchBackgroundPushWithServiceRole(
-    availability.veterinarian_id,
-    {
-      title: 'Nova solicitação na fila DrVet',
-      body: `${data.kind === 'teleconsultation' ? 'Teleconsulta' : 'Consulta presencial'} solicitada para ${whenFormatted}.`,
-      url: '/painel/veterinario',
-      tag: `queue-${data.id}`,
-    },
-    'queue',
-  ).catch(() => null);
+  const [{ data: petRow }, dispatch] = await Promise.all([
+    supabase.from('pets').select('id, name, species').eq('id', data.pet_id).maybeSingle(),
+    dispatchBackgroundPushWithServiceRole(
+      availability.veterinarian_id,
+      {
+        title: 'Nova solicitação na fila DrVet',
+        body: `${data.kind === 'teleconsultation' ? 'Teleconsulta' : 'Consulta presencial'} solicitada para ${whenFormatted}.`,
+        url: '/painel/veterinario',
+        tag: `queue-${data.id}`,
+      },
+      'queue',
+    ).catch(() => ({ attempted: 0, delivered: 0 })),
+    persistServerAuditLog(createdAudit),
+  ]);
 
-  return NextResponse.json({ appointment: data }, { status: 201 });
+  await recordAppointmentNotificationOutbox({
+    recipientUserId: availability.veterinarian_id,
+    event: 'created',
+    pushAttempted: dispatch.attempted,
+    pushDelivered: dispatch.delivered,
+  }).catch(() => null);
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json(
+      {
+        appointment: {
+          ...data,
+          pet: petRow ?? null,
+        },
+      },
+      { status: 201 },
+    ),
+    rateLimit,
+  );
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:appointments:write',
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = transitionAppointmentSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const { data, error } = await supabase.rpc('transition_appointment', {
@@ -236,21 +348,59 @@ export async function PATCH(request: NextRequest) {
 
   if (error) {
     const status = error.code === 'P0002' ? 404 : error.code === '42501' ? 403 : 409;
-    return supabaseErrorResponse(
-      error,
-      'A mudança de status não foi autorizada ou não é válida.',
-      status,
+    const failedAudit = {
+      event: 'appointments.transition_failed',
+      resource: 'appointments',
+      action: parsed.data.status,
+      outcome: (status === 403 ? 'denied' : 'error') as 'denied' | 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { appointmentId: parsed.data.id },
+    };
+    logAuditEvent(failedAudit);
+    await persistServerAuditLog(failedAudit);
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'A mudança de status não foi autorizada ou não é válida.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
+  const transitionedAudit = {
+    event: 'appointments.transitioned',
+    resource: 'appointments',
+    action: parsed.data.status,
+    outcome: 'allowed' as const,
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: { appointmentId: parsed.data.id, nextStatus: parsed.data.status },
+  };
+  logAuditEvent(transitionedAudit);
+
+  const [{ data: petRow }] = await Promise.all([
+    data?.pet_id
+      ? supabase.from('pets').select('id, name, species').eq('id', data.pet_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+    persistServerAuditLog(transitionedAudit),
+  ]);
+
   if (data && (parsed.data.status === 'confirmed' || parsed.data.status === 'cancelled')) {
+    const recipientId =
+      authUser.id === data.veterinarian_id ? data.tutor_id : data.veterinarian_id;
+    const filterType =
+      recipientId === data.veterinarian_id ? 'queue' : 'appointments';
     const whenFormatted = new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(new Date(data.starts_at));
 
-    await dispatchBackgroundPushWithServiceRole(
-      data.tutor_id,
+    const dispatch = await dispatchBackgroundPushWithServiceRole(
+      recipientId,
       {
         title:
           parsed.data.status === 'confirmed'
@@ -260,12 +410,29 @@ export async function PATCH(request: NextRequest) {
           parsed.data.status === 'confirmed'
             ? `Seu atendimento foi confirmado para ${whenFormatted}.`
             : `O atendimento de ${whenFormatted} foi cancelado.`,
-        url: '/agendamento',
+        url: recipientId === data.veterinarian_id ? '/painel/veterinario' : '/agendamento',
         tag: `status-${data.id}`,
       },
-      'appointments',
-    ).catch(() => null);
+      filterType,
+    ).catch(() => ({ attempted: 0, delivered: 0 }));
+
+    await recordAppointmentNotificationOutbox({
+      recipientUserId: recipientId,
+      event: parsed.data.status,
+      pushAttempted: dispatch.attempted,
+      pushDelivered: dispatch.delivered,
+    }).catch(() => null);
   }
 
-  return NextResponse.json({ appointment: data });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      appointment: data
+        ? {
+            ...data,
+            pet: petRow ?? null,
+          }
+        : data,
+    }),
+    rateLimit,
+  );
 }

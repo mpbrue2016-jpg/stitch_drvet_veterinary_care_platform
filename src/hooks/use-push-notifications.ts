@@ -20,6 +20,7 @@ import {
   unsubscribeBrowserPush,
   updatePushPreferences,
   type LeadMinutesOption,
+  type NotificationOutboxSummary,
 } from '@/services/push.service';
 import type { PushNotificationItem, PushSubscriptionItem } from '@/types/entities';
 
@@ -59,6 +60,8 @@ export function usePushNotifications() {
   const [browserEndpoint, setBrowserEndpoint] = useState<string | null>(null);
   const [subscriptions, setSubscriptions] = useState<PushSubscriptionItem[]>([]);
   const [notifications, setNotifications] = useState<PushNotificationItem[]>([]);
+  const [outboxSummary, setOutboxSummary] =
+    useState<NotificationOutboxSummary | null>(null);
   const [schemaMissing, setSchemaMissing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -137,6 +140,7 @@ export function usePushNotifications() {
         setBrowserEndpoint(browserSub?.endpoint ?? null);
         setSubscriptions(subsResult.subscriptions);
         setNotifications(notifResult.notifications);
+        setOutboxSummary(notifResult.outboxSummary);
         setSchemaMissing(subsResult.schemaMissing || notifResult.schemaMissing);
       } catch (error) {
         if (error instanceof PushApiError && error.code === 'SCHEMA_MISSING') {
@@ -505,6 +509,7 @@ export function usePushNotifications() {
     subscriptions,
     currentSubscription,
     notifications,
+    outboxSummary,
     unreadCount,
     preferences,
     isPushEnabledOnThisDevice,

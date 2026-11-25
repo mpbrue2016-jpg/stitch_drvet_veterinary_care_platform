@@ -1,7 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  PageHeader,
+  PaginationControls,
+  Skeleton,
+} from '@/components/ui';
+import type { PaginationMeta } from '@/lib/pagination';
 import { createVaccinationSchema } from '@/lib/validations';
 import { listarAgendamentos } from '@/services/appointments.service';
 import { criarRegistroVacina, listarVacinas } from '@/services/vaccinations.service';
@@ -50,19 +60,32 @@ export function VaccinationWallet() {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
     try {
       const [appointmentsResult, vaccinationsResult] = await Promise.all([
-        listarAgendamentos(),
-        listarVacinas(),
+        listarAgendamentos({ limit: 100 }),
+        listarVacinas({
+          page,
+          limit: 10,
+          q: searchQuery || undefined,
+          from: dateFrom || undefined,
+          to: dateTo || undefined,
+        }),
       ]);
 
       setAppointments(appointmentsResult.appointments);
       setCurrentUserId(appointmentsResult.currentUserId);
       setVaccinations(vaccinationsResult.vaccinations);
+      setPagination(vaccinationsResult.pagination ?? null);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar a carteira.',
@@ -70,7 +93,7 @@ export function VaccinationWallet() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dateFrom, dateTo, page, searchQuery]);
 
   useEffect(() => {
     void loadData();
@@ -294,6 +317,66 @@ export function VaccinationWallet() {
         title="Histórico de vacinação"
         description="Registros disponíveis de acordo com sua relação com o paciente."
       >
+        <form
+          aria-label="Filtrar carteira de vacinação"
+          className="mb-5 grid gap-3 rounded-2xl border border-slate-100 bg-[#f6faff] p-4 sm:grid-cols-2 lg:grid-cols-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setPage(1);
+            setSearchQuery(searchInput.trim());
+          }}
+        >
+          <div className="lg:col-span-2">
+            <Input
+              label="Buscar por vacina, pet, fabricante ou lote"
+              name="vaccinations-search"
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder="Ex.: V10, Raiva, Pipoca..."
+              value={searchInput}
+            />
+          </div>
+          <Input
+            label="Aplicadas de"
+            name="vaccinations-from"
+            onChange={(event) => {
+              setDateFrom(event.target.value);
+              setPage(1);
+            }}
+            type="date"
+            value={dateFrom}
+          />
+          <Input
+            label="Até"
+            name="vaccinations-to"
+            onChange={(event) => {
+              setDateTo(event.target.value);
+              setPage(1);
+            }}
+            type="date"
+            value={dateTo}
+          />
+          <div className="flex flex-wrap items-center gap-2 sm:col-span-2 lg:col-span-4">
+            <Button type="submit" variant="primary">
+              Buscar
+            </Button>
+            {(searchQuery || searchInput || dateFrom || dateTo) && (
+              <Button
+                onClick={() => {
+                  setSearchInput('');
+                  setSearchQuery('');
+                  setDateFrom('');
+                  setDateTo('');
+                  setPage(1);
+                }}
+                type="button"
+                variant="outline"
+              >
+                Limpar filtros
+              </Button>
+            )}
+          </div>
+        </form>
+
         {loading ? (
           <div className="grid gap-3" aria-busy="true">
             <Skeleton className="h-24 w-full rounded-2xl" />
@@ -301,11 +384,20 @@ export function VaccinationWallet() {
           </div>
         ) : vaccinations.length === 0 ? (
           <EmptyState
-            title="Nenhuma vacinação registrada"
-            description="Os registros serão exibidos após serem salvos pelo veterinário responsável."
+            title={
+              searchQuery || dateFrom || dateTo
+                ? 'Nenhuma vacinação encontrada para os filtros'
+                : 'Nenhuma vacinação registrada'
+            }
+            description={
+              searchQuery || dateFrom || dateTo
+                ? 'Limpe ou ajuste os filtros acima para visualizar outros registros.'
+                : 'Os registros serão exibidos após serem salvos pelo veterinário responsável.'
+            }
           />
         ) : (
-          <ul className="grid gap-3">
+          <>
+            <ul className="grid gap-3">
             {vaccinations.map((vaccination) => (
               <li className="rounded-2xl bg-[#f6faff] p-4" key={vaccination.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -344,7 +436,17 @@ export function VaccinationWallet() {
                 )}
               </li>
             ))}
-          </ul>
+            </ul>
+            {pagination && (
+              <PaginationControls
+                disabled={loading}
+                onPageChange={(nextPage) => setPage(nextPage)}
+                page={pagination.page}
+                total={pagination.total}
+                totalPages={pagination.totalPages}
+              />
+            )}
+          </>
         )}
       </Card>
     </div>

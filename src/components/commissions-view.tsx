@@ -20,6 +20,8 @@ import {
   Tabs,
   Toast,
 } from '@/components/ui';
+import { calculateCommissionSplitCents } from '@/lib/payments/split';
+import { buildUtf8Csv } from '@/lib/security/csv';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import {
   anticipationRequestSchema,
@@ -297,21 +299,16 @@ export function CommissionsView() {
       return;
     }
     const headers = ['Referência', 'Tutor', 'Pet', 'Origem', 'Valor Líquido (BRL)', 'Status', 'Data'];
-    const escapeCell = (value: string) => `"${value.replace(/"/g, '""')}"`;
-    const rows = entries.map((entry) =>
-      [
-        entry.reference,
-        entry.tutor_name,
-        entry.pet_name,
-        originLabels[entry.origin],
-        (entry.net_amount_cents / 100).toFixed(2).replace('.', ','),
-        statusLabels[entry.status],
-        new Date(entry.occurred_at).toLocaleDateString('pt-BR'),
-      ]
-        .map(escapeCell)
-        .join(';'),
-    );
-    const csv = `\uFEFF${[headers.map(escapeCell).join(';'), ...rows].join('\n')}`;
+    const rows = entries.map((entry) => [
+      entry.reference,
+      entry.tutor_name,
+      entry.pet_name,
+      originLabels[entry.origin],
+      (entry.net_amount_cents / 100).toFixed(2).replace('.', ','),
+      statusLabels[entry.status],
+      new Date(entry.occurred_at).toLocaleDateString('pt-BR'),
+    ]);
+    const csv = buildUtf8Csv(headers, rows, ';');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -568,12 +565,37 @@ export function CommissionsView() {
               },
               {
                 id: 'conciliacao',
-                label: 'Conciliação',
-                content: (
-                  <p className="text-sm text-slate-600">
-                    Utilize o botão Exportar CSV acima para baixar os lançamentos filtrados ou integre o webhook do provedor em Admin &amp; Integrações.
-                  </p>
-                ),
+                label: 'Conciliação & Split',
+                content: (() => {
+                  const baseGross =
+                    summary && summary.period_total_cents > 0
+                      ? summary.period_total_cents
+                      : 20_000;
+                  const split = calculateCommissionSplitCents({
+                    grossAmountCents: baseGross,
+                    discountCents: 0,
+                    platformFeeBps: 1500,
+                  });
+                  return (
+                    <div className="grid gap-3 text-xs text-slate-600">
+                      <p className="text-sm">
+                        Utilize o botão Exportar CSV acima para baixar os lançamentos filtrados (com proteção anti-injeção de fórmulas) ou integre o webhook do provedor em Admin &amp; Integrações.
+                      </p>
+                      <div className="rounded-xl border border-slate-200 bg-[#f6faff] p-3">
+                        <p className="font-bold text-[#153b50]">
+                          Regra de Split no Servidor (15% plataforma / 85% profissional)
+                        </p>
+                        <p className="mt-1">
+                          Base calculada: {formatCurrency(split.grossAmountCents)} · Taxa plataforma ({split.platformFeeBps / 100}%):{' '}
+                          {formatCurrency(split.platformFeeCents)} · Repasse líquido:{' '}
+                          <span className="font-bold text-[#006b57]">
+                            {formatCurrency(split.netVeterinarianCents)}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })(),
               },
             ]}
           />

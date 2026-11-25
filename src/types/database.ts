@@ -65,6 +65,7 @@ export interface Database {
           email: string | null;
           phone: string | null;
           role: UserRole;
+          avatar_path: string | null;
           created_at: string;
           updated_at: string;
         },
@@ -74,6 +75,7 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           role?: UserRole;
+          avatar_path?: string | null;
         }
       >;
       organizations: Table<
@@ -119,6 +121,7 @@ export interface Database {
           consultation_fee_cents: number;
           bio: string | null;
           is_online_now: boolean;
+          avatar_path: string | null;
           created_at: string;
           updated_at: string;
         },
@@ -132,6 +135,7 @@ export interface Database {
           consultation_fee_cents?: number;
           bio?: string | null;
           is_online_now?: boolean;
+          avatar_path?: string | null;
           created_at?: string;
           updated_at?: string;
         }
@@ -821,6 +825,7 @@ export interface Database {
           specialty: string | null;
           city: string | null;
           state: string | null;
+          avatar_path: string | null;
           status: 'pending' | 'approved' | 'rejected';
           reviewer_notes: string | null;
           reviewed_by: string | null;
@@ -838,10 +843,168 @@ export interface Database {
           specialty?: string | null;
           city?: string | null;
           state?: string | null;
+          avatar_path?: string | null;
           status?: 'pending' | 'approved' | 'rejected';
           reviewer_notes?: string | null;
           reviewed_by?: string | null;
           reviewed_at?: string | null;
+        }
+      >;
+      audit_logs: Table<
+        {
+          id: string;
+          actor_id: string | null;
+          event: string;
+          resource: string;
+          action: string;
+          outcome: 'allowed' | 'denied' | 'error' | 'rate_limited';
+          status_code: number | null;
+          metadata: Json;
+          created_at: string;
+        },
+        {
+          id?: string;
+          actor_id?: string | null;
+          event: string;
+          resource: string;
+          action: string;
+          outcome: 'allowed' | 'denied' | 'error' | 'rate_limited';
+          status_code?: number | null;
+          metadata?: Json;
+          created_at?: string;
+        }
+      >;
+      webhook_events: Table<
+        {
+          id: string;
+          provider: string;
+          event_id: string;
+          event_type: string;
+          order_id: string | null;
+          payload_hash: string;
+          status: 'processed' | 'ignored' | 'failed';
+          processed_at: string;
+          created_at: string;
+        },
+        {
+          id?: string;
+          provider: string;
+          event_id: string;
+          event_type: string;
+          order_id?: string | null;
+          payload_hash: string;
+          status?: 'processed' | 'ignored' | 'failed';
+          processed_at?: string;
+          created_at?: string;
+        }
+      >;
+      teleconsultation_consents: Table<
+        {
+          id: string;
+          session_id: string;
+          appointment_id: string;
+          tutor_id: string;
+          veterinarian_id: string;
+          policy_version: string;
+          tutor_consented_at: string | null;
+          tutor_revoked_at: string | null;
+          vet_consented_at: string | null;
+          vet_revoked_at: string | null;
+          retention_days: number;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          session_id: string;
+          appointment_id: string;
+          tutor_id: string;
+          veterinarian_id: string;
+          policy_version?: string;
+          tutor_consented_at?: string | null;
+          tutor_revoked_at?: string | null;
+          vet_consented_at?: string | null;
+          vet_revoked_at?: string | null;
+          retention_days?: number;
+        }
+      >;
+      notification_outbox: Table<
+        {
+          id: string;
+          recipient_user_id: string;
+          channel: 'email' | 'whatsapp' | 'push';
+          template_key: string;
+          status: 'queued' | 'sent' | 'failed' | 'cancelled';
+          attempts: number;
+          provider_message_id: string | null;
+          scheduled_for: string;
+          sent_at: string | null;
+          last_error: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          recipient_user_id: string;
+          channel: 'email' | 'whatsapp' | 'push';
+          template_key: string;
+          status?: 'queued' | 'sent' | 'failed' | 'cancelled';
+          attempts?: number;
+          provider_message_id?: string | null;
+          scheduled_for?: string;
+          sent_at?: string | null;
+          last_error?: string | null;
+        }
+      >;
+      facial_biometrics: Table<
+        {
+          id: string;
+          user_id: string;
+          status: 'active' | 'revoked' | 'pending_recalibration';
+          algorithm: string;
+          template_hash: string;
+          descriptor_vector: number[];
+          liveness_score: number;
+          device_label: string | null;
+          enrolled_at: string;
+          last_verified_at: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id?: string;
+          user_id: string;
+          status?: 'active' | 'revoked' | 'pending_recalibration';
+          algorithm?: string;
+          template_hash: string;
+          descriptor_vector: number[];
+          liveness_score: number;
+          device_label?: string | null;
+          enrolled_at?: string;
+          last_verified_at?: string | null;
+        }
+      >;
+      facial_biometric_verifications: Table<
+        {
+          id: string;
+          user_id: string;
+          biometric_id: string | null;
+          event_type: 'enroll' | 'verify_success' | 'verify_failed' | 'revoke';
+          similarity_score: number | null;
+          liveness_score: number | null;
+          matched: boolean;
+          device_label: string | null;
+          created_at: string;
+        },
+        {
+          id?: string;
+          user_id: string;
+          biometric_id?: string | null;
+          event_type: 'enroll' | 'verify_success' | 'verify_failed' | 'revoke';
+          similarity_score?: number | null;
+          liveness_score?: number | null;
+          matched?: boolean;
+          device_label?: string | null;
         }
       >;
     };
@@ -862,6 +1025,7 @@ export interface Database {
           target_registration_number: string;
           target_registration_region: string;
           target_specialty?: string | null;
+          target_avatar_path?: string | null;
         };
         Returns: undefined;
       };
@@ -944,6 +1108,13 @@ export interface Database {
         };
         Returns: Database['public']['Tables']['teleconsultation_sessions']['Row'];
       };
+      record_teleconsultation_consent: {
+        Args: {
+          target_session: string;
+          consent_granted: boolean;
+        };
+        Returns: Database['public']['Tables']['teleconsultation_consents']['Row'];
+      };
       subscribe_pet_to_plan: {
         Args: {
           target_plan: string;
@@ -993,6 +1164,7 @@ export interface Database {
           bio: string | null;
           is_online_now: boolean;
           open_slots_count: number;
+          avatar_path: string | null;
         }[];
       };
       update_my_vet_profile: {
@@ -1000,6 +1172,7 @@ export interface Database {
           target_consultation_fee_cents: number;
           target_bio?: string | null;
           target_is_online_now?: boolean | null;
+          target_avatar_path?: string | null;
         };
         Returns: Database['public']['Tables']['veterinarian_profiles']['Row'];
       };
@@ -1033,6 +1206,7 @@ export interface Database {
           target_specialty?: string | null;
           target_city?: string | null;
           target_state?: string | null;
+          target_avatar_path?: string | null;
         };
         Returns: Database['public']['Tables']['role_applications']['Row'];
       };
@@ -1085,6 +1259,28 @@ export interface Database {
           target_pix_key: string;
         };
         Returns: Database['public']['Tables']['payout_accounts']['Row'];
+      };
+      enroll_facial_biometrics: {
+        Args: {
+          target_template_hash: string;
+          target_descriptor_vector: Json;
+          target_liveness_score: number;
+          target_device_label?: string | null;
+        };
+        Returns: Database['public']['Tables']['facial_biometrics']['Row'];
+      };
+      record_facial_biometric_verification: {
+        Args: {
+          target_matched: boolean;
+          target_similarity_score: number;
+          target_liveness_score: number;
+          target_device_label?: string | null;
+        };
+        Returns: Database['public']['Tables']['facial_biometric_verifications']['Row'];
+      };
+      revoke_facial_biometrics: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
       };
     };
     Enums: {

@@ -99,6 +99,7 @@ export function NotificationCenter() {
     markAsRead,
     notice,
     notifications,
+    outboxSummary,
     permission,
     preferences,
     refresh,
@@ -238,6 +239,32 @@ export function NotificationCenter() {
           value={loading ? '…' : String(unreadCount)}
         />
       </div>
+
+      {outboxSummary && (
+        <Card
+          description="Rastreamento da fila notification_outbox (migration #15) para e-mail transacional e Web Push."
+          title="Fila Multicanal (Outbox)"
+        >
+          {outboxSummary.schemaReady ? (
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-700">
+              <Badge variant="info">
+                Na fila (E-mail/Worker): {outboxSummary.queued}
+              </Badge>
+              <Badge variant="success">Entregues: {outboxSummary.sent}</Badge>
+              <Badge variant={outboxSummary.failed > 0 ? 'warning' : 'neutral'}>
+                Falhas: {outboxSummary.failed}
+              </Badge>
+              <span className="text-slate-500">
+                Disparos de e-mail aguardam worker transacional com provedor SMTP/Resend configurado.
+              </span>
+            </div>
+          ) : (
+            <p className="text-xs text-slate-600">
+              Tabela <code>notification_outbox</code> aguardando aplicação da migration #15 para histórico multicanal de e-mail e push.
+            </p>
+          )}
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card

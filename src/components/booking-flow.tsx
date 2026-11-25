@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { CheckCircle2, Stethoscope } from 'lucide-react';
 import { Skeleton } from '@/components/ui';
 import { createBookingSchema, createPetSchema } from '@/lib/validations';
 import { criarAgendamento } from '@/services/appointments.service';
@@ -15,6 +16,7 @@ import {
   gerarCaminhoSeguroStorage,
   listarArquivosStorage,
   obterUrlAssinadaStorage,
+  obterUrlPublicaStorage,
   uploadArquivoStorage,
 } from '@/services/storage.service';
 import type {
@@ -172,6 +174,7 @@ export function BookingFlow() {
       if (!cupomFromUrl && attributionResult.attribution?.coupon_code) {
         setCouponCode((curr) => curr || attributionResult.attribution!.coupon_code);
       }
+      const requestedPetId = urlParams?.get('petId')?.trim() ?? '';
       const spParam = urlParams?.get('species') ?? null;
       const vetParam = urlParams?.get('vet')?.trim() ?? '';
       const speciesToken =
@@ -184,6 +187,9 @@ export function BookingFlow() {
               : spParam === 'exotic'
                 ? 'coelho'
                 : '';
+      const requestedPet = requestedPetId
+        ? loadedPets.find((pet) => pet.id === requestedPetId)
+        : undefined;
       const matchedPet = speciesToken
         ? loadedPets.find((pet) =>
             pet.species.toLowerCase().includes(speciesToken.slice(0, 4)),
@@ -192,7 +198,7 @@ export function BookingFlow() {
       setPetId((current) =>
         loadedPets.some((pet) => pet.id === current)
           ? current
-          : (matchedPet?.id ?? loadedPets[0]?.id ?? ''),
+          : (requestedPet?.id ?? matchedPet?.id ?? loadedPets[0]?.id ?? ''),
       );
       const scopedAvailability = vetParam
         ? loadedAvailability.filter((slot) => slot.veterinarian_id === vetParam)
@@ -690,9 +696,28 @@ export function BookingFlow() {
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-[#dff0ff] text-2xl text-[#006b57]">
-              ♙
-            </span>
+            {(() => {
+              const vetPhotoUrl = obterUrlPublicaStorage(
+                'vet-avatars',
+                activeVeterinarian?.avatar_path,
+              );
+              return vetPhotoUrl ? (
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-[#dff0ff]">
+                  <Image
+                    alt={activeVeterinarian?.display_name || 'Médico Veterinário'}
+                    className="object-cover"
+                    fill
+                    referrerPolicy="no-referrer"
+                    sizes="56px"
+                    src={vetPhotoUrl}
+                  />
+                </div>
+              ) : (
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-[#dff0ff] text-[#006b57]">
+                  <Stethoscope className="h-6 w-6" />
+                </span>
+              );
+            })()}
             <div className="min-w-0">
               <p className="truncate font-bold text-[#153b50]">
                 {activeVeterinarian
@@ -705,9 +730,9 @@ export function BookingFlow() {
             </div>
             <span
               aria-label="Credenciamento validado pelo sistema"
-              className="ml-auto text-lg text-[#087a68]"
+              className="ml-auto text-[#087a68]"
             >
-              ✓
+              <CheckCircle2 className="h-5 w-5" />
             </span>
           </div>
         </div>

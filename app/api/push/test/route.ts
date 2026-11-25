@@ -1,9 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { dispatchWebPushForUser } from '@/lib/push/server-dispatch';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const testPushSchema = z
   .object({
@@ -12,26 +14,24 @@ const testPushSchema = z
   .strict();
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:test',
+    limit: 10,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const rawBody: unknown = await request.json().catch(() => ({}));
   const parsed = testPushSchema.safeParse(rawBody);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Parâmetros inválidos.' },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Parâmetros inválidos.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const audience = parsed.data.audience ?? 'tutor';
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   const { data: inserted, error: insertError } = await supabase
     .from('notifications')
     .insert({
-      recipient_id: authData.user.id,
+      recipient_id: authUser.id,
       kind: 'system_test',
       title,
       body: bodyText,
@@ -61,14 +61,17 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (insertError) {
-    return supabaseErrorResponse(
-      insertError,
-      'Não foi possível registrar a notificação de teste.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        insertError,
+        'Não foi possível registrar a notificação de teste.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  const dispatch = await dispatchWebPushForUser(supabase, authData.user.id, {
+  const dispatch = await dispatchWebPushForUser(supabase, authUser.id, {
     title,
     body: bodyText,
     url: actionUrl,
@@ -82,8 +85,11 @@ export async function POST(request: NextRequest) {
       .eq('id', inserted.id);
   }
 
-  return NextResponse.json({
-    notification: inserted,
-    dispatch,
-  });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      notification: inserted,
+      dispatch,
+    }),
+    rateLimit,
+  );
 }

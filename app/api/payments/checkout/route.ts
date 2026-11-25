@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 import { buildPixBrCode } from '@/lib/payments/pix';
 
@@ -14,26 +17,24 @@ const checkoutSchema = z
   .strict();
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:payments:checkout',
+    limit: 20,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados de checkout inválidos.' },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados de checkout inválidos.' },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   const { data: baseOrder, error: orderError } = await supabase.rpc(
@@ -54,21 +55,46 @@ export async function POST(request: NextRequest) {
           : orderError?.code === '22023'
             ? 400
             : 500;
-    return supabaseErrorResponse(
-      orderError,
-      orderError?.message || 'Não foi possível gerar a cobrança da consulta.',
-      status,
+    logAuditEvent({
+      event: 'payments.checkout_failed',
+      resource: 'payment_orders',
+      action: 'checkout',
+      outcome: status === 403 ? 'denied' : 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { appointmentId: parsed.data.appointmentId, method: parsed.data.method },
+    });
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        orderError,
+        orderError?.message || 'Não foi possível gerar a cobrança da consulta.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
   if (parsed.data.method !== 'pix') {
-    return NextResponse.json({ order: baseOrder });
+    logAuditEvent({
+      event: 'payments.checkout_created',
+      resource: 'payment_orders',
+      action: 'checkout',
+      outcome: 'allowed',
+      actorId: authUser.id,
+      statusCode: 200,
+      requestId,
+      metadata: { orderId: baseOrder.id, method: parsed.data.method },
+    });
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({ order: baseOrder }),
+      rateLimit,
+    );
   }
 
   let pixPayload: string | null = baseOrder.pix_payload ?? null;
   let providerPaymentId: string | null = baseOrder.provider_payment_id ?? null;
 
-  // Integração real opcional com Mercado Pago quando credencial privada está no servidor.
   const mpToken = process.env.MERCADO_PAGO_ACCESS_TOKEN?.trim();
   if (mpToken && baseOrder.net_amount_cents > 0 && !providerPaymentId) {
     try {
@@ -85,7 +111,7 @@ export async function POST(request: NextRequest) {
           payment_method_id: 'pix',
           external_reference: baseOrder.id,
           payer: {
-            email: authData.user.email || 'tutor@drvets.com.br',
+            email: authUser.email || 'tutor@drvets.com.br',
           },
         }),
         signal: AbortSignal.timeout(8000),
@@ -128,11 +154,42 @@ export async function POST(request: NextRequest) {
     },
   );
 
+  const gatewayMode = providerPaymentId ? 'mercado_pago_pix' : 'static_pix_brcode';
+  const gatewayConfigured = Boolean(mpToken);
+
+  logAuditEvent({
+    event: 'payments.checkout_created',
+    resource: 'payment_orders',
+    action: 'checkout',
+    outcome: 'allowed',
+    actorId: authUser.id,
+    statusCode: 200,
+    requestId,
+    metadata: {
+      orderId: baseOrder.id,
+      method: parsed.data.method,
+      gatewayMode,
+      gatewayConfigured,
+    },
+  });
+
   if (updateError) {
-    return NextResponse.json({
-      order: { ...baseOrder, pix_payload: pixPayload, provider_payment_id: providerPaymentId },
-    });
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({
+        order: { ...baseOrder, pix_payload: pixPayload, provider_payment_id: providerPaymentId },
+        gatewayMode,
+        gatewayConfigured,
+      }),
+      rateLimit,
+    );
   }
 
-  return NextResponse.json({ order: updatedOrder });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      order: updatedOrder,
+      gatewayMode,
+      gatewayConfigured,
+    }),
+    rateLimit,
+  );
 }

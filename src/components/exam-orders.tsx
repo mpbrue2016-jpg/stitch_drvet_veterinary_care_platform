@@ -1,7 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  PageHeader,
+  PaginationControls,
+  Skeleton,
+} from '@/components/ui';
+import type { PaginationMeta } from '@/lib/pagination';
 import { createExamOrderSchema, recordExamResultSchema } from '@/lib/validations';
 import { listarAgendamentos } from '@/services/appointments.service';
 import {
@@ -61,6 +71,12 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
 
   const loadOrderAttachments = useCallback(async (loadedOrders: ExamOrder[]) => {
     if (loadedOrders.length === 0) {
@@ -100,8 +116,15 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     setErrorMessage('');
     try {
       const [appointmentsResult, ordersResult] = await Promise.all([
-        listarAgendamentos(),
-        listarPedidosExames(appointmentId || undefined),
+        listarAgendamentos({ limit: 100 }),
+        listarPedidosExames({
+          appointmentId: appointmentId || undefined,
+          page,
+          limit: 10,
+          q: searchQuery || undefined,
+          from: dateFrom || undefined,
+          to: dateTo || undefined,
+        }),
       ]);
 
       const loadedAppointments = appointmentsResult.appointments;
@@ -109,6 +132,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
       setCurrentUserId(appointmentsResult.currentUserId);
       const loadedOrders = ordersResult.examOrders;
       setOrders(loadedOrders);
+      setPagination(ordersResult.pagination ?? null);
       void loadOrderAttachments(loadedOrders);
       setResultFields((current) => {
         const next = { ...current };
@@ -137,7 +161,7 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
     } finally {
       setLoading(false);
     }
-  }, [appointmentId, loadOrderAttachments]);
+  }, [appointmentId, dateFrom, dateTo, loadOrderAttachments, page, searchQuery]);
 
   useEffect(() => {
     void loadData();
@@ -412,6 +436,66 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
         title="Pedidos e resultados"
         description="Resultados são adicionados uma vez e não podem ser alterados pela aplicação."
       >
+        <form
+          aria-label="Filtrar pedidos de exames"
+          className="mb-5 grid gap-3 rounded-2xl border border-slate-100 bg-[#f6faff] p-4 sm:grid-cols-2 lg:grid-cols-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setPage(1);
+            setSearchQuery(searchInput.trim());
+          }}
+        >
+          <div className="lg:col-span-2">
+            <Input
+              label="Buscar por exame, indicação, laboratório ou pet"
+              name="exams-search"
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder="Ex.: Hemograma, Ultrassom, Pipoca..."
+              value={searchInput}
+            />
+          </div>
+          <Input
+            label="Solicitados de"
+            name="exams-from"
+            onChange={(event) => {
+              setDateFrom(event.target.value);
+              setPage(1);
+            }}
+            type="date"
+            value={dateFrom}
+          />
+          <Input
+            label="Até"
+            name="exams-to"
+            onChange={(event) => {
+              setDateTo(event.target.value);
+              setPage(1);
+            }}
+            type="date"
+            value={dateTo}
+          />
+          <div className="flex flex-wrap items-center gap-2 sm:col-span-2 lg:col-span-4">
+            <Button type="submit" variant="primary">
+              Buscar
+            </Button>
+            {(searchQuery || searchInput || dateFrom || dateTo) && (
+              <Button
+                onClick={() => {
+                  setSearchInput('');
+                  setSearchQuery('');
+                  setDateFrom('');
+                  setDateTo('');
+                  setPage(1);
+                }}
+                type="button"
+                variant="outline"
+              >
+                Limpar filtros
+              </Button>
+            )}
+          </div>
+        </form>
+
         {loading ? (
           <div className="grid gap-3" aria-busy="true">
             <Skeleton className="h-28 w-full rounded-2xl" />
@@ -419,11 +503,20 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
           </div>
         ) : orders.length === 0 ? (
           <EmptyState
-            title="Nenhum exame encontrado"
-            description="Os pedidos aparecerão após serem registrados para um atendimento."
+            title={
+              searchQuery || dateFrom || dateTo
+                ? 'Nenhum exame encontrado para os filtros'
+                : 'Nenhum exame encontrado'
+            }
+            description={
+              searchQuery || dateFrom || dateTo
+                ? 'Limpe ou ajuste os filtros acima para visualizar outros exames.'
+                : 'Os pedidos aparecerão após serem registrados para um atendimento.'
+            }
           />
         ) : (
-          <ul className="grid gap-4">
+          <>
+            <ul className="grid gap-4">
             {orders.map((order) => (
               <li className="rounded-2xl bg-[#f6faff] p-4" key={order.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -621,7 +714,17 @@ export function ExamOrders({ appointmentId }: { appointmentId: string }) {
                   )}
               </li>
             ))}
-          </ul>
+            </ul>
+            {pagination && (
+              <PaginationControls
+                disabled={loading}
+                onPageChange={(nextPage) => setPage(nextPage)}
+                page={pagination.page}
+                total={pagination.total}
+                totalPages={pagination.totalPages}
+              />
+            )}
+          </>
         )}
       </Card>
       <p className="text-xs leading-5 text-slate-500">

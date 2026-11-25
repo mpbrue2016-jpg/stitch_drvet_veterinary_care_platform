@@ -32,6 +32,69 @@ export async function listarParceirosAtivos(): Promise<{
   }
 }
 
+export interface PartnersPaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export async function buscarPortalParceirosPaginado(params?: {
+  q?: string;
+  kind?: PartnerKind | '';
+  page?: number;
+  limit?: number;
+}): Promise<{
+  partners: PartnerListing[];
+  campaigns: AdCampaign[];
+  pagination: {
+    partners: PartnersPaginationMeta;
+    campaigns: PartnersPaginationMeta;
+  };
+}> {
+  try {
+    const search = new URLSearchParams();
+    if (params?.q?.trim()) search.set('q', params.q.trim());
+    if (params?.kind) search.set('kind', params.kind);
+    if (params?.page) search.set('page', String(params.page));
+    if (params?.limit) search.set('limit', String(params.limit));
+
+    const queryString = search.toString();
+    const response = await fetch(
+      `/api/partners${queryString ? `?${queryString}` : ''}`,
+      { cache: 'no-store' },
+    );
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      partners?: PartnerListing[];
+      campaigns?: AdCampaign[];
+      pagination?: {
+        partners: PartnersPaginationMeta;
+        campaigns: PartnersPaginationMeta;
+      };
+    };
+
+    if (!response.ok || !payload.pagination) {
+      throw new Error(
+        payload.error || 'Não foi possível carregar o portal de parceiros.',
+      );
+    }
+
+    return {
+      partners: payload.partners ?? [],
+      campaigns: payload.campaigns ?? [],
+      pagination: payload.pagination,
+    };
+  } catch (error) {
+    throw toFriendlyError(
+      error,
+      'Não foi possível carregar o portal de parceiros.',
+    );
+  }
+}
+
 export async function cadastrarParceiroB2B(input: {
   organization_id: string;
   kind: PartnerKind;
@@ -42,26 +105,32 @@ export async function cadastrarParceiroB2B(input: {
   discount_percent: number;
 }): Promise<{ partner: PartnerListing }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('partner_listings')
-      .insert({
-        organization_id: input.organization_id,
-        kind: input.kind,
-        trade_name: input.trade_name.trim(),
-        city: input.city.trim(),
-        state: input.state.trim().toUpperCase(),
-        coupon_code: input.coupon_code.trim().toUpperCase(),
-        discount_percent: input.discount_percent,
-        active: true,
-      })
-      .select(
-        'id, organization_id, kind, trade_name, city, state, coupon_code, discount_percent, active',
-      )
-      .single();
-
-    if (error) throw error;
-    return { partner: data };
+    const response = await fetch('/api/partners', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_partner',
+        payload: {
+          organization_id: input.organization_id,
+          kind: input.kind,
+          trade_name: input.trade_name.trim(),
+          city: input.city.trim(),
+          state: input.state.trim().toUpperCase(),
+          coupon_code: input.coupon_code.trim().toUpperCase(),
+          discount_percent: input.discount_percent,
+        },
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      partner?: PartnerListing;
+    };
+    if (!response.ok || !payload.partner) {
+      throw new Error(
+        payload.error || 'Não foi possível credenciar o estabelecimento parceiro.',
+      );
+    }
+    return { partner: payload.partner };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -100,24 +169,28 @@ export async function criarCampanhaAds(input: {
   starts_on: string;
 }): Promise<{ campaign: AdCampaign }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('ad_campaigns')
-      .insert({
-        organization_id: input.organization_id,
-        title: input.title.trim(),
-        placement: input.placement,
-        budget_cents: input.budget_cents,
-        status: 'active',
-        starts_on: input.starts_on,
-      })
-      .select(
-        'id, organization_id, title, placement, budget_cents, status, starts_on, ends_on, clicks_count',
-      )
-      .single();
-
-    if (error) throw error;
-    return { campaign: data };
+    const response = await fetch('/api/partners', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_campaign',
+        payload: {
+          organization_id: input.organization_id,
+          title: input.title.trim(),
+          placement: input.placement,
+          budget_cents: input.budget_cents,
+          starts_on: input.starts_on,
+        },
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      campaign?: AdCampaign;
+    };
+    if (!response.ok || !payload.campaign) {
+      throw new Error(payload.error || 'Não foi possível ativar a campanha.');
+    }
+    return { campaign: payload.campaign };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível ativar a campanha.');
   }
@@ -128,18 +201,24 @@ export async function atualizarStatusCampanhaAds(input: {
   status: AdCampaignStatus;
 }): Promise<{ campaign: AdCampaign }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('ad_campaigns')
-      .update({ status: input.status })
-      .eq('id', input.campaignId)
-      .select(
-        'id, organization_id, title, placement, budget_cents, status, starts_on, ends_on, clicks_count',
-      )
-      .single();
-
-    if (error) throw error;
-    return { campaign: data };
+    const response = await fetch('/api/partners', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: input.campaignId,
+        status: input.status,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      campaign?: AdCampaign;
+    };
+    if (!response.ok || !payload.campaign) {
+      throw new Error(
+        payload.error || 'Não foi possível alterar o status da campanha.',
+      );
+    }
+    return { campaign: payload.campaign };
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -152,12 +231,28 @@ export async function registrarAtribuicaoParceiro(
   couponCode: string,
 ): Promise<{ attribution: PartnerAttribution }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('record_partner_attribution', {
-      target_coupon: couponCode.trim().toUpperCase(),
+    const response = await fetch('/api/partners', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        couponCode: couponCode.trim().toUpperCase(),
+      }),
     });
-    if (error) throw error;
-    return { attribution: data };
+
+    const payload = (await response.json().catch(() => null)) as {
+      attribution?: PartnerAttribution;
+      error?: string;
+    } | null;
+
+    if (!response.ok || !payload?.attribution) {
+      throw new Error(
+        payload?.error ||
+          'Não foi possível vincular o cupom do parceiro à sua conta.',
+      );
+    }
+
+    return { attribution: payload.attribution };
   } catch (error) {
     throw toFriendlyError(
       error,

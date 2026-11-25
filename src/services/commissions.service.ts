@@ -140,41 +140,32 @@ export async function solicitarAntecipacao(input: {
   notes?: string;
 }): Promise<{ protocol: string; requested_cents: number }> {
   try {
-    const supabase = getSupabaseClient();
-
-    // Tenta executar via Edge Function para validação e auditoria server-side.
-    const { data: fnData, error: fnError } = await supabase.functions.invoke<{
-      protocol: string;
-      requested_cents: number;
-      error?: string;
-    }>('request-anticipation', {
-      body: {
-        amount_cents: input.amount_cents,
-        notes: input.notes ?? null,
-      },
+    const response = await fetch('/api/commissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'request_anticipation',
+        payload: {
+          amount_cents: input.amount_cents,
+          notes: input.notes?.trim() || undefined,
+        },
+      }),
     });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      protocol?: string;
+      requested_cents?: number;
+    };
 
-    if (!fnError && fnData?.protocol) {
-      return {
-        protocol: fnData.protocol,
-        requested_cents: fnData.requested_cents,
-      };
+    if (!response.ok || !payload.protocol || typeof payload.requested_cents !== 'number') {
+      throw new Error(
+        payload.error || 'Não foi possível registrar a solicitação de antecipação.',
+      );
     }
 
-    // Fallback seguro para a RPC transacional no PostgreSQL caso a Edge Function ainda não esteja publicada.
-    const { data: rpcData, error: rpcError } = await supabase.rpc(
-      'request_commission_anticipation',
-      {
-        target_amount_cents: input.amount_cents,
-        target_notes: input.notes?.trim() || null,
-      },
-    );
-
-    if (rpcError) throw rpcError;
-
     return {
-      protocol: rpcData.protocol,
-      requested_cents: rpcData.requested_cents,
+      protocol: payload.protocol,
+      requested_cents: payload.requested_cents,
     };
   } catch (error) {
     throw toFriendlyError(
@@ -184,31 +175,35 @@ export async function solicitarAntecipacao(input: {
   }
 }
 
-function maskPixKeyForDisplay(raw: string): string {
-  const trimmed = raw.trim();
-  if (trimmed.length <= 6) return trimmed;
-  if (trimmed.includes('@')) {
-    const [local, domain] = trimmed.split('@');
-    const safeLocal =
-      local.length <= 2 ? `${local[0] ?? '*'}*` : `${local.slice(0, 2)}***`;
-    return `${safeLocal}@${domain}`;
-  }
-  return `${trimmed.slice(0, 3)}••••${trimmed.slice(-4)}`;
-}
-
 export async function salvarContaRepasse(input: {
   provider: 'asaas' | 'mercadopago';
   payout_account_label: string;
   pix_key: string;
 }): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase.rpc('upsert_my_payout_account', {
-      target_provider: input.provider,
-      target_label: input.payout_account_label.trim(),
-      target_pix_key: maskPixKeyForDisplay(input.pix_key),
+    const response = await fetch('/api/commissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'upsert_payout_account',
+        payload: {
+          provider: input.provider,
+          payout_account_label: input.payout_account_label.trim(),
+          pix_key: input.pix_key.trim(),
+        },
+      }),
     });
-    if (error) throw error;
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      updated?: boolean;
+    };
+
+    if (!response.ok || !payload.updated) {
+      throw new Error(
+        payload.error ||
+          'Não foi possível salvar os dados bancários e chave PIX de repasse.',
+      );
+    }
   } catch (error) {
     throw toFriendlyError(
       error,
@@ -243,16 +238,28 @@ export async function solicitarNotaFiscal(input: {
   notes?: string;
 }): Promise<{ invoice: FiscalInvoice }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('request_fiscal_invoice', {
-      target_period_label: input.period_label.trim(),
-      target_total_cents: input.total_cents,
-      target_tax_id: input.tax_id.trim(),
-      target_provider: input.provider,
-      target_notes: input.notes?.trim() || null,
+    const response = await fetch('/api/commissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'request_fiscal_invoice',
+        payload: {
+          period_label: input.period_label.trim(),
+          total_cents: input.total_cents,
+          tax_id: input.tax_id.trim(),
+          provider: input.provider,
+          notes: input.notes?.trim() || undefined,
+        },
+      }),
     });
-    if (error) throw error;
-    return { invoice: data };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      invoice?: FiscalInvoice;
+    };
+    if (!response.ok || !payload.invoice) {
+      throw new Error(payload.error || 'Não foi possível solicitar a nota fiscal.');
+    }
+    return { invoice: payload.invoice };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível solicitar a nota fiscal.');
   }
@@ -263,13 +270,25 @@ export async function atualizarStatusNotaFiscal(input: {
   status: 'requested' | 'issued' | 'cancelled';
 }): Promise<{ invoice: FiscalInvoice }> {
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.rpc('update_fiscal_invoice_status', {
-      target_invoice: input.invoiceId,
-      next_status: input.status,
+    const response = await fetch('/api/commissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update_fiscal_invoice_status',
+        payload: {
+          invoiceId: input.invoiceId,
+          status: input.status,
+        },
+      }),
     });
-    if (error) throw error;
-    return { invoice: data };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      invoice?: FiscalInvoice;
+    };
+    if (!response.ok || !payload.invoice) {
+      throw new Error(payload.error || 'Não foi possível atualizar a nota fiscal.');
+    }
+    return { invoice: payload.invoice };
   } catch (error) {
     throw toFriendlyError(error, 'Não foi possível atualizar a nota fiscal.');
   }

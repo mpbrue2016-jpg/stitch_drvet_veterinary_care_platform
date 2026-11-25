@@ -18,7 +18,9 @@ import {
   Tabs,
   Toast,
 } from '@/components/ui';
+import { canAccessPath, type UserAuthContext } from '@/lib/auth/guards';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { buscarContextoAcessoAtual } from '@/services/auth.service';
 import { listarDisponibilidade } from '@/services/availability.service';
 import { listarComissoes } from '@/services/commissions.service';
 import {
@@ -160,6 +162,10 @@ export function OperationsHub() {
   const [acknowledgements, setAcknowledgements] = useState<LegalAcknowledgement[]>([]);
   const [ackBusy, setAckBusy] = useState(false);
   const [loading, setLoading] = useState(configured);
+  const [accessContext, setAccessContext] = useState<UserAuthContext>({
+    role: 'tutor',
+    organizationRoles: [],
+  });
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -171,18 +177,25 @@ export function OperationsHub() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [vetsRes, availRes, commRes, legalRes] = await Promise.all([
+      const [vetsRes, availRes, commRes, legalRes, accessRes] = await Promise.all([
         listarVeterinariosAprovados().catch(() => ({
           professionals: [],
         })),
         listarDisponibilidade().catch(() => ({ availability: [] })),
         listarComissoes().catch(() => ({ entries: [] })),
         listarCientesLegais().catch(() => ({ acknowledgements: [] })),
+        buscarContextoAcessoAtual(),
       ]);
       setProfessionals(vetsRes.professionals);
       setSlots(availRes.availability);
       setCommissions(commRes.entries);
       setAcknowledgements(legalRes.acknowledgements);
+      if (accessRes.authenticated && accessRes.emailConfirmed) {
+        setAccessContext({
+          role: accessRes.role,
+          organizationRoles: accessRes.organizationRoles,
+        });
+      }
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Não foi possível carregar a central.',
@@ -258,20 +271,27 @@ export function OperationsHub() {
     <div className="mx-auto max-w-6xl">
       <PageHeader
         action={
-          <div className="flex flex-wrap gap-2">
-            <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-semibold text-white hover:bg-[#0d2a3a]"
-              href="/painel/veterinario"
-            >
-              Painel Veterinário
-            </Link>
-            <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-brand-ink hover:bg-brand-ice"
-              href="/painel/parceiro"
-            >
-              Painel Parceiro
-            </Link>
-          </div>
+          canAccessPath('/painel/veterinario', accessContext) ||
+          canAccessPath('/painel/parceiro', accessContext) ? (
+            <div className="flex flex-wrap gap-2">
+              {canAccessPath('/painel/veterinario', accessContext) && (
+                <Link
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-semibold text-white hover:bg-[#0d2a3a]"
+                  href="/painel/veterinario"
+                >
+                  Painel Veterinário
+                </Link>
+              )}
+              {canAccessPath('/painel/parceiro', accessContext) && (
+                <Link
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-brand-ink hover:bg-brand-ice"
+                  href="/painel/parceiro"
+                >
+                  Painel Parceiro
+                </Link>
+              )}
+            </div>
+          ) : undefined
         }
         description="Diretório de especialistas por especialidade, exportação bancária CSV/OFX e repositório de termos digitais DrVet."
         title="Central Operacional & Documentos"
@@ -323,12 +343,21 @@ export function OperationsHub() {
                 ) : filteredProfessionals.length === 0 ? (
                   <EmptyState
                     action={
-                      <Link
-                        className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-semibold text-white"
-                        href="/agenda"
-                      >
-                        Abrir gestão de agenda e equipe
-                      </Link>
+                      canAccessPath('/agenda', accessContext) ? (
+                        <Link
+                          className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-semibold text-white"
+                          href="/agenda"
+                        >
+                          Abrir gestão de agenda e equipe
+                        </Link>
+                      ) : (
+                        <Link
+                          className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-semibold text-white"
+                          href="/agendamento/edit"
+                        >
+                          Ir para agendamentos
+                        </Link>
+                      )
                     }
                     description="Nenhum profissional credenciado encontrado para este filtro ou organização."
                     title="Sem profissionais listados"

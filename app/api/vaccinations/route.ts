@@ -1,7 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logAuditEvent } from '@/lib/logging/audit';
+import { persistServerAuditLog } from '@/lib/notifications/outbox';
+import {
+  matchesPeriodFilter,
+  matchesTextQuery,
+  paginateItems,
+  parseListFilterParams,
+} from '@/lib/pagination';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
 
 const dateSchema = z
@@ -36,22 +46,19 @@ const vaccinationSchema = z
     },
   );
 
-export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+export async function GET(request: NextRequest) {
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:vaccinations:get',
+    limit: 90,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
-    );
-  }
+  const { page, limit, q, from, to } = parseListFilterParams(
+    request.nextUrl.searchParams,
+    { limit: 50, maxLimit: 200 },
+  );
 
   const { data: records, error } = await supabase
     .from('vaccination_records')
@@ -59,13 +66,16 @@ export async function GET() {
       'id, appointment_id, organization_id, pet_id, veterinarian_id, vaccine_name, administered_on, batch_number, manufacturer, next_due_on, notes, created_at',
     )
     .order('administered_on', { ascending: false })
-    .limit(200);
+    .limit(500);
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível carregar a carteira de vacinação.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível carregar a carteira de vacinação.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
@@ -76,46 +86,66 @@ export async function GET() {
       : { data: [], error: null };
 
   if (petsError) {
-    return supabaseErrorResponse(
-      petsError,
-      'Não foi possível carregar os pacientes das vacinas.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        petsError,
+        'Não foi possível carregar os pacientes das vacinas.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
   const petsById = new Map((pets ?? []).map((pet) => [pet.id, pet]));
-  return NextResponse.json({
-    vaccinations: records.map((record) => ({
-      ...record,
-      pet: petsById.get(record.pet_id) ?? null,
-    })),
-    currentUserId: authData.user.id,
-  });
+  const enriched = records.map((record) => ({
+    ...record,
+    pet: petsById.get(record.pet_id) ?? null,
+  }));
+
+  const filtered = enriched.filter(
+    (record) =>
+      matchesTextQuery(
+        [
+          record.vaccine_name,
+          record.manufacturer,
+          record.batch_number,
+          record.pet?.name,
+          record.pet?.species,
+        ],
+        q,
+      ) && matchesPeriodFilter(record.administered_on, from, to),
+  );
+
+  const { items, pagination } = paginateItems(filtered, { page, limit });
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      vaccinations: items,
+      currentUserId: authUser.id,
+      pagination,
+    }),
+    rateLimit,
+  );
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:vaccinations:write',
+    limit: 25,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit, requestId } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = vaccinationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Dados inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json(
-      { error: 'Autenticação necessária.' },
-      { status: 401 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Dados inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
   }
 
@@ -138,14 +168,54 @@ export async function POST(request: NextRequest) {
           : error.code === '22023'
             ? 400
             : 500;
-    return supabaseErrorResponse(
-      error,
-      error.code === '22023'
-        ? 'Confira o nome da vacina e as datas informadas.'
-        : 'Não foi possível registrar a vacinação.',
-      status,
+    const failedAudit = {
+      event: 'vaccinations.create_failed',
+      resource: 'vaccination_records',
+      action: 'create',
+      outcome: (status === 403 ? 'denied' : 'error') as 'denied' | 'error',
+      actorId: authUser.id,
+      statusCode: status,
+      requestId,
+      metadata: { appointmentId: parsed.data.appointment_id },
+    };
+    logAuditEvent(failedAudit);
+    await persistServerAuditLog(failedAudit);
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        error.code === '22023'
+          ? 'Confira o nome da vacina e as datas informadas.'
+          : 'Não foi possível registrar a vacinação.',
+        status,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ vaccination: data }, { status: 201 });
+  const createdAudit = {
+    event: 'vaccinations.created',
+    resource: 'vaccination_records',
+    action: 'create',
+    outcome: 'allowed' as const,
+    actorId: authUser.id,
+    statusCode: 201,
+    requestId,
+    metadata: { appointmentId: parsed.data.appointment_id },
+  };
+  logAuditEvent(createdAudit);
+
+  const [{ data: petRow }] = await Promise.all([
+    data?.pet_id
+      ? supabase.from('pets').select('id, name, species').eq('id', data.pet_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+    persistServerAuditLog(createdAudit),
+  ]);
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json(
+      { vaccination: data ? { ...data, pet: petRow ?? null } : data },
+      { status: 201 },
+    ),
+    rateLimit,
+  );
 }

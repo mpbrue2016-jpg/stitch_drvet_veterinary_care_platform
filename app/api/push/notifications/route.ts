@@ -1,9 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { dispatchWebPushForUser } from '@/lib/push/server-dispatch';
+import {
+  applyRateLimitHeadersToResponse,
+  requireProtectedApiContext,
+} from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const markReadSchema = z
   .object({
@@ -16,18 +18,13 @@ const markReadSchema = z
   });
 
 export async function GET(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:notifications:get',
+    limit: 60,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const syncReminders = request.nextUrl.searchParams.get('sync') !== '0';
 
@@ -37,7 +34,7 @@ export async function GET(request: NextRequest) {
     for (const item of createdReminders) {
       await dispatchWebPushForUser(
         supabase,
-        authData.user.id,
+        authUser.id,
         {
           title: item.title,
           body: item.body,
@@ -58,15 +55,18 @@ export async function GET(request: NextRequest) {
     .select(
       'id, recipient_id, appointment_id, kind, title, body, action_url, read_at, pushed_at, created_at',
     )
-    .eq('recipient_id', authData.user.id)
+    .eq('recipient_id', authUser.id)
     .order('created_at', { ascending: false })
     .limit(50);
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível carregar as notificações.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível carregar as notificações.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       const filterType = item.kind === 'vet_queue_new' ? 'queue' : 'appointments';
       const result = await dispatchWebPushForUser(
         supabase,
-        authData.user.id,
+        authUser.id,
         {
           title: item.title,
           body: item.body,
@@ -102,60 +102,89 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({
-    notifications: list,
-    unreadCount: list.filter((item) => !item.read_at).length,
-  });
+  const outboxRes = await supabase
+    .from('notification_outbox')
+    .select('status')
+    .eq('recipient_user_id', authUser.id)
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  const outboxRows = outboxRes.error ? [] : (outboxRes.data ?? []);
+  const outboxSummary = {
+    schemaReady: !outboxRes.error,
+    queued: outboxRows.filter((row) => row.status === 'queued').length,
+    sent: outboxRows.filter((row) => row.status === 'sent').length,
+    failed: outboxRows.filter((row) => row.status === 'failed').length,
+  };
+
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({
+      notifications: list,
+      unreadCount: list.filter((item) => !item.read_at).length,
+      outboxSummary,
+    }),
+    rateLimit,
+  );
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Supabase não configurado.' },
-      { status: 503 },
-    );
-  }
+  const ctx = await requireProtectedApiContext(request, {
+    routeKey: 'api:push:notifications:write',
+    limit: 60,
+    windowMs: 60_000,
+  });
+  if (!ctx.ok) return ctx.response;
+  const { supabase, user: authUser, rateLimit } = ctx;
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = markReadSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Parâmetros inválidos.', details: parsed.error.flatten() },
-      { status: 400 },
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Parâmetros inválidos.', details: parsed.error.flatten() },
+        { status: 400 },
+      ),
+      rateLimit,
     );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: 'Autenticação necessária.' }, { status: 401 });
   }
 
   if (parsed.data.markAll) {
     const { data, error } = await supabase.rpc('mark_all_notifications_read');
     if (error) {
-      return supabaseErrorResponse(
-        error,
-        'Não foi possível marcar todas as notificações como lidas.',
-        500,
+      return applyRateLimitHeadersToResponse(
+        supabaseErrorResponse(
+          error,
+          'Não foi possível marcar todas as notificações como lidas.',
+          500,
+        ),
+        rateLimit,
       );
     }
-    return NextResponse.json({ updatedCount: data ?? 0 });
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json({ updatedCount: data ?? 0 }),
+      rateLimit,
+    );
   }
 
   const { error } = await supabase
     .from('notifications')
     .update({ read_at: new Date().toISOString() })
     .eq('id', parsed.data.id!)
-    .eq('recipient_id', authData.user.id);
+    .eq('recipient_id', authUser.id);
 
   if (error) {
-    return supabaseErrorResponse(
-      error,
-      'Não foi possível marcar a notificação como lida.',
-      500,
+    return applyRateLimitHeadersToResponse(
+      supabaseErrorResponse(
+        error,
+        'Não foi possível marcar a notificação como lida.',
+        500,
+      ),
+      rateLimit,
     );
   }
 
-  return NextResponse.json({ updatedCount: 1 });
+  return applyRateLimitHeadersToResponse(
+    NextResponse.json({ updatedCount: 1 }),
+    rateLimit,
+  );
 }

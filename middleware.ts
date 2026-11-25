@@ -1,9 +1,15 @@
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import {
+  getRouteAccessDenial,
+  isEmailConfirmedUser,
+  normalizeUserRole,
+  sanitizeNextPath,
+} from '@/lib/auth/guards';
 import { getSupabasePublicConfig, isSupabaseConfigured } from '@/lib/supabase/config';
 import { isSchemaMissingError } from '@/services/errors';
-import type { Database } from '@/types/database';
+import type { Database, OrganizationRole } from '@/types/database';
 
 const protectedPaths = [
   '/agenda',
@@ -28,32 +34,34 @@ const protectedPaths = [
 
 const publicBypassPaths = ['/receitas/verificar'];
 
-const professionalOnlyPaths = [
+const roleCheckedPaths = [
   '/agenda',
   '/receitas',
   '/comissoes',
   '/parceiros',
   '/anuncios',
-  '/painel/veterinario',
-  '/painel/parceiro',
+  '/painel',
+  '/admin',
 ];
-const adminOnlyPaths = ['/admin'];
+
+function copyCookies(source: NextResponse, target: NextResponse) {
+  source.cookies.getAll().forEach((cookie) => {
+    target.cookies.set(cookie);
+  });
+  return target;
+}
 
 export async function middleware(request: NextRequest) {
-  const isPublicBypass = publicBypassPaths.some(
-    (path) =>
-      request.nextUrl.pathname === path ||
-      request.nextUrl.pathname.startsWith(`${path}/`),
-  );
+  const pathname = request.nextUrl.pathname;
 
+  const isPublicBypass = publicBypassPaths.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
   if (isPublicBypass) return NextResponse.next({ request });
 
   const isProtectedPath = protectedPaths.some(
-    (path) =>
-      request.nextUrl.pathname === path ||
-      request.nextUrl.pathname.startsWith(`${path}/`),
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
-
   if (!isProtectedPath) return NextResponse.next({ request });
 
   if (!isSupabaseConfigured()) {
@@ -85,41 +93,36 @@ export async function middleware(request: NextRequest) {
   });
 
   const { data, error } = await supabase.auth.getUser();
+  const nextTarget = sanitizeNextPath(
+    `${pathname}${request.nextUrl.search}`,
+    '/agendamento',
+  );
+
   if (error || !data.user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set(
-      'next',
-      `${request.nextUrl.pathname}${request.nextUrl.search}`,
-    );
-    const redirect = NextResponse.redirect(loginUrl);
-    response.cookies.getAll().forEach((cookie) =>
-      redirect.cookies.set(cookie),
-    );
-    return redirect;
+    loginUrl.search = '';
+    loginUrl.searchParams.set('next', nextTarget);
+    return copyCookies(response, NextResponse.redirect(loginUrl));
   }
 
-<<<<<<< HEAD
-  // Exigir confirmação de e-mail quando a política de Auth do Supabase exigir.
-  // data.user.email_confirmed_at é preenchido apenas após clicar no link enviado por e-mail.
-  if (!data.user.email_confirmed_at) {
+  if (!isEmailConfirmedUser(data.user)) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', request.nextUrl.pathname);
-    loginUrl.searchParams.set('confirm_email', 'required');
-    const redirect = NextResponse.redirect(loginUrl);
-    response.cookies.getAll().forEach((cookie) =>
-      redirect.cookies.set(cookie),
-    );
-    return redirect;
-=======
-  const requiresProfessionalRole = professionalOnlyPaths.some(
-    (path) =>
-      request.nextUrl.pathname === path ||
-      request.nextUrl.pathname.startsWith(`${path}/`),
+    loginUrl.search = '';
+    loginUrl.searchParams.set('error', 'unconfirmed');
+    loginUrl.searchParams.set('next', nextTarget);
+    if (data.user.email) {
+      loginUrl.searchParams.set('email', data.user.email);
+    }
+    return copyCookies(response, NextResponse.redirect(loginUrl));
+  }
+
+  const requiresRoleCheck = roleCheckedPaths.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
 
-  if (requiresProfessionalRole) {
+  if (requiresRoleCheck) {
     const [
       { data: profile, error: profileError },
       { data: memberships, error: membershipError },
@@ -132,76 +135,29 @@ export async function middleware(request: NextRequest) {
       supabase
         .from('organization_memberships')
         .select('role')
-        .eq('user_id', data.user.id)
-        .limit(1),
+        .eq('user_id', data.user.id),
     ]);
 
     if (isSchemaMissingError(profileError) || isSchemaMissingError(membershipError)) {
       const restrictedUrl = request.nextUrl.clone();
       restrictedUrl.pathname = '/agendamento';
       restrictedUrl.search = '?denied=schema';
-      const redirect = NextResponse.redirect(restrictedUrl);
-      response.cookies.getAll().forEach((cookie) =>
-        redirect.cookies.set(cookie),
-      );
-      return redirect;
+      return copyCookies(response, NextResponse.redirect(restrictedUrl));
     }
 
-    const role = profile?.role ?? 'tutor';
-    const hasOrgMembership = (memberships?.length ?? 0) > 0;
-    const isAllowed =
-      role === 'admin' ||
-      role === 'veterinarian' ||
-      role === 'partner' ||
-      hasOrgMembership;
+    const role = normalizeUserRole(profile?.role);
+    const organizationRoles = (memberships ?? []).map(
+      (item) => item.role,
+    ) as OrganizationRole[];
 
-    if (!isAllowed) {
+    const denial = getRouteAccessDenial(pathname, { role, organizationRoles });
+    if (denial) {
       const restrictedUrl = request.nextUrl.clone();
       restrictedUrl.pathname = '/agendamento';
-      restrictedUrl.searchParams.set('denied', 'role');
-      const redirect = NextResponse.redirect(restrictedUrl);
-      response.cookies.getAll().forEach((cookie) =>
-        redirect.cookies.set(cookie),
-      );
-      return redirect;
+      restrictedUrl.search = '';
+      restrictedUrl.searchParams.set('denied', denial);
+      return copyCookies(response, NextResponse.redirect(restrictedUrl));
     }
-  }
-
-  const requiresAdminRole = adminOnlyPaths.some(
-    (path) =>
-      request.nextUrl.pathname === path ||
-      request.nextUrl.pathname.startsWith(`${path}/`),
-  );
-
-  if (requiresAdminRole) {
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .maybeSingle();
-
-    if (isSchemaMissingError(profileError)) {
-      const restrictedUrl = request.nextUrl.clone();
-      restrictedUrl.pathname = '/agendamento';
-      restrictedUrl.search = '?denied=schema';
-      const redirect = NextResponse.redirect(restrictedUrl);
-      response.cookies.getAll().forEach((cookie) =>
-        redirect.cookies.set(cookie),
-      );
-      return redirect;
-    }
-
-    if (profile?.role !== 'admin') {
-      const restrictedUrl = request.nextUrl.clone();
-      restrictedUrl.pathname = '/agendamento';
-      restrictedUrl.searchParams.set('denied', 'admin');
-      const redirect = NextResponse.redirect(restrictedUrl);
-      response.cookies.getAll().forEach((cookie) =>
-        redirect.cookies.set(cookie),
-      );
-      return redirect;
-    }
->>>>>>> origin/main
   }
 
   return response;
