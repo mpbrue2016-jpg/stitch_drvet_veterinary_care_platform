@@ -1,6 +1,10 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { CalendarDays, Camera, Trash2, Upload, UserRound } from 'lucide-react';
 import { Skeleton } from '@/components/ui';
 import {
   createAvailabilitySchema,
@@ -18,6 +22,11 @@ import {
   listarOrganizacoesEVeterinarios,
   registrarVeterinario,
 } from '@/services/organizations.service';
+import {
+  gerarCaminhoSeguroStorage,
+  obterUrlPublicaStorage,
+  uploadArquivoStorage,
+} from '@/services/storage.service';
 import type {
   AvailabilitySlot,
   Organization,
@@ -42,6 +51,8 @@ export function ProfessionalSetup() {
   const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([]);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [blockReason, setBlockReason] = useState('');
+  const [vetPhotoPath, setVetPhotoPath] = useState('');
+  const [uploadingVetPhoto, setUploadingVetPhoto] = useState(false);
 
   const loadOrganizations = useCallback(async () => {
     setLoading(true);
@@ -103,6 +114,7 @@ export function ProfessionalSetup() {
       await loadOrganizations();
       setSuccessMessage('Alterações salvas.');
       form.reset();
+      setVetPhotoPath('');
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -146,9 +158,9 @@ export function ProfessionalSetup() {
       professional.organization_id === organizationId &&
       professional.user_id === currentUserId,
   );
-  const canManageAvailability =
-    selectedOrganization?.role === 'veterinarian' &&
-    selectedProfessional?.status === 'approved';
+  const canManageAvailability = Boolean(
+    selectedProfessional && selectedProfessional.status === 'approved',
+  );
 
   useEffect(() => {
     if (canManageAvailability && organizationId) {
@@ -175,12 +187,43 @@ export function ProfessionalSetup() {
         isBlocked ? 'Horário bloqueado.' : 'Horário liberado para agendamento.',
       );
       await loadAvailability(organizationId);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('drvet:availability-updated'));
+      }
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Não foi possível atualizar o horário.',
       );
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleVetPhotoUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !organizationId) return;
+
+    setErrorMessage('');
+    setSuccessMessage('');
+    setUploadingVetPhoto(true);
+    try {
+      const storagePath = gerarCaminhoSeguroStorage(organizationId, `vet-${file.name}`);
+      const { path } = await uploadArquivoStorage({
+        bucket: 'vet-avatars',
+        path: storagePath,
+        file,
+      });
+      setVetPhotoPath(path);
+      setSuccessMessage('Foto profissional carregada e pronta para o cadastro.');
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar a foto do veterinário.',
+      );
+    } finally {
+      setUploadingVetPhoto(false);
     }
   }
 
@@ -294,6 +337,7 @@ export function ProfessionalSetup() {
                         formData.get('registrationRegion') ?? '',
                       ),
                       specialty: String(formData.get('specialty') ?? ''),
+                      avatar_path: vetPhotoPath.trim() || null,
                     });
                     if (!parsed.success) {
                       throw new Error(
@@ -338,9 +382,67 @@ export function ProfessionalSetup() {
                     name="specialty"
                   />
                 </label>
+
+                <div className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-[#f6faff] p-3.5 sm:col-span-2">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-slate-300 bg-white">
+                    {(() => {
+                      const previewUrl = obterUrlPublicaStorage('vet-avatars', vetPhotoPath);
+                      return previewUrl ? (
+                        <Image
+                          alt="Foto profissional do veterinário"
+                          className="object-cover"
+                          fill
+                          referrerPolicy="no-referrer"
+                          sizes="56px"
+                          src={previewUrl}
+                        />
+                      ) : (
+                        <span className="grid h-full w-full place-items-center text-slate-400">
+                          <Camera className="h-5 w-5" />
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-[#153b50]">
+                      Foto profissional do veterinário (opcional)
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      JPG, PNG ou WEBP até 5 MB armazenada no bucket vet-avatars.
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <label className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[#087a68] bg-white px-3.5 text-xs font-bold text-[#087a68] hover:bg-[#ebf5ff]">
+                        <Upload className="h-3.5 w-3.5" />
+                        {uploadingVetPhoto
+                          ? 'Enviando...'
+                          : vetPhotoPath
+                            ? 'Trocar foto'
+                            : 'Enviar foto'}
+                        <input
+                          accept="image/jpeg,image/png,image/webp"
+                          className="sr-only"
+                          disabled={uploadingVetPhoto}
+                          onChange={(event) => void handleVetPhotoUpload(event)}
+                          type="file"
+                        />
+                      </label>
+                      {vetPhotoPath && (
+                        <button
+                          className="inline-flex min-h-9 items-center gap-1 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                          onClick={() => setVetPhotoPath('')}
+                          type="button"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Remover
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   className="min-h-11 rounded-full bg-[#087a68] px-4 font-bold text-white disabled:opacity-60 sm:col-span-2"
-                  disabled={busy}
+                  disabled={busy || uploadingVetPhoto}
                   type="submit"
                 >
                   Registrar veterinário
@@ -348,29 +450,78 @@ export function ProfessionalSetup() {
               </form>
 
               {professionals
-                .filter(
-                  (professional) =>
-                    professional.organization_id === organizationId &&
-                    professional.status === 'pending',
-                )
-                .map((professional) => (
-                  <div
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50 p-3"
-                    key={professional.user_id}
-                  >
-                    <p className="break-all text-sm text-amber-950">
-                      Registro {professional.registration_region} {professional.registration_number}
-                    </p>
-                    <button
-                      className="min-h-10 rounded-full bg-white px-4 text-sm font-bold text-[#087a68] disabled:opacity-60"
-                      disabled={busy}
-                      onClick={() => void approveProfessional(professional)}
-                      type="button"
+                .filter((professional) => professional.organization_id === organizationId)
+                .map((professional) => {
+                  const photoUrl = obterUrlPublicaStorage(
+                    'vet-avatars',
+                    professional.avatar_path,
+                  );
+                  const isPending = professional.status === 'pending';
+                  return (
+                    <div
+                      className={`flex flex-wrap items-center justify-between gap-3 rounded-xl p-3 ${
+                        isPending
+                          ? 'bg-amber-50'
+                          : 'border border-slate-200 bg-[#f6faff]'
+                      }`}
+                      key={professional.user_id}
                     >
-                      Aprovar
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-white">
+                          {photoUrl ? (
+                            <Image
+                              alt={professional.display_name || 'Médico Veterinário'}
+                              className="object-cover"
+                              fill
+                              referrerPolicy="no-referrer"
+                              sizes="40px"
+                              src={photoUrl}
+                            />
+                          ) : (
+                            <span className="grid h-full w-full place-items-center text-slate-400">
+                              <UserRound className="h-4 w-4" />
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-[#153b50]">
+                            {professional.display_name || 'Profissional'} · CRMV-
+                            {professional.registration_region}{' '}
+                            {professional.registration_number}
+                          </p>
+                          <p className="text-xs text-slate-600">
+                            {isPending ? 'Pendente de aprovação' : 'Aprovado'} ·{' '}
+                            {professional.avatar_path
+                              ? 'Foto profissional cadastrada'
+                              : 'Sem foto profissional'}{' '}
+                            · Agenda individual separada
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {!isPending && (
+                          <Link
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-[#153b50] hover:bg-slate-50"
+                            href={`/agendamento?vet=${professional.user_id}`}
+                          >
+                            <CalendarDays className="h-3.5 w-3.5 text-[#087a68]" />
+                            Horários deste vet
+                          </Link>
+                        )}
+                        {isPending && (
+                          <button
+                            className="min-h-10 rounded-full bg-white px-4 text-sm font-bold text-[#087a68] disabled:opacity-60"
+                            disabled={busy}
+                            onClick={() => void approveProfessional(professional)}
+                            type="button"
+                          >
+                            Aprovar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           )}
 
@@ -393,11 +544,14 @@ export function ProfessionalSetup() {
                   }
                   await criarHorarioDisponivel(parsed.data);
                   await loadAvailability(organizationId);
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('drvet:availability-updated'));
+                  }
                 })
               }
             >
               <h3 className="font-bold text-[#153b50] sm:col-span-2">
-                Publicar horário de atendimento
+                Publicar horário na sua agenda individual
               </h3>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                 Início
@@ -436,11 +590,11 @@ export function ProfessionalSetup() {
             >
               <div>
                 <h3 className="font-bold text-[#153b50]" id="availability-heading">
-                  Horários publicados
+                  Horários publicados da sua agenda individual
                 </h3>
                 <p className="mt-1 text-xs text-slate-600">
-                  Bloqueie horários sem agendamento ou libere um bloqueio. Horários
-                  reservados não podem ser bloqueados.
+                  Estes horários pertencem exclusivamente a você nesta clínica. Bloqueie ou
+                  libere janelas sem afetar os demais veterinários.
                 </p>
               </div>
               <label className="grid gap-1.5 text-sm font-semibold text-slate-700 sm:max-w-xl">

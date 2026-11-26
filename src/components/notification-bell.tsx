@@ -30,7 +30,11 @@ function formatRelativeDate(iso: string): string {
 }
 
 function NotificationKindIcon({ kind }: { kind: PushNotificationItem['kind'] }) {
-  if (kind === 'vet_queue_new') {
+  if (
+    kind === 'vet_queue_new' ||
+    kind === 'vet_agenda_reminder' ||
+    kind === 'vet_agenda_summary'
+  ) {
     return (
       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#e6f7f4] text-[#087a68]">
         <Stethoscope className="h-4 w-4" />

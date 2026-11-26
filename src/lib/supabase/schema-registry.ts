@@ -146,6 +146,13 @@ export const DRVET_MIGRATIONS_REGISTRY: MigrationSchemaEntry[] = [
     tables: ['facial_biometrics', 'facial_biometric_verifications'],
     buckets: ['vet-avatars'],
   },
+  {
+    order: 17,
+    filename: '20261126000100_individual_vet_agenda_and_comms.sql',
+    title: 'Agenda Individual do Veterinário & Comunicados Individuais',
+    stitchScope: 'Agenda Semanal Individual (/agenda), Fila Clínica (/painel/veterinario) & Comunicados (/notificacoes)',
+    tables: ['notifications', 'professional_availability', 'appointments'],
+  },
 ];
 
 export const DRVET_ALL_TABLES: string[] = Array.from(

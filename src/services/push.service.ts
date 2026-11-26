@@ -1,5 +1,6 @@
 'use client';
 
+import type { IndividualVetAgendaDigest } from '@/lib/agenda/individual-digest';
 import type { PushNotificationItem, PushSubscriptionItem } from '@/types/entities';
 
 export type LeadMinutesOption = 15 | 30 | 60 | 120 | 1440;
@@ -378,4 +379,193 @@ export async function sendTestPushNotification(
     notification: PushNotificationItem;
     dispatch: { attempted: number; delivered: number; failed: number };
   }>(res, 'Não foi possível disparar a notificação de teste.');
+}
+
+export interface VetAgendaCommunicationsPayload {
+  schemaMissing: boolean;
+  isVeterinarian: boolean;
+  digest: IndividualVetAgendaDigest | null;
+  notifications: PushNotificationItem[];
+  unreadCount: number;
+  outboxStats?: {
+    schemaReady: boolean;
+    emailQueued: number;
+    pushSent: number;
+  };
+}
+
+export async function fetchVetAgendaCommunications(): Promise<VetAgendaCommunicationsPayload> {
+  const res = await fetch('/api/agenda/communicate', { cache: 'no-store' });
+  const payload = (await res.json().catch(() => ({}))) as Partial<VetAgendaCommunicationsPayload> & {
+    code?: string;
+    error?: string;
+  };
+
+  if (res.status === 503 && payload.code === 'SCHEMA_MISSING') {
+    return {
+      schemaMissing: true,
+      isVeterinarian: false,
+      digest: null,
+      notifications: [],
+      unreadCount: 0,
+    };
+  }
+  if (!res.ok) {
+    throw new PushApiError(
+      payload.error || 'Não foi possível carregar os comunicados da agenda individual.',
+      res.status,
+      payload.code,
+    );
+  }
+
+  return {
+    schemaMissing: false,
+    isVeterinarian: Boolean(payload.isVeterinarian),
+    digest: payload.digest ?? null,
+    notifications: payload.notifications ?? [],
+    unreadCount: payload.unreadCount ?? 0,
+    outboxStats: payload.outboxStats,
+  };
+}
+
+export async function dispatchVetAgendaCommunicado(force = true): Promise<{
+  notification: PushNotificationItem | null;
+  digest: IndividualVetAgendaDigest;
+  dispatch: { attempted: number; delivered: number; deactivated: number };
+  outboxRecorded: number;
+}> {
+  const res = await fetch('/api/agenda/communicate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ force }),
+  });
+
+  return parseJsonResponse<{
+    notification: PushNotificationItem | null;
+    digest: IndividualVetAgendaDigest;
+    dispatch: { attempted: number; delivered: number; deactivated: number };
+    outboxRecorded: number;
+  }>(res, 'Não foi possível enviar o comunicado da sua agenda individual.');
+}
+
+import type { VetReminderChannel } from '@/lib/notifications/vet-reminders';
+
+export type { VetReminderChannel };
+
+export interface Vet30MinReminderRunSummary {
+  dueAppointmentsCount: number;
+  triggeredCount: number;
+  pushAttempted: number;
+  pushDelivered: number;
+  emailSent: number;
+  emailQueued: number;
+  emailFailed: number;
+  whatsappAttempted: number;
+  whatsappSent: number;
+  whatsappQueued: number;
+  whatsappFailed: number;
+}
+
+export interface Vet30MinRemindersPayload {
+  schemaMissing: boolean;
+  leadMinutes: number;
+  enabled: boolean;
+  channel: VetReminderChannel;
+  recipientEmail: string | null;
+  recipientPhone: string | null;
+  emailProviderConfigured: boolean;
+  whatsappProviderConfigured: boolean;
+  summary: Vet30MinReminderRunSummary;
+  recentReminders?: PushNotificationItem[];
+  createdNotifications?: PushNotificationItem[];
+}
+
+export async function fetchVet30MinReminders(
+  sync = true,
+): Promise<Vet30MinRemindersPayload> {
+  const res = await fetch(`/api/push/vet-reminders?sync=${sync ? '1' : '0'}`, {
+    cache: 'no-store',
+  });
+  const payload = (await res.json().catch(() => ({}))) as Partial<Vet30MinRemindersPayload> & {
+    code?: string;
+    error?: string;
+  };
+
+  if (res.status === 503 && payload.code === 'SCHEMA_MISSING') {
+    return {
+      schemaMissing: true,
+      leadMinutes: 30,
+      enabled: true,
+      channel: 'both',
+      recipientEmail: null,
+      recipientPhone: null,
+      emailProviderConfigured: false,
+      whatsappProviderConfigured: false,
+      summary: {
+        dueAppointmentsCount: 0,
+        triggeredCount: 0,
+        pushAttempted: 0,
+        pushDelivered: 0,
+        emailSent: 0,
+        emailQueued: 0,
+        emailFailed: 0,
+        whatsappAttempted: 0,
+        whatsappSent: 0,
+        whatsappQueued: 0,
+        whatsappFailed: 0,
+      },
+      recentReminders: [],
+    };
+  }
+
+  if (!res.ok) {
+    throw new PushApiError(
+      payload.error || 'Não foi possível verificar os lembretes de 30 minutos.',
+      res.status,
+      payload.code,
+    );
+  }
+
+  return {
+    schemaMissing: Boolean(payload.schemaMissing),
+    leadMinutes: payload.leadMinutes ?? 30,
+    enabled: payload.enabled ?? true,
+    channel: payload.channel ?? 'both',
+    recipientEmail: payload.recipientEmail ?? null,
+    recipientPhone: payload.recipientPhone ?? null,
+    emailProviderConfigured: Boolean(payload.emailProviderConfigured),
+    whatsappProviderConfigured: Boolean(payload.whatsappProviderConfigured),
+    summary: payload.summary ?? {
+      dueAppointmentsCount: 0,
+      triggeredCount: 0,
+      pushAttempted: 0,
+      pushDelivered: 0,
+      emailSent: 0,
+      emailQueued: 0,
+      emailFailed: 0,
+      whatsappAttempted: 0,
+      whatsappSent: 0,
+      whatsappQueued: 0,
+      whatsappFailed: 0,
+    },
+    recentReminders: payload.recentReminders ?? [],
+  };
+}
+
+export async function syncVet30MinReminders(input?: {
+  channel?: VetReminderChannel;
+  enabled?: boolean;
+  syncNow?: boolean;
+  whatsappPhone?: string | null;
+}): Promise<Vet30MinRemindersPayload> {
+  const res = await fetch('/api/push/vet-reminders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input ?? { syncNow: true }),
+  });
+
+  return parseJsonResponse<Vet30MinRemindersPayload>(
+    res,
+    'Não foi possível sincronizar os lembretes de 30 minutos.',
+  );
 }

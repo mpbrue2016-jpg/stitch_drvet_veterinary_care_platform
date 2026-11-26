@@ -198,7 +198,9 @@ export function usePushNotifications() {
           if (!shownLocalTagsRef.current.has(tag)) {
             shownLocalTagsRef.current.add(tag);
             const allowByKind =
-              item.kind === 'vet_queue_new'
+              item.kind === 'vet_queue_new' ||
+              item.kind === 'vet_agenda_reminder' ||
+              item.kind === 'vet_agenda_summary'
                 ? preferences.notifyQueue
                 : item.kind === 'appointment_reminder' ||
                     item.kind === 'appointment_confirmed' ||

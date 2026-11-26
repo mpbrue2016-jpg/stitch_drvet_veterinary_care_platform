@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { WifiOff } from 'lucide-react';
 import { Badge, Button, Card, PageHeader, Skeleton } from '@/components/ui';
+import { isLikelyOfflineError } from '@/lib/offline/vet-cache-helpers';
+import {
+  getCachedVetBasicRecordByAppointment,
+  saveSingleVetBasicRecordToCache,
+} from '@/lib/offline/vet-indexeddb';
 import { clinicalRecordSchema } from '@/lib/validations';
 import {
   buscarProntuarioPorAtendimento,
@@ -85,6 +91,8 @@ export function ClinicalRecordForm({
   >([]);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [offlineNotice, setOfflineNotice] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -122,6 +130,8 @@ export function ClinicalRecordForm({
   const loadRecord = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
+    setOfflineNotice('');
+    setOfflineMode(false);
     try {
       const result = await buscarProntuarioPorAtendimento(appointmentId);
       const loadedRecord = result.clinicalRecord;
@@ -137,8 +147,34 @@ export function ClinicalRecordForm({
           plan: loadedRecord.plan,
         });
         setVitals(toVitalFields(loadedRecord.vitals));
+        void saveSingleVetBasicRecordToCache(loadedRecord).catch(() => null);
       }
     } catch (error) {
+      if (isLikelyOfflineError(error)) {
+        const cached = await getCachedVetBasicRecordByAppointment(appointmentId).catch(
+          () => null,
+        );
+        if (cached?.clinicalRecord) {
+          const loaded = cached.clinicalRecord;
+          setRecord(loaded);
+          setPetId(loaded.pet_id);
+          setCanEdit(false);
+          setOfflineMode(true);
+          setFields({
+            subjective: loaded.subjective,
+            objective: loaded.objective,
+            assessment: loaded.assessment,
+            plan: loaded.plan,
+          });
+          setVitals(toVitalFields(loaded.vitals));
+          setOfflineNotice(
+            cached.lastSyncedAt
+              ? `Sem conexão com a internet. Exibindo prontuário básico salvo no IndexedDB em ${formatDate(cached.lastSyncedAt)} (somente leitura).`
+              : 'Sem conexão com a internet. Exibindo prontuário básico salvo no IndexedDB (somente leitura).',
+          );
+          return;
+        }
+      }
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar o prontuário.',
       );
@@ -239,6 +275,7 @@ export function ClinicalRecordForm({
 
       setRecord(result.clinicalRecord);
       setCanEdit(result.clinicalRecord.status === 'draft');
+      void saveSingleVetBasicRecordToCache(result.clinicalRecord).catch(() => null);
       setNotice(
         status === 'finalized'
           ? 'Prontuário finalizado. O registro não pode mais ser alterado.'
@@ -253,7 +290,7 @@ export function ClinicalRecordForm({
     }
   }
 
-  const readOnly = !canEdit || record?.status === 'finalized';
+  const readOnly = offlineMode || !canEdit || record?.status === 'finalized';
 
   return (
     <div className="grid gap-5">
@@ -280,6 +317,15 @@ export function ClinicalRecordForm({
         </div>
       )}
 
+      {offlineNotice && (
+        <div
+          className="flex flex-wrap items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-950"
+          role="status"
+        >
+          <WifiOff className="h-4 w-4 shrink-0 text-amber-700" />
+          <span>{offlineNotice}</span>
+        </div>
+      )}
       {errorMessage && (
         <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800" role="alert">
           {errorMessage}

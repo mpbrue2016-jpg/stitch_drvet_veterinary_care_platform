@@ -12,11 +12,16 @@
     "noEmit": false
   },
   "include": [
+    "src/lib/agenda/individual-digest.ts",
     "src/lib/auth/guards.ts",
     "src/lib/clinical/prescription-digest.ts",
     "src/lib/clinical/recent-prescription-codes.ts",
     "src/lib/clinical/server-flows.ts",
     "src/lib/logging/audit.ts",
+    "src/lib/notifications/cron-auth.ts",
+    "src/lib/notifications/vet-reminders.ts",
+    "src/lib/notifications/whatsapp-dispatcher.ts",
+    "src/lib/offline/vet-cache-helpers.ts",
     "src/lib/pagination.ts",
     "src/lib/payments/architecture.ts",
     "src/lib/payments/pix-mask.ts",

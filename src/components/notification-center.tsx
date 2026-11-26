@@ -58,8 +58,18 @@ function getKindMeta(kind: PushNotificationItem['kind']) {
   switch (kind) {
     case 'vet_queue_new':
       return {
-        label: 'Fila Veterinária',
+        label: 'Reserva na Agenda Vet',
         variant: 'warning' as const,
+      };
+    case 'vet_agenda_reminder':
+      return {
+        label: 'Lembrete da Agenda Vet',
+        variant: 'warning' as const,
+      };
+    case 'vet_agenda_summary':
+      return {
+        label: 'Comunicado da Agenda Individual',
+        variant: 'info' as const,
       };
     case 'appointment_reminder':
       return {
@@ -124,7 +134,12 @@ export function NotificationCenter() {
       );
     }
     if (filter === 'vet') {
-      return notifications.filter((item) => item.kind === 'vet_queue_new');
+      return notifications.filter(
+        (item) =>
+          item.kind === 'vet_queue_new' ||
+          item.kind === 'vet_agenda_reminder' ||
+          item.kind === 'vet_agenda_summary',
+      );
     }
     return notifications;
   }, [filter, notifications]);
@@ -356,18 +371,18 @@ export function NotificationCenter() {
         </Card>
 
         <Card
-          description="Configurações aplicáveis a médicos-veterinários com fila ativa."
-          title="Alertas da Fila Veterinária"
+          description="Configurações aplicáveis à agenda individual de cada médico-veterinário."
+          title="Comunicados & Fila da Agenda Individual"
         >
           <div className="grid gap-4">
             <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f6faff] p-4">
               <Stethoscope className="mt-0.5 h-5 w-5 shrink-0 text-[#087a68]" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold text-[#153b50]">
-                  Aviso instantâneo de nova solicitação na fila
+                  Avisos e lembretes exclusivos da sua agenda individual
                 </p>
                 <p className="mt-1 text-xs text-slate-600">
-                  Sempre que um tutor reservar uma teleconsulta ou atendimento presencial com você, o trigger SQL gera o alerta em tempo real e envia Push para seus dispositivos inscritos.
+                  Cada veterinário recebe apenas os comunicados, novas reservas, cancelamentos e lembretes da sua própria agenda individual em tempo real e via Web Push.
                 </p>
               </div>
               <button
@@ -488,7 +503,7 @@ export function NotificationCenter() {
               [
                 { id: 'all', label: 'Todas' },
                 { id: 'tutor', label: 'Consultas do Tutor' },
-                { id: 'vet', label: 'Fila Veterinária' },
+                { id: 'vet', label: 'Agenda Individual Vet' },
               ] as const
             ).map((tab) => (
               <button

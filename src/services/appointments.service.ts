@@ -15,6 +15,8 @@ export interface ListAppointmentsParams {
   status?: AppointmentStatus | '';
   page?: number;
   limit?: number;
+  mine?: boolean;
+  veterinarian_id?: string;
 }
 
 export interface CreateAppointmentInput {
@@ -58,6 +60,10 @@ export async function listarAgendamentos(
     if (params?.status) query.set('status', params.status);
     if (params?.page && params.page > 0) query.set('page', String(params.page));
     if (params?.limit && params.limit > 0) query.set('limit', String(params.limit));
+    if (params?.mine) query.set('mine', 'true');
+    if (params?.veterinarian_id?.trim()) {
+      query.set('veterinarian_id', params.veterinarian_id.trim());
+    }
 
     const qs = query.toString();
     const response = await fetch(`/api/appointments${qs ? `?${qs}` : ''}`, {

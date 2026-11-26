@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { WifiOff } from 'lucide-react';
 import {
   Button,
   EmptyState,
@@ -11,6 +12,14 @@ import {
   Skeleton,
 } from '@/components/ui';
 import { PushInlineBanner } from '@/components/push-inline-banner';
+import {
+  filterCachedAppointments,
+  isLikelyOfflineError,
+} from '@/lib/offline/vet-cache-helpers';
+import {
+  getCachedVetAppointments,
+  saveVetAppointmentsToCache,
+} from '@/lib/offline/vet-indexeddb';
 import type { PaginationMeta } from '@/lib/pagination';
 import {
   atualizarStatusAgendamento,
@@ -46,6 +55,7 @@ export function AppointmentsList() {
   const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  const [offlineNotice, setOfflineNotice] = useState('');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -68,6 +78,7 @@ export function AppointmentsList() {
   const loadAppointments = useCallback(async () => {
     setLoading(true);
     setErrorMessage('');
+    setOfflineNotice('');
     try {
       const result = await listarAgendamentos({
         page,
@@ -80,7 +91,52 @@ export function AppointmentsList() {
       setAppointments(result.appointments);
       setCurrentUserId(result.currentUserId);
       setPagination(result.pagination ?? null);
+
+      if (
+        result.currentUserId &&
+        !searchQuery &&
+        !statusFilter &&
+        !dateFrom &&
+        !dateTo &&
+        page === 1
+      ) {
+        const vetOwned = result.appointments.filter(
+          (item) => item.veterinarian_id === result.currentUserId,
+        );
+        if (vetOwned.length > 0) {
+          void saveVetAppointmentsToCache(result.currentUserId, vetOwned).catch(
+            () => null,
+          );
+        }
+      }
     } catch (error) {
+      if (isLikelyOfflineError(error)) {
+        const cached = await getCachedVetAppointments().catch(() => null);
+        if (cached && cached.appointments.length > 0 && cached.veterinarianId) {
+          const filtered = filterCachedAppointments(cached.appointments, {
+            q: searchQuery || undefined,
+            status: statusFilter || undefined,
+            from: dateFrom || undefined,
+            to: dateTo || undefined,
+          });
+          setAppointments(filtered);
+          setCurrentUserId(cached.veterinarianId);
+          setPagination({
+            page: 1,
+            limit: filtered.length || 10,
+            total: filtered.length,
+            totalPages: 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+          });
+          setOfflineNotice(
+            cached.lastSyncedAt
+              ? `Sem conexão com a internet. Exibindo agendamentos salvos localmente no IndexedDB em ${formatDate(cached.lastSyncedAt)}.`
+              : 'Sem conexão com a internet. Exibindo agendamentos salvos localmente no IndexedDB.',
+          );
+          return;
+        }
+      }
       setErrorMessage(
         error instanceof Error ? error.message : 'Erro ao carregar os agendamentos.',
       );
@@ -207,6 +263,16 @@ export function AppointmentsList() {
           )}
         </div>
       </form>
+
+      {offlineNotice && (
+        <div
+          className="mt-4 flex flex-wrap items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-medium text-amber-950"
+          role="status"
+        >
+          <WifiOff className="h-4 w-4 shrink-0 text-amber-700" />
+          <span>{offlineNotice}</span>
+        </div>
+      )}
 
       {deniedNotice && (
         <div

@@ -59,12 +59,58 @@ export async function GET(request: NextRequest) {
   const from = request.nextUrl.searchParams.get('from');
   const to = request.nextUrl.searchParams.get('to');
   const rawStatus = request.nextUrl.searchParams.get('status')?.trim() || null;
+  const mine = request.nextUrl.searchParams.get('mine') === 'true';
+  const requestedVetId = request.nextUrl.searchParams.get('veterinarian_id')?.trim() || null;
+
+  if (requestedVetId && !z.string().uuid().safeParse(requestedVetId).success) {
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Identificador de veterinário inválido.' },
+        { status: 400 },
+      ),
+      rateLimit,
+    );
+  }
 
   if (rawStatus && !statusFilterSchema.safeParse(rawStatus).success) {
     return applyRateLimitHeadersToResponse(
       NextResponse.json({ error: 'Filtro de status inválido.' }, { status: 400 }),
       rateLimit,
     );
+  }
+
+  if (requestedVetId && requestedVetId !== authUser.id) {
+    const [{ data: profile }, { data: targetVetOrgs }, { data: callerOwnerOrgs }] =
+      await Promise.all([
+        supabase.from('profiles').select('role').eq('id', authUser.id).maybeSingle(),
+        supabase
+          .from('veterinarian_profiles')
+          .select('organization_id')
+          .eq('user_id', requestedVetId),
+        supabase
+          .from('organization_memberships')
+          .select('organization_id')
+          .eq('user_id', authUser.id)
+          .in('role', ['owner', 'admin']),
+      ]);
+
+    const isGlobalAdmin = profile?.role === 'admin';
+    const managedOrgIds = new Set(
+      (callerOwnerOrgs ?? []).map((item) => item.organization_id),
+    );
+    const managesTargetVet = (targetVetOrgs ?? []).some((item) =>
+      managedOrgIds.has(item.organization_id),
+    );
+
+    if (!isGlobalAdmin && !managesTargetVet) {
+      return applyRateLimitHeadersToResponse(
+        NextResponse.json(
+          { error: 'Cada veterinário visualiza apenas a própria agenda individual.' },
+          { status: 403 },
+        ),
+        rateLimit,
+      );
+    }
   }
 
   const isIsoRange = Boolean(from && to && from.includes('T') && to.includes('T'));
@@ -93,6 +139,12 @@ export async function GET(request: NextRequest) {
     )
     .order('starts_at', { ascending: range !== null })
     .limit(500);
+
+  if (mine) {
+    appointmentsQuery = appointmentsQuery.eq('veterinarian_id', authUser.id);
+  } else if (requestedVetId) {
+    appointmentsQuery = appointmentsQuery.eq('veterinarian_id', requestedVetId);
+  }
 
   if (range?.success) {
     appointmentsQuery = appointmentsQuery
@@ -284,14 +336,20 @@ export async function POST(request: NextRequest) {
     timeStyle: 'short',
   }).format(new Date(data.starts_at));
 
-  const [{ data: petRow }, dispatch] = await Promise.all([
-    supabase.from('pets').select('id, name, species').eq('id', data.pet_id).maybeSingle(),
+  const { data: petRow } = await supabase
+    .from('pets')
+    .select('id, name, species')
+    .eq('id', data.pet_id)
+    .maybeSingle();
+
+  const petLabel = petRow?.name ? ` (${petRow.name})` : '';
+  const [dispatch] = await Promise.all([
     dispatchBackgroundPushWithServiceRole(
       availability.veterinarian_id,
       {
-        title: 'Nova solicitação na fila DrVet',
+        title: `Nova reserva na sua agenda${petLabel}`,
         body: `${data.kind === 'teleconsultation' ? 'Teleconsulta' : 'Consulta presencial'} solicitada para ${whenFormatted}.`,
-        url: '/painel/veterinario',
+        url: '/agenda',
         tag: `queue-${data.id}`,
       },
       'queue',
@@ -405,12 +463,14 @@ export async function PATCH(request: NextRequest) {
         title:
           parsed.data.status === 'confirmed'
             ? 'Consulta veterinária confirmada'
-            : 'Consulta veterinária cancelada',
+            : recipientId === data.veterinarian_id
+              ? 'Horário cancelado na sua agenda individual'
+              : 'Consulta veterinária cancelada',
         body:
           parsed.data.status === 'confirmed'
-            ? `Seu atendimento foi confirmado para ${whenFormatted}.`
-            : `O atendimento de ${whenFormatted} foi cancelado.`,
-        url: recipientId === data.veterinarian_id ? '/painel/veterinario' : '/agendamento',
+            ? `Atendimento${petRow?.name ? ` de ${petRow.name}` : ''} confirmado para ${whenFormatted}.`
+            : `O atendimento${petRow?.name ? ` de ${petRow.name}` : ''} de ${whenFormatted} foi cancelado.`,
+        url: recipientId === data.veterinarian_id ? '/agenda' : '/agendamento',
         tag: `status-${data.id}`,
       },
       filterType,

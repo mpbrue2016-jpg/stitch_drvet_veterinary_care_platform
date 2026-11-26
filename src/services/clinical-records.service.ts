@@ -1,3 +1,4 @@
+import { isLikelyOfflineError } from '@/lib/offline/vet-cache-helpers';
 import { getSupabaseClient } from '@/lib/supabase';
 import type { Json } from '@/types/database';
 import type {
@@ -87,7 +88,13 @@ export async function buscarProntuarioPorAtendimento(
   try {
     const supabase = getSupabaseClient();
     const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError || !authData.user) {
+    if (authError) {
+      if (isLikelyOfflineError(authError)) {
+        throw authError;
+      }
+      throw new Error('Faça login para acessar o prontuário.');
+    }
+    if (!authData.user) {
       throw new Error('Faça login para acessar o prontuário.');
     }
 

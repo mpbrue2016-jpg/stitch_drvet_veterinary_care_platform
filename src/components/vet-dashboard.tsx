@@ -1,7 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { ShieldAlert, ShieldCheck, UserRound, WifiOff } from 'lucide-react';
+import { FacialBiometricsCapture } from '@/components/facial-biometrics-capture';
+import { VetAutoRemindersCard } from '@/components/vet-auto-reminders-card';
+import { VetConsultationSummary } from '@/components/vet-consultation-summary';
+import { VetOfflineCachePanel } from '@/components/vet-offline-cache-panel';
 import {
   Badge,
   Button,
@@ -18,9 +24,22 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { atualizarStatusAgendamento, listarAgendamentos } from '@/services/appointments.service';
 import { buscarPerfilAtual } from '@/services/auth.service';
+import {
+  consultarBiometriaFacial,
+  type FacialBiometricsStatusResponse,
+} from '@/services/biometrics.service';
 import { listarDisponibilidade } from '@/services/availability.service';
+import { isLikelyOfflineError } from '@/lib/offline/vet-cache-helpers';
+import {
+  getVetOfflineCacheSnapshot,
+  syncFullVetOfflineSnapshot,
+} from '@/lib/offline/vet-indexeddb';
+import { listarProntuarios } from '@/services/clinical-records.service';
 import { buscarResumoFinanceiro } from '@/services/commissions.service';
 import { listarOrganizacoesEVeterinarios } from '@/services/organizations.service';
+import { registerPushServiceWorker } from '@/services/push.service';
+import { obterUrlPublicaStorage } from '@/services/storage.service';
+import { listarSessoesTeleconsulta } from '@/services/teleconsultations.service';
 import type {
   Appointment,
   AppointmentStatus,
@@ -61,10 +80,21 @@ export function VetDashboard() {
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [finance, setFinance] = useState<CommissionSummary | null>(null);
   const [vetProfiles, setVetProfiles] = useState<VeterinarianProfile[]>([]);
+  const [biometricsStatus, setBiometricsStatus] =
+    useState<FacialBiometricsStatusResponse | null>(null);
+  const [inProgressAppointmentIds, setInProgressAppointmentIds] = useState<string[]>([]);
+  const [initialDailyGoal, setInitialDailyGoal] = useState<number | null>(null);
+  const [showBiometricEnroll, setShowBiometricEnroll] = useState(false);
   const [loading, setLoading] = useState(configured);
   const [busyId, setBusyId] = useState('');
+  const [offlineVetId, setOfflineVetId] = useState('');
+  const [offlineModeNotice, setOfflineModeNotice] = useState('');
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    void registerPushServiceWorker().catch(() => null);
+  }, []);
 
   const loadDashboard = useCallback(async () => {
     if (!configured) {
@@ -73,18 +103,25 @@ export function VetDashboard() {
     }
     setLoading(true);
     setErrorMessage('');
+    setOfflineModeNotice('');
     try {
-      const [me, appts, avail, fin, orgs] = await Promise.all([
-        buscarPerfilAtual(),
-        listarAgendamentos(),
-        listarDisponibilidade({ mine: true }).catch(() => ({ availability: [] })),
-        buscarResumoFinanceiro().catch(() => null),
-        listarOrganizacoesEVeterinarios().catch(() => ({
-          organizations: [],
-          professionals: [],
-          currentUserId: '',
-        })),
-      ]);
+      const supabase = createSupabaseBrowserClient();
+      const [me, appts, avail, fin, orgs, bio, tele, authUserRes, recordsRes] =
+        await Promise.all([
+          buscarPerfilAtual(),
+          listarAgendamentos({ mine: true }),
+          listarDisponibilidade({ mine: true }).catch(() => ({ availability: [] })),
+          buscarResumoFinanceiro().catch(() => null),
+          listarOrganizacoesEVeterinarios().catch(() => ({
+            organizations: [],
+            professionals: [],
+            currentUserId: '',
+          })),
+          consultarBiometriaFacial().catch(() => null),
+          listarSessoesTeleconsulta().catch(() => ({ sessions: [], currentUserId: '' })),
+          supabase.auth.getUser().catch(() => ({ data: { user: null } })),
+          listarProntuarios().catch(() => ({ clinicalRecords: [] })),
+        ]);
       setProfile(me);
       setAppointments(appts.appointments);
       setAvailability(avail.availability);
@@ -92,7 +129,49 @@ export function VetDashboard() {
       setVetProfiles(
         orgs.professionals.filter((item) => item.user_id === appts.currentUserId),
       );
+      setBiometricsStatus(bio);
+      const metadataGoal = Number(
+        authUserRes.data?.user?.user_metadata?.daily_consultation_goal,
+      );
+      setInitialDailyGoal(
+        Number.isFinite(metadataGoal) && metadataGoal > 0 ? metadataGoal : null,
+      );
+      setInProgressAppointmentIds(
+        tele.sessions
+          .filter(
+            (session) =>
+              session.status === 'in_progress' &&
+              (!appts.currentUserId || session.veterinarian_id === appts.currentUserId),
+          )
+          .map((session) => session.appointment_id),
+      );
+
+      const vetIdForCache = appts.currentUserId || me?.id || '';
+      if (vetIdForCache) {
+        const vetRecords = recordsRes.clinicalRecords.filter(
+          (record) => record.veterinarian_id === vetIdForCache,
+        );
+        void syncFullVetOfflineSnapshot({
+          veterinarianId: vetIdForCache,
+          veterinarianName: me?.display_name ?? null,
+          appointments: appts.appointments,
+          clinicalRecords: vetRecords,
+        }).catch(() => null);
+      }
     } catch (error) {
+      if (isLikelyOfflineError(error)) {
+        const snapshot = await getVetOfflineCacheSnapshot().catch(() => null);
+        if (snapshot && (snapshot.appointments.length > 0 || snapshot.records.length > 0)) {
+          setAppointments(snapshot.appointments);
+          setOfflineVetId(snapshot.veterinarianId ?? '');
+          setOfflineModeNotice(
+            snapshot.meta?.last_synced_at
+              ? `Modo offline ativo: exibindo dados locais do IndexedDB sincronizados em ${formatDateTime(snapshot.meta.last_synced_at)}.`
+              : 'Modo offline ativo: exibindo agendamentos e prontuários básicos salvos localmente no IndexedDB.',
+          );
+          return;
+        }
+      }
       setErrorMessage(
         error instanceof Error ? error.message : 'Não foi possível carregar o painel clínico.',
       );
@@ -105,7 +184,7 @@ export function VetDashboard() {
     void loadDashboard();
   }, [loadDashboard]);
 
-  const currentVetId = profile?.id ?? '';
+  const currentVetId = profile?.id || offlineVetId;
 
   useEffect(() => {
     if (!configured || !currentVetId) return;
@@ -118,6 +197,18 @@ export function VetDashboard() {
           event: '*',
           schema: 'public',
           table: 'appointments',
+          filter: `veterinarian_id=eq.${currentVetId}`,
+        },
+        () => {
+          void loadDashboard();
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'teleconsultation_sessions',
           filter: `veterinarian_id=eq.${currentVetId}`,
         },
         () => {
@@ -160,6 +251,10 @@ export function VetDashboard() {
     (slot) => slot.is_available && !slot.is_blocked,
   ).length;
   const primaryVet = vetProfiles[0];
+  const vetAvatarUrl = obterUrlPublicaStorage(
+    'vet-avatars',
+    primaryVet?.avatar_path ?? profile?.avatar_path,
+  );
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -186,6 +281,15 @@ export function VetDashboard() {
 
       {!configured && <DemoNotice />}
       <PushInlineBanner audience="veterinarian" />
+      {offlineModeNotice && (
+        <div
+          className="mb-4 flex flex-wrap items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-950"
+          role="status"
+        >
+          <WifiOff className="h-4 w-4 shrink-0 text-amber-700" />
+          <span>{offlineModeNotice}</span>
+        </div>
+      )}
       {notice && (
         <div className="mb-4">
           <Toast message={notice} onDismiss={() => setNotice('')} variant="success" />
@@ -199,11 +303,37 @@ export function VetDashboard() {
 
       {profile && (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-brand-muted">
-              Profissional logado
-            </p>
-            <p className="text-base font-extrabold text-brand-navy">{profile.display_name}</p>
+          <div className="flex items-center gap-3">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-[#dff0ff]">
+              {vetAvatarUrl ? (
+                <Image
+                  alt={profile.display_name}
+                  className="object-cover"
+                  fill
+                  referrerPolicy="no-referrer"
+                  sizes="48px"
+                  src={vetAvatarUrl}
+                />
+              ) : (
+                <span className="grid h-full w-full place-items-center text-[#087a68]">
+                  <UserRound className="h-5 w-5" />
+                </span>
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-brand-muted">
+                Profissional logado
+              </p>
+              <p className="text-base font-extrabold text-brand-navy">{profile.display_name}</p>
+              {!vetAvatarUrl && (
+                <Link
+                  className="text-xs font-semibold text-brand-green hover:underline"
+                  href="/perfil"
+                >
+                  Adicionar foto profissional →
+                </Link>
+              )}
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {primaryVet ? (
@@ -214,6 +344,20 @@ export function VetDashboard() {
             ) : (
               <Badge variant="info">Perfil {profile.role}</Badge>
             )}
+            {biometricsStatus?.schemaReady && (
+              <Badge variant={biometricsStatus.enrolled ? 'success' : 'warning'}>
+                <span className="inline-flex items-center gap-1">
+                  {biometricsStatus.enrolled ? (
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                  ) : (
+                    <ShieldAlert className="h-3.5 w-3.5" />
+                  )}
+                  {biometricsStatus.enrolled
+                    ? 'Biometria facial ativa'
+                    : 'Biometria facial pendente'}
+                </span>
+              </Badge>
+            )}
             <Link
               className="text-xs font-bold text-brand-green hover:underline"
               href="/receitas"
@@ -223,6 +367,76 @@ export function VetDashboard() {
           </div>
         </div>
       )}
+
+      {biometricsStatus?.schemaReady &&
+        biometricsStatus.isVeterinarian &&
+        !biometricsStatus.enrolled && (
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-extrabold text-amber-950">
+                  Biometria facial não identificada no banco de dados
+                </p>
+                <p className="mt-1 text-xs text-amber-900">
+                  Faça a confecção da sua biometria facial pela câmera agora para proteger
+                  os próximos logins e registros clínicos.
+                </p>
+              </div>
+              {!showBiometricEnroll && (
+                <Button
+                  onClick={() => setShowBiometricEnroll(true)}
+                  type="button"
+                  variant="secondary"
+                >
+                  Cadastrar biometria facial agora
+                </Button>
+              )}
+            </div>
+
+            {showBiometricEnroll && (
+              <div className="mt-4">
+                <FacialBiometricsCapture
+                  cancelLabel="Fechar"
+                  mode="enroll"
+                  onCancel={() => setShowBiometricEnroll(false)}
+                  onCompleted={() => {
+                    setShowBiometricEnroll(false);
+                    setNotice(
+                      'Biometria facial cadastrada e vinculada ao seu perfil veterinário!',
+                    );
+                    void loadDashboard();
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+      <VetConsultationSummary
+        appointments={appointments}
+        inProgressAppointmentIds={inProgressAppointmentIds}
+        initialDailyGoal={initialDailyGoal}
+        loading={loading}
+        veterinarianId={currentVetId || undefined}
+      />
+
+      <div className="mb-6">
+        <VetAutoRemindersCard
+          appointments={appointments}
+          veterinarianEmail={profile?.email ?? null}
+          veterinarianPhone={profile?.phone ?? null}
+        />
+      </div>
+
+      <div className="mb-6">
+        <VetOfflineCachePanel
+          appointments={appointments}
+          loadingParent={loading}
+          onSyncTrigger={loadDashboard}
+          veterinarianId={currentVetId || undefined}
+          veterinarianName={profile?.display_name ?? null}
+        />
+      </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
@@ -361,6 +575,13 @@ export function VetDashboard() {
               href="/comissoes"
             >
               <span>Extrato de honorários &amp; PIX</span>
+              <span>→</span>
+            </Link>
+            <Link
+              className="flex items-center justify-between rounded-xl border border-slate-200 bg-[#F5F8FA] px-4 py-3 text-sm font-semibold text-brand-navy hover:bg-brand-ice"
+              href="/agenda"
+            >
+              <span>Minha agenda &amp; comunicados individuais</span>
               <span>→</span>
             </Link>
             <Link

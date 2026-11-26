@@ -1,9 +1,34 @@
+const STATIC_CACHE = 'drvet-static-v1';
+const VET_PAGES_CACHE = 'drvet-vet-pages-v1';
+const VET_OFFLINE_PATH_PREFIXES = [
+  '/painel/veterinario',
+  '/agenda',
+  '/prontuarios',
+  '/agendamento',
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key.startsWith('drvet-') &&
+                key !== STATIC_CACHE &&
+                key !== VET_PAGES_CACHE,
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
 });
 
 function sanitizeUrl(rawUrl) {
@@ -20,6 +45,75 @@ function sanitizeUrl(rawUrl) {
   }
   return '/agendamento';
 }
+
+function isCacheableStaticPath(pathname) {
+  if (pathname.startsWith('/_next/webpack-hmr')) return false;
+  return (
+    pathname.startsWith('/_next/static/') ||
+    pathname === '/pwa-192x192.png' ||
+    pathname === '/pwa-512x512.png' ||
+    pathname === '/apple-touch-icon.png' ||
+    pathname === '/stitch-vet-hero.webp' ||
+    pathname === '/icon.svg'
+  );
+}
+
+function isVetOfflineNavigationPath(pathname) {
+  return VET_OFFLINE_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
+
+  if (isCacheableStaticPath(url.pathname)) {
+    event.respondWith(
+      caches.open(STATIC_CACHE).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        const response = await fetch(request);
+        if (response && response.ok && response.type === 'basic') {
+          void cache.put(request, response.clone());
+        }
+        return response;
+      }),
+    );
+    return;
+  }
+
+  if (request.mode === 'navigate' && isVetOfflineNavigationPath(url.pathname)) {
+    event.respondWith(
+      caches.open(VET_PAGES_CACHE).then(async (cache) => {
+        try {
+          const response = await fetch(request);
+          if (
+            response &&
+            response.ok &&
+            response.type === 'basic' &&
+            !response.redirected
+          ) {
+            void cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          const exactMatch = await cache.match(request);
+          if (exactMatch) return exactMatch;
+          const dashboardFallback = await cache.match('/painel/veterinario');
+          if (dashboardFallback) return dashboardFallback;
+          const recordsFallback = await cache.match('/prontuarios');
+          if (recordsFallback) return recordsFallback;
+          throw new Error('Offline navigation unavailable');
+        }
+      }),
+    );
+  }
+});
 
 self.addEventListener('push', (event) => {
   let payload = {
@@ -58,7 +152,14 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('message', (event) => {
   const data = event.data;
-  if (!data || data.type !== 'SHOW_LOCAL_NOTIFICATION') return;
+  if (!data) return;
+
+  if (data.type === 'CLEAR_OFFLINE_CACHE') {
+    event.waitUntil(caches.delete(VET_PAGES_CACHE));
+    return;
+  }
+
+  if (data.type !== 'SHOW_LOCAL_NOTIFICATION') return;
 
   const title =
     typeof data.title === 'string' && data.title.trim()

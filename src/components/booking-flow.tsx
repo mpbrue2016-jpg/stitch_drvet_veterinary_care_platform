@@ -203,16 +203,14 @@ export function BookingFlow() {
       const scopedAvailability = vetParam
         ? loadedAvailability.filter((slot) => slot.veterinarian_id === vetParam)
         : loadedAvailability;
-      const effectiveAvailability =
-        scopedAvailability.length > 0 ? scopedAvailability : loadedAvailability;
       const availableDays = Array.from(
-        new Set(effectiveAvailability.map((slot) => dayKey(slot.starts_at))),
+        new Set(scopedAvailability.map((slot) => dayKey(slot.starts_at))),
       );
       setSelectedDay((current) =>
         availableDays.includes(current) ? current : availableDays[0] ?? '',
       );
       setSelectedSlotId((current) =>
-        effectiveAvailability.some((slot) => slot.id === current)
+        scopedAvailability.some((slot) => slot.id === current)
           ? current
           : '',
       );
@@ -231,8 +229,7 @@ export function BookingFlow() {
 
   const filteredAvailability = useMemo(() => {
     if (!vetFilterId) return availability;
-    const matches = availability.filter((slot) => slot.veterinarian_id === vetFilterId);
-    return matches.length > 0 ? matches : availability;
+    return availability.filter((slot) => slot.veterinarian_id === vetFilterId);
   }, [availability, vetFilterId]);
 
   const availableDays = useMemo(() => {
@@ -735,6 +732,33 @@ export function BookingFlow() {
               <CheckCircle2 className="h-5 w-5" />
             </span>
           </div>
+          {veterinarians.length > 1 && (
+            <label className="grid gap-1 text-xs font-semibold text-slate-600">
+              Filtrar agenda individual do veterinário
+              <select
+                className="min-h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-[#153b50]"
+                onChange={(event) => {
+                  const nextVetId = event.target.value;
+                  setVetFilterId(nextVetId);
+                  setSelectedSlotId('');
+                  const nextScoped = nextVetId
+                    ? availability.filter((slot) => slot.veterinarian_id === nextVetId)
+                    : availability;
+                  const firstNextDay = nextScoped[0] ? dayKey(nextScoped[0].starts_at) : '';
+                  setSelectedDay(firstNextDay);
+                }}
+                value={vetFilterId}
+              >
+                <option value="">Todos os veterinários disponíveis</option>
+                {veterinarians.map((vet) => (
+                  <option key={vet.user_id} value={vet.user_id}>
+                    {vet.display_name || 'Médico Veterinário'} · CRMV-{vet.registration_region}{' '}
+                    {vet.registration_number}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
 
         <div className="rounded-xl bg-white p-4 shadow-sm">
@@ -751,10 +775,27 @@ export function BookingFlow() {
               </div>
             </div>
           ) : availableDays.length === 0 ? (
-            <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
-              Não há horários publicados. Tente novamente mais tarde ou consulte
-              a equipe para saber quando a agenda será aberta.
-            </p>
+            <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+              <p>
+                {vetFilterId
+                  ? 'Este veterinário ainda não publicou horários disponíveis na sua agenda individual.'
+                  : 'Não há horários publicados. Tente novamente mais tarde ou consulte a equipe para saber quando a agenda será aberta.'}
+              </p>
+              {vetFilterId && (
+                <button
+                  className="mt-2 font-bold text-[#087a68] underline"
+                  onClick={() => {
+                    setVetFilterId('');
+                    setSelectedSlotId('');
+                    const firstDay = availability[0] ? dayKey(availability[0].starts_at) : '';
+                    setSelectedDay(firstDay);
+                  }}
+                  type="button"
+                >
+                  Ver horários de todos os veterinários
+                </button>
+              )}
+            </div>
           ) : (
             <>
               <div

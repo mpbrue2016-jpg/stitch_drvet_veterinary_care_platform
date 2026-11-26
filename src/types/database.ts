@@ -53,6 +53,8 @@ export type NotificationKind =
   | 'appointment_confirmed'
   | 'appointment_cancelled'
   | 'vet_queue_new'
+  | 'vet_agenda_reminder'
+  | 'vet_agenda_summary'
   | 'system_test';
 
 export interface Database {
@@ -1144,6 +1146,10 @@ export interface Database {
       };
       enqueue_appointment_reminders: {
         Args: Record<PropertyKey, never>;
+        Returns: Database['public']['Tables']['notifications']['Row'][];
+      };
+      enqueue_vet_agenda_summary: {
+        Args: { force_new?: boolean };
         Returns: Database['public']['Tables']['notifications']['Row'][];
       };
       mark_all_notifications_read: {

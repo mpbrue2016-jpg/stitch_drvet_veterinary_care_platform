@@ -1,11 +1,24 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
+import { recordAppointmentWhatsappOutbox } from '@/lib/notifications/outbox';
+import { dispatchVetExternalRemindersForCreatedNotifications } from '@/lib/notifications/vet-reminder-runner';
+import {
+  buildAppointmentWhatsappReminderText,
+  isVetAutoReminderEnabled,
+  normalizeVetReminderChannel,
+  normalizeWhatsappPhoneToE164,
+  shouldSendEmailForChannel,
+  shouldSendPushForChannel,
+  shouldSendWhatsappForChannel,
+} from '@/lib/notifications/vet-reminders';
+import { sendWhatsappReminder } from '@/lib/notifications/whatsapp-dispatcher';
 import { dispatchWebPushForUser } from '@/lib/push/server-dispatch';
 import {
   applyRateLimitHeadersToResponse,
   requireProtectedApiContext,
 } from '@/lib/security/api-guard';
 import { supabaseErrorResponse } from '@/lib/supabase/api-error';
+import type { PushNotificationItem } from '@/types/entities';
 
 const markReadSchema = z
   .object({
@@ -30,23 +43,123 @@ export async function GET(request: NextRequest) {
 
   if (syncReminders) {
     const { data: reminderRows } = await supabase.rpc('enqueue_appointment_reminders');
-    const createdReminders = reminderRows ?? [];
+    const createdReminders = (reminderRows ?? []) as PushNotificationItem[];
+    const userMeta = (authUser.user_metadata ?? {}) as Record<string, unknown>;
+    const vetChannel = normalizeVetReminderChannel(
+      userMeta.vet_reminder_channel,
+      'both',
+    );
+    const vetAutoEnabled = isVetAutoReminderEnabled(
+      userMeta.vet_auto_reminder_enabled,
+    );
+
+    let profilePhone: string | null = null;
+    let profileDisplayName: string | null =
+      typeof userMeta.display_name === 'string' ? userMeta.display_name : null;
+
+    if (createdReminders.length > 0) {
+      const profileRes = await supabase
+        .from('profiles')
+        .select('phone, display_name')
+        .eq('id', authUser.id)
+        .maybeSingle();
+
+      if (!profileRes.error && profileRes.data) {
+        profilePhone = profileRes.data.phone ?? null;
+        profileDisplayName = profileRes.data.display_name || profileDisplayName;
+      }
+    }
+
+    const vetMetaPhone =
+      typeof userMeta.vet_whatsapp_phone === 'string' &&
+      userMeta.vet_whatsapp_phone.trim()
+        ? userMeta.vet_whatsapp_phone.trim()
+        : null;
+    const recipientPhone = vetMetaPhone ?? profilePhone;
+
+    const vetRemindersCreated: PushNotificationItem[] = [];
+    const tutorRemindersCreated: PushNotificationItem[] = [];
+
     for (const item of createdReminders) {
-      await dispatchWebPushForUser(
+      const isVetReminder = item.kind === 'vet_agenda_reminder';
+      if (isVetReminder && !vetAutoEnabled) {
+        continue;
+      }
+      if (isVetReminder) {
+        vetRemindersCreated.push(item);
+      } else if (item.kind === 'appointment_reminder') {
+        tutorRemindersCreated.push(item);
+      }
+
+      const shouldSendPush = !isVetReminder || shouldSendPushForChannel(vetChannel);
+      if (shouldSendPush) {
+        const filterType =
+          item.kind === 'vet_agenda_reminder' ||
+          item.kind === 'vet_queue_new' ||
+          item.kind === 'vet_agenda_summary'
+            ? 'queue'
+            : 'appointments';
+        await dispatchWebPushForUser(
+          supabase,
+          authUser.id,
+          {
+            title: item.title,
+            body: item.body,
+            url: item.action_url,
+            tag: `reminder-${item.id}`,
+          },
+          filterType,
+        );
+        await supabase
+          .from('notifications')
+          .update({ pushed_at: new Date().toISOString() })
+          .eq('id', item.id);
+      }
+    }
+
+    if (
+      vetRemindersCreated.length > 0 &&
+      vetAutoEnabled &&
+      (shouldSendEmailForChannel(vetChannel) || shouldSendWhatsappForChannel(vetChannel))
+    ) {
+      await dispatchVetExternalRemindersForCreatedNotifications({
+        reminders: vetRemindersCreated,
+        recipientUserId: authUser.id,
+        recipientEmail: authUser.email,
+        recipientPhone,
+        veterinarianName: profileDisplayName,
+        channel: vetChannel,
         supabase,
-        authUser.id,
-        {
-          title: item.title,
-          body: item.body,
-          url: item.action_url,
-          tag: `reminder-${item.id}`,
-        },
-        'appointments',
-      );
-      await supabase
-        .from('notifications')
-        .update({ pushed_at: new Date().toISOString() })
-        .eq('id', item.id);
+      }).catch(() => null);
+    }
+
+    const tutorPhoneNormalized = normalizeWhatsappPhoneToE164(profilePhone);
+    if (
+      tutorRemindersCreated.length > 0 &&
+      tutorPhoneNormalized &&
+      userMeta.appointment_whatsapp_enabled !== false
+    ) {
+      for (const item of tutorRemindersCreated) {
+        const whatsappRes = await sendWhatsappReminder({
+          to: tutorPhoneNormalized,
+          body: buildAppointmentWhatsappReminderText({
+            title: item.title,
+            body: item.body,
+            actionUrl: item.action_url,
+            recipientName: profileDisplayName,
+          }),
+        }).catch(() => null);
+
+        if (whatsappRes) {
+          await recordAppointmentWhatsappOutbox({
+            recipientUserId: authUser.id,
+            templateKey: 'appointment_reminder',
+            sent: whatsappRes.sent,
+            providerMessageId: whatsappRes.providerMessageSid,
+            error: whatsappRes.error,
+          }).catch(() => null);
+        }
+      }
     }
   }
 
@@ -75,13 +188,20 @@ export async function GET(request: NextRequest) {
     (item) =>
       !item.pushed_at &&
       (item.kind === 'vet_queue_new' ||
+        item.kind === 'vet_agenda_reminder' ||
+        item.kind === 'vet_agenda_summary' ||
         item.kind === 'appointment_confirmed' ||
         item.kind === 'appointment_cancelled'),
   );
 
   if (syncReminders && unpushed.length > 0) {
     for (const item of unpushed.slice(0, 3)) {
-      const filterType = item.kind === 'vet_queue_new' ? 'queue' : 'appointments';
+      const filterType =
+        item.kind === 'vet_queue_new' ||
+        item.kind === 'vet_agenda_reminder' ||
+        item.kind === 'vet_agenda_summary'
+          ? 'queue'
+          : 'appointments';
       const result = await dispatchWebPushForUser(
         supabase,
         authUser.id,

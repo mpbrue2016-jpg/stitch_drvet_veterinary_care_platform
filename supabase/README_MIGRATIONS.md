@@ -1,6 +1,6 @@
 # Procedimento Seguro de Aplicação das Migrations (Dev / Staging)
 
-As migrations do DrVet residem em `supabase/migrations/` em ordem cronológica estrita (`20261112210000` até `20261125000100`).
+As migrations do DrVet residem em `supabase/migrations/` em ordem cronológica estrita (`20261112210000` até `20261126000100`).
 
 > **Regra de segurança:** nunca aplique migrations diretamente em produção sem aprovação prévia, backup/snapshot e validação prévia em desenvolvimento ou staging.
 
@@ -28,6 +28,7 @@ As migrations do DrVet residem em `supabase/migrations/` em ordem cronológica e
 14. `20261124000100_security_indexes_and_audit_logs.sql`
 15. `20261124000200_mvp_architecture_readiness.sql`
 16. `20261125000100_vet_photo_and_facial_biometrics.sql`
+17. `20261126000100_individual_vet_agenda_and_comms.sql`
 
 ## Passo a passo em Desenvolvimento / Staging (via Supabase CLI)
 ```bash
@@ -47,6 +48,6 @@ npx supabase db push
 ## Passo a passo alternativo (SQL Editor do Painel Supabase — Dev/Staging)
 Se não houver `SUPABASE_ACCESS_TOKEN` ou `DATABASE_URL` no terminal:
 1. Abra o **SQL Editor** do projeto de desenvolvimento/staging no painel do Supabase.
-2. Execute cada arquivo de `supabase/migrations/` na ordem numérica acima (`1` a `16`), aguardando conclusão sem erros em cada etapa.
+2. Execute cada arquivo de `supabase/migrations/` na ordem numérica acima (`1` a `17`), aguardando conclusão sem erros em cada etapa.
 3. Verifique no **Table Editor** se todas as tabelas de `DRVET_ALL_TABLES` foram criadas.
 4. Verifique no **Authentication -> Providers / Email** se a confirmação de e-mail (`Confirm email`) está habilitada conforme a política do ambiente.

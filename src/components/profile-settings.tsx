@@ -1,8 +1,18 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import {
+  Camera,
+  ShieldAlert,
+  ShieldCheck,
+  Trash2,
+  Upload,
+  UserRound,
+} from 'lucide-react';
+import { FacialBiometricsCapture } from '@/components/facial-biometrics-capture';
 import {
   Badge,
   Button,
@@ -20,6 +30,11 @@ import {
   buscarPerfilAtual,
 } from '@/services/auth.service';
 import {
+  consultarBiometriaFacial,
+  revogarBiometriaFacial,
+  type FacialBiometricsStatusResponse,
+} from '@/services/biometrics.service';
+import {
   enviarSolicitacaoPerfil,
   listarMinhasSolicitacoesPerfil,
 } from '@/services/operations.service';
@@ -28,6 +43,11 @@ import {
   listarOrganizacoesEVeterinarios,
 } from '@/services/organizations.service';
 import { listarPets } from '@/services/pets.service';
+import {
+  gerarCaminhoSeguroStorage,
+  obterUrlPublicaStorage,
+  uploadArquivoStorage,
+} from '@/services/storage.service';
 import {
   listarAssinaturasPet,
   listarPagamentosUsuario,
@@ -89,6 +109,8 @@ export function ProfileSettings() {
   const [feeBrl, setFeeBrl] = useState('180.00');
   const [vetBio, setVetBio] = useState('');
   const [isOnlineNow, setIsOnlineNow] = useState(false);
+  const [vetAvatarPath, setVetAvatarPath] = useState('');
+  const [uploadingVetAvatar, setUploadingVetAvatar] = useState(false);
 
   // Role application state
   const [reqRole, setReqRole] = useState<'veterinarian' | 'partner'>('veterinarian');
@@ -98,6 +120,16 @@ export function ProfileSettings() {
   const [reqSpecialty, setReqSpecialty] = useState('');
   const [reqCity, setReqCity] = useState('');
   const [reqState, setReqState] = useState('');
+  const [reqAvatarPath, setReqAvatarPath] = useState('');
+  const [uploadingReqAvatar, setUploadingReqAvatar] = useState(false);
+
+  // Facial biometrics state
+  const [biometricsStatus, setBiometricsStatus] =
+    useState<FacialBiometricsStatusResponse | null>(null);
+  const [biometricsCaptureMode, setBiometricsCaptureMode] = useState<
+    'enroll' | 'verify' | null
+  >(null);
+  const [revokingBiometrics, setRevokingBiometrics] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -110,7 +142,7 @@ export function ProfileSettings() {
     setLoading(true);
     setErrorMessage('');
     try {
-      const [userProfile, orgsRes, petsRes, subsRes, paymentsRes, appsRes] =
+      const [userProfile, orgsRes, petsRes, subsRes, paymentsRes, appsRes, bioRes] =
         await Promise.all([
           buscarPerfilAtual(),
           listarOrganizacoesEVeterinarios().catch(() => ({
@@ -124,6 +156,7 @@ export function ProfileSettings() {
           listarMinhasSolicitacoesPerfil().catch(() => ({
             applications: [] as RoleApplication[],
           })),
+          consultarBiometriaFacial().catch(() => null),
         ]);
 
       setProfile(userProfile);
@@ -141,6 +174,11 @@ export function ProfileSettings() {
         );
         setVetBio(firstApprovedVet.bio ?? '');
         setIsOnlineNow(Boolean(firstApprovedVet.is_online_now));
+        setVetAvatarPath(
+          firstApprovedVet.avatar_path ?? userProfile?.avatar_path ?? '',
+        );
+      } else {
+        setVetAvatarPath(userProfile?.avatar_path ?? '');
       }
       setApplications(appsRes.applications);
       setPetsCount(petsRes.pets.length);
@@ -148,6 +186,7 @@ export function ProfileSettings() {
         subsRes.subscriptions.filter((sub) => sub.status === 'active').length,
       );
       setPaymentsCount(paymentsRes.payments.length);
+      setBiometricsStatus(bioRes);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -162,6 +201,57 @@ export function ProfileSettings() {
   useEffect(() => {
     void loadProfileData();
   }, [loadProfileData]);
+
+  async function handleAvatarUpload(
+    event: ChangeEvent<HTMLInputElement>,
+    target: 'vet' | 'req',
+  ) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !profile?.id) return;
+
+    setErrorMessage('');
+    setNotice('');
+    if (target === 'vet') {
+      setUploadingVetAvatar(true);
+    } else {
+      setUploadingReqAvatar(true);
+    }
+
+    try {
+      const storagePath = gerarCaminhoSeguroStorage(
+        profile.id,
+        `${target}-${file.name}`,
+      );
+      const { path } = await uploadArquivoStorage({
+        bucket: 'vet-avatars',
+        path: storagePath,
+        file,
+      });
+
+      if (target === 'vet') {
+        setVetAvatarPath(path);
+        setNotice(
+          'Foto enviada! Clique em "Atualizar vitrine profissional" para salvar no perfil público.',
+        );
+      } else {
+        setReqAvatarPath(path);
+        setNotice('Foto profissional anexada à solicitação de credenciamento.');
+      }
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar a foto profissional.',
+      );
+    } finally {
+      if (target === 'vet') {
+        setUploadingVetAvatar(false);
+      } else {
+        setUploadingReqAvatar(false);
+      }
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -216,8 +306,9 @@ export function ProfileSettings() {
         consultation_fee_cents: Math.round(numericFee * 100),
         bio: vetBio.trim() || null,
         is_online_now: isOnlineNow,
+        avatar_path: vetAvatarPath.trim() || null,
       });
-      setNotice('Configurações públicas do consultório atualizadas.');
+      setNotice('Configurações públicas e foto do consultório atualizadas.');
       await loadProfileData();
     } catch (error) {
       setErrorMessage(
@@ -249,11 +340,14 @@ export function ProfileSettings() {
         specialty: reqRole === 'veterinarian' ? reqSpecialty : null,
         city: reqCity || null,
         state: reqState || null,
+        avatar_path:
+          reqRole === 'veterinarian' ? reqAvatarPath.trim() || null : null,
       });
       setApplications((current) => [application, ...current]);
       setReqOrgName('');
       setReqDocumentId('');
       setReqSpecialty('');
+      setReqAvatarPath('');
       setNotice(
         'Solicitação de credenciamento enviada! O administrador analisará seus dados em breve.',
       );
@@ -268,9 +362,31 @@ export function ProfileSettings() {
     }
   }
 
+  async function handleRevokeBiometrics() {
+    setErrorMessage('');
+    setNotice('');
+    setRevokingBiometrics(true);
+    try {
+      await revogarBiometriaFacial();
+      setBiometricsCaptureMode(null);
+      setNotice('Biometria facial revogada. Você pode cadastrá-la novamente quando desejar.');
+      await loadProfileData();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível revogar a biometria facial.',
+      );
+    } finally {
+      setRevokingBiometrics(false);
+    }
+  }
+
   const isApprovedVet =
     profile?.role === 'veterinarian' ||
     vetRecords.some((v) => v.status === 'approved');
+  const vetAvatarPreviewUrl = obterUrlPublicaStorage('vet-avatars', vetAvatarPath);
+  const reqAvatarPreviewUrl = obterUrlPublicaStorage('vet-avatars', reqAvatarPath);
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
@@ -285,7 +401,7 @@ export function ProfileSettings() {
             </Link>
           </div>
         }
-        description="Gerencie seus dados de contato, credenciamento profissional, valor público de consulta e atalhos da sua conta DrVet."
+        description="Gerencie seus dados de contato, foto profissional, biometria facial, credenciamento e configurações públicas na DrVet."
         title="Meu Perfil"
       />
 
@@ -373,10 +489,64 @@ export function ProfileSettings() {
 
             {isApprovedVet && (
               <Card
-                description="Defina seu honorário de consulta exibido na vitrine pública e disponibilidade em plantão."
+                description="Defina sua foto de perfil, honorário de consulta exibido na vitrine pública e disponibilidade em plantão."
                 title="Configuração Pública do Consultório"
               >
                 <form className="grid gap-4" onSubmit={handleVetPublicSave}>
+                  <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-[#f6faff] p-4">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-slate-300 bg-white">
+                      {vetAvatarPreviewUrl ? (
+                        <Image
+                          alt="Foto profissional do médico-veterinário"
+                          className="object-cover"
+                          fill
+                          referrerPolicy="no-referrer"
+                          sizes="64px"
+                          src={vetAvatarPreviewUrl}
+                        />
+                      ) : (
+                        <div className="grid h-full w-full place-items-center text-slate-400">
+                          <UserRound className="h-7 w-7" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-[#153b50]">
+                        Foto profissional na vitrine pública
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate-600">
+                        JPG, PNG ou WEBP até 5 MB. Exibida nos cartões da Home e no agendamento.
+                      </p>
+                      <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                        <label className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[#087a68] bg-white px-3.5 text-xs font-bold text-[#087a68] hover:bg-[#ebf5ff]">
+                          <Upload className="h-3.5 w-3.5" />
+                          {uploadingVetAvatar
+                            ? 'Enviando foto...'
+                            : vetAvatarPath
+                              ? 'Alterar foto'
+                              : 'Enviar foto'}
+                          <input
+                            accept="image/jpeg,image/png,image/webp"
+                            className="sr-only"
+                            disabled={uploadingVetAvatar}
+                            onChange={(event) => void handleAvatarUpload(event, 'vet')}
+                            type="file"
+                          />
+                        </label>
+                        {vetAvatarPath && (
+                          <button
+                            className="inline-flex min-h-9 items-center gap-1 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                            onClick={() => setVetAvatarPath('')}
+                            type="button"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Remover foto
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <Input
                     label="Valor da teleconsulta (R$)"
                     name="feeBrl"
@@ -404,7 +574,7 @@ export function ProfileSettings() {
                     Estou disponível no plantão online agora
                   </label>
                   <div className="flex justify-end">
-                    <Button disabled={savingVet} type="submit" variant="secondary">
+                    <Button disabled={savingVet || uploadingVetAvatar} type="submit" variant="secondary">
                       {savingVet ? 'Salvando...' : 'Atualizar vitrine profissional'}
                     </Button>
                   </div>
@@ -478,15 +648,70 @@ export function ProfileSettings() {
                     />
                   )}
                   {reqRole === 'veterinarian' && (
-                    <div className="sm:col-span-2">
-                      <Input
-                        label="Especialidade principal"
-                        name="reqSpecialty"
-                        onChange={(e) => setReqSpecialty(e.target.value)}
-                        placeholder="Ex.: Clínica Geral, Dermatologia, Medicina Felina"
-                        value={reqSpecialty}
-                      />
-                    </div>
+                    <>
+                      <div className="sm:col-span-2">
+                        <Input
+                          label="Especialidade principal"
+                          name="reqSpecialty"
+                          onChange={(e) => setReqSpecialty(e.target.value)}
+                          placeholder="Ex.: Clínica Geral, Dermatologia, Medicina Felina"
+                          value={reqSpecialty}
+                        />
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-[#f6faff] p-4 sm:col-span-2">
+                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-slate-300 bg-white">
+                          {reqAvatarPreviewUrl ? (
+                            <Image
+                              alt="Pré-visualização da foto do veterinário"
+                              className="object-cover"
+                              fill
+                              referrerPolicy="no-referrer"
+                              sizes="56px"
+                              src={reqAvatarPreviewUrl}
+                            />
+                          ) : (
+                            <div className="grid h-full w-full place-items-center text-slate-400">
+                              <Camera className="h-5 w-5" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-[#153b50]">
+                            Foto profissional do Médico-Veterinário (opcional)
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-600">
+                            Será exibida no catálogo público e nos agendamentos após aprovação.
+                          </p>
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            <label className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[#087a68] bg-white px-3.5 text-xs font-bold text-[#087a68] hover:bg-[#ebf5ff]">
+                              <Upload className="h-3.5 w-3.5" />
+                              {uploadingReqAvatar
+                                ? 'Enviando...'
+                                : reqAvatarPath
+                                  ? 'Trocar foto'
+                                  : 'Selecionar foto'}
+                              <input
+                                accept="image/jpeg,image/png,image/webp"
+                                className="sr-only"
+                                disabled={uploadingReqAvatar}
+                                onChange={(event) => void handleAvatarUpload(event, 'req')}
+                                type="file"
+                              />
+                            </label>
+                            {reqAvatarPath && (
+                              <button
+                                className="inline-flex min-h-9 items-center gap-1 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                                onClick={() => setReqAvatarPath('')}
+                                type="button"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                Remover
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
                   {reqRole === 'partner' && (
                     <Input
@@ -499,7 +724,7 @@ export function ProfileSettings() {
                     />
                   )}
                   <div className="flex justify-end sm:col-span-2">
-                    <Button disabled={submittingApp} type="submit" variant="primary">
+                    <Button disabled={submittingApp || uploadingReqAvatar} type="submit" variant="primary">
                       {submittingApp
                         ? 'Enviando...'
                         : 'Enviar solicitação de credenciamento'}
@@ -541,6 +766,150 @@ export function ProfileSettings() {
           </div>
 
           <div className="grid content-start gap-6 lg:col-span-5">
+            <Card
+              description="Confecção e validação facial com prova de vida protegida no banco de dados."
+              title="Biometria Facial & Segurança"
+            >
+              {!biometricsStatus ? (
+                <p className="text-sm text-slate-600">
+                  Status biométrico indisponível no momento.
+                </p>
+              ) : !biometricsStatus.schemaReady ? (
+                <div className="grid gap-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-amber-600" />
+                    <Badge variant="warning">Aguardando migration #16</Badge>
+                  </div>
+                  <p className="text-xs leading-5 text-slate-600">
+                    As tabelas biométricas ainda não foram aplicadas no banco remoto.
+                    Execute a migration de foto veterinária e biometria facial no Supabase
+                    para habilitar o cadastro pela câmera.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#f6faff] px-3.5 py-2.5">
+                    <div className="flex items-center gap-2 text-sm font-bold text-[#153b50]">
+                      {biometricsStatus.enrolled ? (
+                        <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                      ) : (
+                        <ShieldAlert className="h-4 w-4 text-amber-600" />
+                      )}
+                      <span>
+                        {biometricsStatus.enrolled
+                          ? 'Biometria facial ativa'
+                          : 'Biometria não cadastrada'}
+                      </span>
+                    </div>
+                    <Badge variant={biometricsStatus.enrolled ? 'success' : 'warning'}>
+                      {biometricsStatus.enrolled ? 'Ativa' : 'Pendente'}
+                    </Badge>
+                  </div>
+
+                  {biometricsStatus.biometric && (
+                    <div className="grid gap-1 text-xs text-slate-600">
+                      <p>
+                        <strong>Cadastrada em:</strong>{' '}
+                        {new Intl.DateTimeFormat('pt-BR', {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        }).format(new Date(biometricsStatus.biometric.enrolled_at))}
+                      </p>
+                      <p>
+                        <strong>Última validação:</strong>{' '}
+                        {biometricsStatus.biometric.last_verified_at
+                          ? new Intl.DateTimeFormat('pt-BR', {
+                              dateStyle: 'short',
+                              timeStyle: 'short',
+                            }).format(new Date(biometricsStatus.biometric.last_verified_at))
+                          : 'Ainda não utilizada no login'}
+                      </p>
+                      <p>
+                        <strong>Prova de vida inicial:</strong>{' '}
+                        {Math.round(biometricsStatus.biometric.liveness_score * 100)}%
+                      </p>
+                    </div>
+                  )}
+
+                  {biometricsCaptureMode ? (
+                    <FacialBiometricsCapture
+                      cancelLabel="Fechar câmera"
+                      mode={biometricsCaptureMode}
+                      onCancel={() => setBiometricsCaptureMode(null)}
+                      onCompleted={() => {
+                        const modeUsed = biometricsCaptureMode;
+                        setBiometricsCaptureMode(null);
+                        setNotice(
+                          modeUsed === 'enroll'
+                            ? 'Biometria facial confeccionada e salva no banco de dados!'
+                            : 'Biometria facial validada com sucesso!',
+                        );
+                        void loadProfileData();
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        onClick={() => setBiometricsCaptureMode('enroll')}
+                        type="button"
+                        variant="secondary"
+                      >
+                        {biometricsStatus.enrolled
+                          ? 'Recadastrar face'
+                          : 'Cadastrar biometria facial'}
+                      </Button>
+                      {biometricsStatus.enrolled && (
+                        <>
+                          <Button
+                            onClick={() => setBiometricsCaptureMode('verify')}
+                            type="button"
+                            variant="outline"
+                          >
+                            Testar validação
+                          </Button>
+                          <Button
+                            disabled={revokingBiometrics}
+                            onClick={() => void handleRevokeBiometrics()}
+                            type="button"
+                            variant="outline"
+                          >
+                            {revokingBiometrics ? 'Revogando...' : 'Revogar'}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {biometricsStatus.recentLogs.length > 0 && (
+                    <div className="grid gap-1.5 border-t border-slate-100 pt-3">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        Últimas verificações ({biometricsStatus.recentLogs.length})
+                      </p>
+                      {biometricsStatus.recentLogs.slice(0, 3).map((log) => (
+                        <div
+                          className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs"
+                          key={log.id}
+                        >
+                          <span className="text-slate-700">
+                            {log.matched ? 'Aprovada' : 'Recusada'} ·{' '}
+                            {typeof log.similarity_score === 'number'
+                              ? `${Math.round(log.similarity_score * 100)}%`
+                              : '—'}
+                          </span>
+                          <span className="text-[11px] text-slate-500">
+                            {new Intl.DateTimeFormat('pt-BR', {
+                              dateStyle: 'short',
+                              timeStyle: 'short',
+                            }).format(new Date(log.created_at))}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+
             <Card
               description="Organizações e registro CRMV vinculados à sua conta."
               title="Vínculos e credenciamento"

@@ -3,6 +3,7 @@ import {
   normalizeUserRole,
   type UserAuthContext,
 } from '@/lib/auth/guards';
+import { clearVetOfflineCache } from '@/lib/offline/vet-indexeddb';
 import { getSupabaseClient } from '@/lib/supabase';
 import type { OrganizationRole } from '@/types/database';
 import type { UserProfile } from '@/types/entities';
@@ -135,6 +136,16 @@ export async function atualizarSenha(password: string) {
 
 export async function sairDaConta() {
   try {
+    await clearVetOfflineCache().catch(() => null);
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      navigator.serviceWorker.controller
+    ) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'CLEAR_OFFLINE_CACHE',
+      });
+    }
     const supabase = getSupabaseClient();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;

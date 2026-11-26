@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeWhatsappPhoneToE164 } from './notifications/vet-reminders';
 
 export const loginSchema = z.object({
   email: z.string().trim().email('Informe um e-mail válido.'),
@@ -560,5 +561,38 @@ export const verifyFacialBiometricsSchema = z
   })
   .strict();
 
+export const dispatchVetAgendaCommunicadoSchema = z
+  .object({
+    force: z.boolean().optional(),
+    organization_id: z.string().uuid('Organização inválida.').optional(),
+  })
+  .strict();
 
+export const vetReminderSettingsSchema = z
+  .object({
+    channel: z
+      .enum([
+        'all',
+        'both',
+        'push',
+        'email',
+        'whatsapp',
+        'push_whatsapp',
+        'email_whatsapp',
+      ])
+      .optional(),
+    enabled: z.boolean().optional(),
+    syncNow: z.boolean().optional(),
+    whatsappPhone: z
+      .string()
+      .trim()
+      .max(32, 'Telefone WhatsApp muito longo.')
+      .refine(
+        (value) => value === '' || normalizeWhatsappPhoneToE164(value) !== null,
+        'Informe um número WhatsApp válido com DDD (ex: +55 11 99999-8888).',
+      )
+      .nullable()
+      .optional(),
+  })
+  .strict();
 

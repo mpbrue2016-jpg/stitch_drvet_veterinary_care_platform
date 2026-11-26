@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
 
   const mine = request.nextUrl.searchParams.get('mine') === 'true';
   const organizationId = request.nextUrl.searchParams.get('organization_id');
+  const veterinarianId = request.nextUrl.searchParams.get('veterinarian_id');
   if (
     organizationId &&
     !z.string().uuid().safeParse(organizationId).success
@@ -52,6 +53,18 @@ export async function GET(request: NextRequest) {
     return applyRateLimitHeadersToResponse(
       NextResponse.json(
         { error: 'Informe uma organização válida.' },
+        { status: 400 },
+      ),
+      rateLimit,
+    );
+  }
+  if (
+    veterinarianId &&
+    !z.string().uuid().safeParse(veterinarianId).success
+  ) {
+    return applyRateLimitHeadersToResponse(
+      NextResponse.json(
+        { error: 'Informe um identificador de veterinário válido.' },
         { status: 400 },
       ),
       rateLimit,
@@ -75,7 +88,14 @@ export async function GET(request: NextRequest) {
   } else {
     availabilityQuery = availabilityQuery
       .eq('is_available', true)
+      .eq('is_blocked', false)
       .gt('starts_at', new Date().toISOString());
+    if (organizationId) {
+      availabilityQuery = availabilityQuery.eq('organization_id', organizationId);
+    }
+    if (veterinarianId) {
+      availabilityQuery = availabilityQuery.eq('veterinarian_id', veterinarianId);
+    }
   }
 
   const { data, error } = await availabilityQuery;

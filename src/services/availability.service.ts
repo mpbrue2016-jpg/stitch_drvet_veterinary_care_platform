@@ -5,6 +5,7 @@ import { toFriendlyError } from './errors';
 export interface ListAvailabilityParams {
   mine?: boolean;
   organization_id?: string;
+  veterinarian_id?: string;
 }
 
 export interface CreateAvailabilityInput {
@@ -47,6 +48,9 @@ export async function listarDisponibilidade(
 
       if (params?.organization_id) {
         query = query.eq('organization_id', params.organization_id);
+      }
+      if (params?.veterinarian_id) {
+        query = query.eq('veterinarian_id', params.veterinarian_id);
       }
     }
 
